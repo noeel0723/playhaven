@@ -102,4 +102,12 @@ scripts/             Helper development Windows
 docs/                Product brief dan urutan pengembangan
 ```
 
-Halaman pembuka dan token palet sudah diberi identitas PlayHaven. Fitur game, diary, reviews, lists, following, dan statistik belum dibuat. Lihat [product brief](docs/PRODUCT.md) untuk tahap selanjutnya.
+Halaman pembuka dan token palet sudah diberi identitas PlayHaven. Fondasi database inti sudah mencakup katalog, profil, library, playthrough, diary, rating, review, lists, dan follows. Model, factory, serta tes integritas tersedia; layar dan endpoint fitur tersebut belum dibuat. Lihat [data model](docs/DATA_MODEL.md) dan [product brief](docs/PRODUCT.md).
+
+Untuk menjalankan seluruh tes pada PostgreSQL yang terpisah dari database development:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\test-postgres.ps1
+```
+
+Script memakai database disposable `playhaven_testing` dan memverifikasi targetnya sebelum tes mereset tabel. Database development `playhaven` tidak dipakai oleh tes tersebut.

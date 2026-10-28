@@ -42,4 +42,4 @@ Use complementary warm light foregrounds for readable text. The dark reference c
 6. **Statistics and discovery:** aggregates, popular/highly rated games, query optimization, and responsive polish.
 7. **Release and mobile:** production infrastructure, email, backups, monitoring, and a versioned API consumed by React Native + Expo.
 
-Stages 2–7 are planned work. The current setup does not implement the game domain yet.
+Stages 1 and 2 are implemented as the tooling and database foundation. Stage 2 includes migrations, models, factories, and integrity tests; its product screens and feature endpoints are not implemented yet. See [the data model](DATA_MODEL.md). Stages 3–7 are planned work.
