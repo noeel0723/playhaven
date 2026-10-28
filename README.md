@@ -67,7 +67,26 @@ php artisan config:clear
 php artisan igdb:check
 ```
 
-`App\Services\Igdb\IgdbClient` menangani OAuth client credentials di server, cache token, timeout, dan penghapusan token saat respons 401. Perintah pemeriksaan tidak mencetak secret. Koneksi IGDB langsung belum diverifikasi karena credential belum diberikan. Katalog dan sinkronisasi belum diimplementasikan; pada tahap katalog, tambahkan queue, cache hasil, dan rate limiter bersama sesuai batas IGDB.
+`App\Services\Igdb\IgdbClient` menangani OAuth di server, cache token/hasil, timeout, pacing bersama, dan cooldown saat respons 429. Katalog publik tersedia di `/games`, dengan pencarian, filter, pagination, dan halaman detail. Sinkronisasi memakai unique jobs dan upsert yang menjaga riwayat pemain.
+
+```powershell
+php artisan catalog:sync --inline
+# Atau antrekan beberapa halaman:
+php artisan catalog:sync --pages=5 --per-page=100 --offset=0
+php artisan queue:work
+```
+
+Koneksi IGDB langsung belum diverifikasi karena credential belum diberikan. Katalog development tetap kosong sampai import berhasil. Lihat [panduan katalog](docs/CATALOG.md) untuk alur import dan batasannya.
+
+## Akses lewat Laragon
+
+Virtual host `playhaven.test` dan alias `www.playhaven.test` sudah disiapkan dengan document root `public/`. Aktivasi domain masih menunggu Laragon dijalankan sebagai Administrator lalu Reload, karena Windows menolak penulisan file hosts pada sesi ini. Setelah aktif:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1 -Service laragon
+```
+
+Mode ini menyalakan PostgreSQL, Vite, dan queue; Apache Laragon melayani web. Detail terdapat di [panduan Laragon](docs/LARAGON.md). Mode localhost sebelumnya tetap tersedia.
 
 ## Authentication dan API
 

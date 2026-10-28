@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Gamepad2, Library, Star } from 'lucide-react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Button } from '@/components/ui/button';
 import { dashboard, login, register } from '@/routes';
+import { index as games } from '@/routes/games';
 
 const experiences = [
     {
@@ -90,6 +91,17 @@ export default function Welcome() {
                                     {auth.user
                                         ? 'Open your account'
                                         : 'Start your story'}{' '}
+                                    <ArrowRight aria-hidden="true" />
+                                </Link>
+                            </Button>
+                            <Button
+                                asChild
+                                variant="ghost"
+                                size="lg"
+                                className="mt-4 text-[#f4f1ed] hover:bg-rein hover:text-white sm:mt-10 sm:ml-3"
+                            >
+                                <Link href={games()}>
+                                    Explore games{' '}
                                     <ArrowRight aria-hidden="true" />
                                 </Link>
                             </Button>

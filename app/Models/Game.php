@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\GameFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
+/**
+ * @property CarbonImmutable|null $released_on
+ * @property CarbonImmutable|null $igdb_updated_at
+ * @property CarbonImmutable|null $synced_at
+ */
 #[Fillable(['igdb_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'igdb_updated_at', 'synced_at'])]
 class Game extends Model
 {

@@ -67,8 +67,8 @@ jobs:
       - name: Run CI Checks
         run: composer ci:check
 
-      - name: Verify SQLite domain compatibility
+      - name: Verify SQLite compatibility
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
-        run: php artisan test --filter=PlayerExperienceTest
+        run: php artisan test
