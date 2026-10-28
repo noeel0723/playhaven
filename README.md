@@ -80,7 +80,7 @@ Koneksi IGDB langsung belum diverifikasi karena credential belum diberikan. Kata
 
 ## Akses lewat Laragon
 
-Virtual host `playhaven.test` dan alias `www.playhaven.test` sudah disiapkan dengan document root `public/`. Aktivasi domain masih menunggu Laragon dijalankan sebagai Administrator lalu Reload, karena Windows menolak penulisan file hosts pada sesi ini. Setelah aktif:
+Virtual host `playhaven.test` dan alias `www.playhaven.test` sudah disiapkan dengan document root `public/`. Domain utama sudah terdaftar dan diverifikasi lewat Apache. Panduan menjalankan Laragon sebagai Administrator serta penyesuaian lokal Carbon/OPcache tersedia di `docs/LARAGON.md`. Untuk development:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1 -Service laragon

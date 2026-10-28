@@ -6,6 +6,19 @@ Stage 3 provides public catalog browsing at `/games`, local search/filtering, ga
 
 Create a Confidential application in the [Twitch Developer Console](https://dev.twitch.tv/console/apps), then set `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET` in the ignored `.env`. Do not put these values in `VITE_*` variables. The [IGDB documentation](https://api-docs.igdb.com/) describes authentication and API access.
 
+1. Sign in to Twitch, verify your email, and enable account two-factor authentication.
+2. Open **Applications → Register Your Application** in the developer console.
+3. Choose a unique name such as `PlayHaven Dev <your-name>`; set the OAuth redirect URL to `http://localhost` and choose client type **Confidential**. IGDB does not use this callback URL.
+4. Create the application, open **Manage**, copy its **Client ID**, then use **New Secret** to generate the **Client Secret**.
+5. In the project root `.env`, replace the empty values with the actual credentials:
+
+```dotenv
+IGDB_CLIENT_ID=your_actual_client_id
+IGDB_CLIENT_SECRET=your_actual_client_secret
+```
+
+Save these values directly in the local file; no need to paste the secret into chat. Do not put them in `.env.example`. The backend obtains and refreshes the access token automatically, so no bearer-token environment variable is needed. Generating another secret invalidates the previous secret; update `.env` if you replace it.
+
 ```powershell
 . .\scripts\env.ps1
 php artisan config:clear
