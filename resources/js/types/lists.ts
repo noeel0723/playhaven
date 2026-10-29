@@ -13,7 +13,7 @@ export type GameList = {
     description: string | null;
     visibility: (typeof listVisibilities)[number]['value'];
     items_count: number;
-    owner: { id: number; name: string };
+    owner: { id: number; name: string; avatar_url?: string | null };
 };
 export type ListItem = {
     id: number;

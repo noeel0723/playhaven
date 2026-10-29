@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, MessageSquare } from 'lucide-react';
 import StarRating from '@/components/star-rating';
+import PlayerAvatar from '@/components/player-avatar';
 import { Button } from '@/components/ui/button';
 import type { ReviewPagination } from '@/types/reviews';
 import { show as playerProfile } from '@/routes/players';
@@ -36,33 +37,42 @@ export default function CommunityReviews({
                             className="rounded-xl border border-shadow bg-rein/20 p-5 sm:p-6"
                         >
                             <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-                                <div className="min-w-0">
-                                    <h3 className="text-sm font-medium break-words">
-                                        {review.author.username ? (
-                                            <Link
-                                                href={playerProfile(
-                                                    review.author.username,
-                                                )}
-                                                className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
-                                            >
-                                                {review.author.name}
-                                            </Link>
-                                        ) : (
-                                            review.author.name
-                                        )}
-                                    </h3>
-                                    <time
-                                        dateTime={review.updated_at}
-                                        className="mt-1 block text-xs text-[#bdb6b1]"
-                                    >
-                                        Updated{' '}
-                                        {new Intl.DateTimeFormat('en', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                            timeZone: 'UTC',
-                                        }).format(new Date(review.updated_at))}
-                                    </time>
+                                <div className="flex min-w-0 items-start gap-3">
+                                    <PlayerAvatar
+                                        name={review.author.name}
+                                        src={review.author.avatar_url}
+                                        className="size-9"
+                                    />
+                                    <div className="min-w-0">
+                                        <h3 className="text-sm font-medium break-words">
+                                            {review.author.username ? (
+                                                <Link
+                                                    href={playerProfile(
+                                                        review.author.username,
+                                                    )}
+                                                    className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
+                                                >
+                                                    {review.author.name}
+                                                </Link>
+                                            ) : (
+                                                review.author.name
+                                            )}
+                                        </h3>
+                                        <time
+                                            dateTime={review.updated_at}
+                                            className="mt-1 block text-xs text-[#bdb6b1]"
+                                        >
+                                            Updated{' '}
+                                            {new Intl.DateTimeFormat('en', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                                timeZone: 'UTC',
+                                            }).format(
+                                                new Date(review.updated_at),
+                                            )}
+                                        </time>
+                                    </div>
                                 </div>
                                 {review.rating !== null && (
                                     <StarRating value={review.rating} />

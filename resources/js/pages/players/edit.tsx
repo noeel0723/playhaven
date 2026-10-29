@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import ProfileShowcaseEditor from '@/components/profile-showcase-editor';
+import ProfilePhotoEditor from '@/components/profile-photo-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,6 +43,19 @@ export default function EditPlayer({
                     Choose how the community gets to know you. Your email and
                     account settings are never shown on this profile.
                 </p>
+                {profile ? (
+                    <ProfilePhotoEditor
+                        name={
+                            profile.display_name || profile.username || 'Player'
+                        }
+                        avatarUrl={profile.avatar_url}
+                    />
+                ) : (
+                    <p className="mt-6 text-sm leading-7 text-[#bdb6b1]">
+                        Save the profile details below to unlock your photo and
+                        profile shelves.
+                    </p>
+                )}
                 <form
                     onSubmit={(event) => {
                         event.preventDefault();

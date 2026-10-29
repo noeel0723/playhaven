@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { CircleUserRound } from 'lucide-react';
+import PlayerAvatar from '@/components/player-avatar';
 import type { PropsWithChildren } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Button } from '@/components/ui/button';
@@ -72,7 +72,11 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                                             size="icon"
                                             aria-label="Account menu"
                                         >
-                                            <CircleUserRound aria-hidden="true" />
+                                            <PlayerAvatar
+                                                name={auth.user.name}
+                                                src={auth.user.avatar}
+                                                className="size-8"
+                                            />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent

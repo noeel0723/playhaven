@@ -1,6 +1,7 @@
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { Search, Users } from 'lucide-react';
 import HistoryPagination from '@/components/history-pagination';
+import PlayerAvatar from '@/components/player-avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -95,14 +96,21 @@ export default function Players({
                         >
                             <Link
                                 href={show(player.username)}
-                                className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
+                                className="flex items-center gap-4 rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
                             >
-                                <h2 className="font-serif text-2xl wrap-break-word">
-                                    {player.name}
-                                </h2>
-                                <p className="mt-2 text-xs text-[#bdb6b1]">
-                                    @{player.username}
-                                </p>
+                                <PlayerAvatar
+                                    name={player.name}
+                                    src={player.avatar_url}
+                                    className="size-12"
+                                />
+                                <div className="min-w-0">
+                                    <h2 className="font-serif text-2xl wrap-break-word">
+                                        {player.name}
+                                    </h2>
+                                    <p className="mt-2 text-xs text-[#bdb6b1]">
+                                        @{player.username}
+                                    </p>
+                                </div>
                             </Link>
                             {player.bio && (
                                 <p className="mt-4 line-clamp-3 text-sm leading-7 wrap-break-word text-[#c5bfba]">

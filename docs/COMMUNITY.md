@@ -6,6 +6,8 @@ Open **Community** in the main navigation. The first community feed contains pub
 
 **Your player profile** at `/community/profile` lets the signed-in user choose a username, display name, bio, and whether to publish the profile. Existing and new profiles default to **nonpublic**. Accounts are not automatically listed in discovery.
 
+Players can upload, replace, preview, and remove a profile photo. Photos follow profile visibility and appear consistently across the public profile, discovery, public contributions, and account avatar. See [photo storage, formats, and cleanup](PROFILE_PHOTOS.md).
+
 - Usernames contain 3–30 ASCII characters, start with a letter, and permit letters, digits, and underscores. Input is normalized to lowercase; the database also enforces case-insensitive uniqueness. A username change changes the public profile link.
 - Display names are required, up to 80 characters. Bios are optional, up to 1,000 characters, rendered as plain text.
 - `/players` searches public usernames and display names, with literal SQL wildcard handling and 18 results per page. Email and account names are not search fields.

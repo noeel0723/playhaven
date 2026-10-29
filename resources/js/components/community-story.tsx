@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import GameCover from '@/components/game-cover';
+import PlayerAvatar from '@/components/player-avatar';
 import StarRating from '@/components/star-rating';
 import { show as gameDetails } from '@/routes/games';
 import { show as playerProfile } from '@/routes/players';
@@ -21,7 +22,12 @@ export default function CommunityStory({
             </Link>
             <div className="min-w-0">
                 <div className="flex flex-wrap items-baseline justify-between gap-2 text-xs text-[#bdb6b1]">
-                    <p>
+                    <p className="flex flex-wrap items-center gap-x-1 gap-y-2">
+                        <PlayerAvatar
+                            name={review.author.name}
+                            src={review.author.avatar_url}
+                            className="mr-1 size-6"
+                        />
                         <Link
                             href={playerProfile(review.author.username)}
                             className="font-medium text-[#e0d9d3] underline-offset-4 hover:underline focus-visible:outline-2"

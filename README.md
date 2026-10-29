@@ -76,6 +76,8 @@ Buka **Your statistics** dari dashboard atau menu akun untuk melihat ringkasan k
 
 ## Community dan profil pemain
 
+Untuk menambahkan foto, buka **Your player profile → Profile photo**, pilih gambar JPEG/PNG/WebP maksimal 5 MB, lalu **Save photo**. Tersedia pratinjau, pembatalan pilihan, penggantian, dan penghapusan foto. Foto mengikuti visibilitas profil dan tampil di komunitas serta avatar akun. Lihat [panduan foto profil](docs/PROFILE_PHOTOS.md).
+
 Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library tetap privat kecuali empat penyelesaian terakhir yang dibagikan melalui opsi di bawah. Lihat [panduan komunitas](docs/COMMUNITY.md).
 
 Profil juga memiliki rak **Top 4 Games** yang bisa dipilih dan diurutkan melalui **Your profile shelves**. Aktifkan **Show my recent completed games** jika ingin membagikan empat game terakhir berstatus Completed beserta rating dan tanggal selesainya. Pilihan ini terpisah dari favorit library dan dimulai dalam keadaan nonaktif. Lihat [panduan rak profil](docs/PROFILE_SHELVES.md).

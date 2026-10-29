@@ -13,6 +13,7 @@ use App\Http\Resources\GameResource;
 use App\Http\Resources\PublicPlayerResource;
 use App\Services\Community;
 use App\Services\PlayerShowcase;
+use App\Services\ProfilePhotos;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -60,7 +61,7 @@ class PlayerController extends Controller
         $search = trim($request->string('q')->value());
 
         return Inertia::render('players/edit', [
-            'profile' => $profile?->only(['username', 'display_name', 'bio', 'is_public', 'share_recent_completed']),
+            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'is_public', 'share_recent_completed']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
             'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
             'availableGames' => $search !== '' ? GameResource::collection($showcase->search($search))->resolve($request) : [],
             'query' => $search,

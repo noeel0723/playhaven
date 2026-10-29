@@ -4,6 +4,7 @@ import FollowPlayer from '@/components/follow-player';
 import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
+import PlayerAvatar from '@/components/player-avatar';
 import { index } from '@/routes/players';
 import type {
     CommunityReviewPagination,
@@ -39,6 +40,11 @@ export default function Player({
             </Link>
             <header className="mb-12 flex flex-wrap items-start justify-between gap-6 border-b border-white/10 pb-10">
                 <div className="max-w-3xl min-w-0">
+                    <PlayerAvatar
+                        name={player.name}
+                        src={player.avatar_url}
+                        className="mb-6 size-24 border-2 sm:size-28"
+                    />
                     <p className="mb-3 text-xs tracking-[0.16em] text-[#bdb6b1]">
                         @{player.username}
                     </p>

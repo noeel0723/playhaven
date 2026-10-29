@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ProfilePhotos;
 use App\Support\EmailVerification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -40,6 +42,15 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    protected static function booted(): void
+    {
+        static::deleting(fn (User $user) => $user->load('profile'));
+        static::deleted(function (User $user): void {
+            $path = $user->profile?->avatar_path;
+            DB::afterCommit(fn () => ProfilePhotos::deleteFile($path));
+        });
+    }
 
     public function sendEmailVerificationNotification(): void
     {

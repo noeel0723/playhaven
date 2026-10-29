@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ArrowUpRight } from 'lucide-react';
 import { show } from '@/routes/lists';
 import type { GameList } from '@/types/lists';
+import PlayerAvatar from '@/components/player-avatar';
 
 export default function GameListCard({ list }: { list: GameList }) {
     return (
@@ -27,8 +28,15 @@ export default function GameListCard({ list }: { list: GameList }) {
                     {list.description}
                 </p>
             )}
-            <p className="mt-5 border-t border-white/10 pt-4 text-xs text-[#c5bfba]">
-                Curated by {list.owner.name}
+            <p className="mt-5 flex items-center gap-2 border-t border-white/10 pt-4 text-xs text-[#c5bfba]">
+                <PlayerAvatar
+                    name={list.owner.name}
+                    src={list.owner.avatar_url}
+                    className="size-6"
+                />
+                <span className="min-w-0 wrap-break-word">
+                    Curated by {list.owner.name}
+                </span>
             </p>
         </article>
     );

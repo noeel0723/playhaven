@@ -46,7 +46,7 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.5'
-          extensions: pdo_pgsql, pdo_sqlite, zip, intl
+          extensions: pdo_pgsql, pdo_sqlite, zip, intl, gd, exif
           tools: composer:v2
           coverage: none
 

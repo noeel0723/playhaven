@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
+import { edit as playerProfile } from '@/routes/players';
 import type { Auth } from '@/types';
 import { send } from '@/routes/verification';
 
@@ -31,6 +32,18 @@ export default function Profile({
             <h1 className="sr-only">Profile settings</h1>
 
             <div className="space-y-6">
+                <div className="rounded-xl border p-5">
+                    <Heading
+                        variant="small"
+                        title="Profile photo"
+                        description="Upload your photo and manage your player identity."
+                    />
+                    <Button asChild variant="outline">
+                        <Link href={`${playerProfile().url}#profile-photo`}>
+                            Manage profile photo
+                        </Link>
+                    </Button>
+                </div>
                 <Heading
                     variant="small"
                     title="Profile"
