@@ -18,7 +18,8 @@ class LibraryEntryResource extends JsonResource
             'is_favorite' => $this->is_favorite,
             'your_rating' => $this->whenLoaded('rating', fn () => $this->rating?->stars),
             'updated_at' => $this->updated_at?->toISOString(),
-            'game' => new GameResource($this->game),
+            // Keep game fields flat when Inertia traverses the dashboard's entry array.
+            'game' => (new GameResource($this->game))->resolve($request),
         ];
     }
 }
