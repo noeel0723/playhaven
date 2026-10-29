@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import CommunityStory from '@/components/community-story';
+import ProfileReviewCard from '@/components/profile-review-card';
 import FollowPlayer from '@/components/follow-player';
 import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
@@ -52,6 +52,12 @@ export default function Player({
                         recentCompleted={recentCompleted}
                         recentCompletedShared={recentCompletedShared}
                         isOwner={player.is_self}
+                        showEditLinks={false}
+                        emptyTopGamesMessage={
+                            player.is_self
+                                ? 'Your four favorite games will appear here once selected.'
+                                : undefined
+                        }
                     />
                     <section aria-labelledby="player-stories" className="mt-12">
                         <div className="mb-6 flex flex-wrap items-baseline justify-between gap-4 border-b border-shadow pb-3">
@@ -59,7 +65,7 @@ export default function Player({
                                 id="player-stories"
                                 className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
                             >
-                                Public reviews
+                                Recent reviews
                             </h2>
                             <p className="text-xs text-[#bdb6b1]">
                                 {reviews.meta.total} public reviews
@@ -68,7 +74,7 @@ export default function Player({
                         {reviews.data.length ? (
                             <div className="space-y-5">
                                 {reviews.data.map((review) => (
-                                    <CommunityStory
+                                    <ProfileReviewCard
                                         key={`${review.id}:${review.updated_at}`}
                                         review={review}
                                     />

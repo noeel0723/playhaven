@@ -40,7 +40,8 @@ Route::get('lists/discover', [GameListController::class, 'discover'])->name('lis
 Route::get('lists/{listOwner}/{listSlug}', [GameListController::class, 'show'])->name('lists.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('community/profile', [PlayerController::class, 'edit'])->name('players.edit');
+    Route::get('community/profile', [PlayerController::class, 'mine'])->name('players.me');
+    Route::get('community/profile/edit', [PlayerController::class, 'edit'])->name('players.edit');
     Route::put('community/profile', [PlayerController::class, 'update'])->name('players.update');
     Route::put('community/profile/showcase', [PlayerController::class, 'showcase'])->name('players.showcase');
     Route::post('community/profile/photo', [ProfilePhotoController::class, 'store'])->middleware('throttle:profile-photos')->name('players.photo.store');

@@ -4,7 +4,7 @@ The public player profile uses a main column with two four-cover shelves, thin s
 
 ## Choose Top 4 games
 
-Open **Your player profile**, save the basic profile if needed, then use **Your profile shelves**:
+Open **Your player profile → Edit profile**, save the basic profile if needed, then use **Top 4 Games** in the editor's right column:
 
 1. Search the local catalog by game title. Each search returns at most 12 results and makes no RAWG API request.
 2. Add up to four distinct games. They do not need to be in the player's library. Import missing games through the existing catalog workflow first.

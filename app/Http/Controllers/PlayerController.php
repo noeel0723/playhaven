@@ -11,11 +11,15 @@ use App\Http\Resources\CompletedGameResource;
 use App\Http\Resources\DiscoveredPlayerResource;
 use App\Http\Resources\GameListResource;
 use App\Http\Resources\GameResource;
+use App\Http\Resources\ProfileActivityResource;
+use App\Http\Resources\ProfileReviewResource;
 use App\Http\Resources\PublicPlayerResource;
 use App\Services\Community;
 use App\Services\PlayerShowcase;
+use App\Services\ProfileActivity;
 use App\Services\ProfilePhotos;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +29,30 @@ use Inertia\Response;
 
 class PlayerController extends Controller
 {
+    public function mine(CommunityRequest $request, PlayerShowcase $showcase, ProfileActivity $activity): Response
+    {
+        $user = $request->user()->load('profile')->loadCount(['followers', 'following', 'libraryEntries']);
+        $profile = $user->profile;
+        $reviews = $user->reviews()->with(['libraryEntry.rating', 'libraryEntry.game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])])
+            ->orderByDesc('reviews.updated_at')->orderByDesc('reviews.id')->paginate(4, ['reviews.*'], 'reviews_page')->withQueryString();
+
+        return Inertia::render('players/me', [
+            'player' => [
+                'name' => $profile?->display_name ?: ($profile?->username ?: $user->name),
+                'username' => $profile?->username,
+                'bio' => $profile?->bio,
+                'avatar_url' => $profile ? ProfilePhotos::url($profile, true) : null,
+                'is_public' => (bool) $profile?->is_public,
+                'followers_count' => (int) $user->getAttribute('followers_count'),
+                'following_count' => (int) $user->getAttribute('following_count'),
+                'games_count' => (int) $user->getAttribute('library_entries_count'),
+            ],
+            'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
+            'activities' => ProfileActivityResource::collection($activity->recent($user))->resolve($request),
+            'reviews' => ProfileReviewResource::collection($reviews),
+        ]);
+    }
+
     public function index(CommunityRequest $request, Community $community): Response
     {
         $search = trim($request->string('q')->value());

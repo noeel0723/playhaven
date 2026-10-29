@@ -54,11 +54,17 @@ export default function ProfileGameShelves({
     recentCompleted,
     recentCompletedShared,
     isOwner,
+    showEditLinks = true,
+    showRecentCompleted = true,
+    emptyTopGamesMessage,
 }: {
     topGames: CatalogGame[];
     recentCompleted: CompletedGame[];
     recentCompletedShared: boolean;
     isOwner: boolean;
+    showEditLinks?: boolean;
+    showRecentCompleted?: boolean;
+    emptyTopGamesMessage?: string;
 }) {
     return (
         <>
@@ -70,7 +76,7 @@ export default function ProfileGameShelves({
                     >
                         Top 4 games
                     </h2>
-                    {isOwner && (
+                    {isOwner && showEditLinks && (
                         <Link
                             href={shelfLink}
                             className="rounded-sm text-xs text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
@@ -110,92 +116,100 @@ export default function ProfileGameShelves({
                 </div>
                 {!topGames.length && (
                     <p className="mt-4 text-xs leading-6 text-[#bdb6b1]">
-                        {isOwner
-                            ? 'Choose four games that feel like you. Add your picks from Edit picks.'
-                            : 'This player has not chosen their favorites yet.'}
+                        {emptyTopGamesMessage ??
+                            (isOwner
+                                ? 'Choose four games that feel like you. Add your picks from Edit picks.'
+                                : 'This player has not chosen their favorites yet.')}
                     </p>
                 )}
             </section>
-            <section
-                aria-labelledby="recent-completed-games"
-                className="mt-10 sm:mt-12"
-            >
-                <div className="mb-4 flex items-baseline justify-between gap-3 border-b border-shadow pb-3">
-                    <h2
-                        id="recent-completed-games"
-                        className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
-                    >
-                        Recently completed
-                    </h2>
-                    {isOwner && (
-                        <Link
-                            href={shelfLink}
-                            className="rounded-sm text-xs text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
+            {showRecentCompleted && (
+                <section
+                    aria-labelledby="recent-completed-games"
+                    className="mt-10 sm:mt-12"
+                >
+                    <div className="mb-4 flex items-baseline justify-between gap-3 border-b border-shadow pb-3">
+                        <h2
+                            id="recent-completed-games"
+                            className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
                         >
-                            Manage
-                        </Link>
-                    )}
-                </div>
-                {!recentCompletedShared ? (
-                    <div className="flex items-start gap-3 rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
-                        <LockKeyhole
-                            className="mt-1 size-4 shrink-0"
-                            aria-hidden="true"
-                        />
-                        <p>
-                            {isOwner
-                                ? 'Recent completions are private. Turn on sharing in your profile shelves to display your latest four.'
-                                : 'This player keeps their recent completions private.'}
-                        </p>
+                            Recently completed
+                        </h2>
+                        {isOwner && showEditLinks && (
+                            <Link
+                                href={shelfLink}
+                                className="rounded-sm text-xs text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
+                            >
+                                Manage
+                            </Link>
+                        )}
                     </div>
-                ) : recentCompleted.length ? (
-                    <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
-                        {recentCompleted.map((entry) => (
-                            <div key={entry.game.id} className="min-w-0">
-                                <Poster game={entry.game} showTitle={false} />
-                                <div className="mt-2 flex h-4 items-center">
-                                    {entry.rating !== null ? (
-                                        <StarRating
-                                            value={entry.rating}
-                                            compact
-                                        />
+                    {!recentCompletedShared ? (
+                        <div className="flex items-start gap-3 rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
+                            <LockKeyhole
+                                className="mt-1 size-4 shrink-0"
+                                aria-hidden="true"
+                            />
+                            <p>
+                                {isOwner
+                                    ? 'Recent completions are private. Turn on sharing in your profile shelves to display your latest four.'
+                                    : 'This player keeps their recent completions private.'}
+                            </p>
+                        </div>
+                    ) : recentCompleted.length ? (
+                        <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
+                            {recentCompleted.map((entry) => (
+                                <div key={entry.game.id} className="min-w-0">
+                                    <Poster
+                                        game={entry.game}
+                                        showTitle={false}
+                                    />
+                                    <div className="mt-2 flex h-4 items-center">
+                                        {entry.rating !== null ? (
+                                            <StarRating
+                                                value={entry.rating}
+                                                compact
+                                            />
+                                        ) : (
+                                            <span className="text-[10px] text-[#807d7d] sm:text-xs">
+                                                Unrated
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba] sm:text-xs">
+                                        {entry.game.name}
+                                    </p>
+                                    {entry.completed_at ? (
+                                        <time
+                                            dateTime={entry.completed_at}
+                                            className="mt-1 block text-[10px] leading-4 text-[#bdb6b1] sm:text-xs"
+                                        >
+                                            {new Intl.DateTimeFormat('en', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                                timeZone: 'UTC',
+                                            }).format(
+                                                new Date(entry.completed_at),
+                                            )}
+                                        </time>
                                     ) : (
-                                        <span className="text-[10px] text-[#807d7d] sm:text-xs">
-                                            Unrated
-                                        </span>
+                                        <p className="mt-1 text-[10px] leading-4 text-[#807d7d] sm:text-xs">
+                                            Date not recorded
+                                        </p>
                                     )}
                                 </div>
-                                <p className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba] sm:text-xs">
-                                    {entry.game.name}
-                                </p>
-                                {entry.completed_at ? (
-                                    <time
-                                        dateTime={entry.completed_at}
-                                        className="mt-1 block text-[10px] leading-4 text-[#bdb6b1] sm:text-xs"
-                                    >
-                                        {new Intl.DateTimeFormat('en', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                            timeZone: 'UTC',
-                                        }).format(new Date(entry.completed_at))}
-                                    </time>
-                                ) : (
-                                    <p className="mt-1 text-[10px] leading-4 text-[#807d7d] sm:text-xs">
-                                        Date not recorded
-                                    </p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
-                        {isOwner
-                            ? 'Mark a game Completed in your library to begin this shelf.'
-                            : 'No completed games to share yet.'}
-                    </p>
-                )}
-            </section>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
+                            {isOwner
+                                ? 'Mark a game Completed in your library to begin this shelf.'
+                                : 'No completed games to share yet.'}
+                        </p>
+                    )}
+                </section>
+            )}
         </>
     );
 }

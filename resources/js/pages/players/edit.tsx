@@ -1,12 +1,10 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import PlayerProfileHeader from '@/components/player-profile-header';
 import ProfileShowcaseEditor from '@/components/profile-showcase-editor';
 import ProfilePhotoEditor from '@/components/profile-photo-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { index as community } from '@/routes/community';
-import { update, show } from '@/routes/players';
+import { update, show, me } from '@/routes/players';
 import type { PlayerProfile } from '@/types/community';
 import type { CatalogGame } from '@/types/catalog';
 
@@ -29,82 +27,33 @@ export default function EditPlayer({
     });
     return (
         <>
-            <Head title="Your player profile" />
-            <PlayerProfileHeader
-                name={
-                    profile?.display_name ||
-                    profile?.username ||
-                    'Your player profile'
-                }
-                username={profile?.username}
-                avatarUrl={profile?.avatar_url}
-                bio={profile?.bio}
-                statistics={[
-                    { label: 'Top 4 picks', value: topGames.length },
-                    {
-                        label: 'Profile',
-                        value: profile?.is_public ? 'Public' : 'Private',
-                    },
-                ]}
-                actions={
-                    <>
-                        <Button
-                            asChild
-                            variant="outline"
-                            className="border-shadow bg-rein/60 text-[#f4f1ed] hover:bg-rein hover:text-white"
-                        >
-                            <a href="#player-profile-details">Edit profile</a>
-                        </Button>
-                        {profile && (
-                            <a
-                                href="#profile-photo"
-                                className="rounded-sm text-xs text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
-                            >
-                                Change photo
-                            </a>
-                        )}
-                    </>
-                }
-            />
-            <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-14">
+            <Head title="Edit player profile" />
+            <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-light tracking-tight">
+                        Edit profile
+                    </h1>
+                    <p className="mt-3 max-w-xl text-sm leading-7 text-[#bdb6b1]">
+                        Your public identity, profile photo, and four favorite
+                        games.
+                    </p>
+                </div>
+                <Link
+                    href={me()}
+                    className="rounded-sm text-sm text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+                >
+                    Back to your profile
+                </Link>
+            </div>
+            <div className="grid items-start gap-12 lg:grid-cols-2 xl:gap-20">
                 <div className="min-w-0">
-                    {profile ? (
-                        <ProfileShowcaseEditor
-                            topGames={topGames}
-                            shareRecentCompleted={
-                                profile.share_recent_completed
-                            }
-                            availableGames={availableGames}
-                            query={query}
-                            embedded
-                        />
-                    ) : (
-                        <section id="profile-shelves" className="scroll-mt-8">
-                            <h2 className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm">
-                                Top 4 Games
-                            </h2>
-                            <p className="mt-5 text-sm leading-7 text-[#bdb6b1]">
-                                Save your player profile below to choose your
-                                Top 4 games and manage recent completions.
-                            </p>
-                        </section>
-                    )}
-                    <section
-                        id="player-profile-details"
-                        aria-labelledby="profile-details-title"
-                        className="mt-12 scroll-mt-8 border-t border-white/10 pt-8"
-                    >
+                    <section aria-labelledby="profile-details-title">
                         <h2
                             id="profile-details-title"
-                            className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
+                            className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
                         >
-                            Profile details
+                            Profile information
                         </h2>
-                        <p className="mt-4 text-sm leading-7 text-[#bdb6b1]">
-                            Choose how the community gets to know you. Your
-                            email and account settings are never shown on this
-                            profile.
-                        </p>
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();
@@ -230,9 +179,10 @@ export default function EditPlayer({
                                     A public profile appears in player discovery
                                     and community feeds with your public reviews
                                     and public lists. Top 4 picks and recent
-                                    completions are managed above. Your diary,
-                                    private reviews, and private or unlisted
-                                    lists stay off this profile.
+                                    completions are managed alongside these
+                                    details. Your diary, private reviews, and
+                                    private or unlisted lists stay off this
+                                    profile.
                                 </p>
                                 <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
                                     Switch this off to hide your player profile
@@ -269,38 +219,47 @@ export default function EditPlayer({
                             </div>
                         </form>
                     </section>
-                </div>
-                <aside
-                    className="min-w-0 border-t border-shadow pt-7 lg:border-t-0 lg:pt-0"
-                    aria-label="Profile photo and community"
-                >
                     {profile ? (
-                        <ProfilePhotoEditor
-                            name={
-                                profile.display_name ||
-                                profile.username ||
-                                'Player'
+                        <div className="mt-12">
+                            <ProfilePhotoEditor
+                                name={
+                                    profile.display_name ||
+                                    profile.username ||
+                                    'Player'
+                                }
+                                avatarUrl={profile.avatar_url}
+                                embedded
+                            />
+                        </div>
+                    ) : (
+                        <p className="mt-8 text-sm leading-7 text-[#bdb6b1]">
+                            Save the profile details to unlock your photo and
+                            Top 4.
+                        </p>
+                    )}
+                </div>
+                <aside aria-label="Edit your Top 4 games" className="min-w-0">
+                    {profile ? (
+                        <ProfileShowcaseEditor
+                            topGames={topGames}
+                            shareRecentCompleted={
+                                profile.share_recent_completed
                             }
-                            avatarUrl={profile.avatar_url}
+                            availableGames={availableGames}
+                            query={query}
                             embedded
                         />
                     ) : (
-                        <section id="profile-photo" className="scroll-mt-8">
+                        <section id="profile-shelves">
                             <h2 className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm">
-                                Profile photo
+                                Top 4 Games
                             </h2>
                             <p className="mt-5 text-sm leading-7 text-[#bdb6b1]">
-                                Save the profile details to unlock your photo
-                                and profile shelves.
+                                Save your profile information first, then choose
+                                and arrange up to four favorites here.
                             </p>
                         </section>
                     )}
-                    <Link
-                        href={community()}
-                        className="mt-8 inline-block rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
-                    >
-                        Back to community
-                    </Link>
                 </aside>
             </div>
         </>

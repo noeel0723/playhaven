@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { register } from '@/routes';
 import { index as community } from '@/routes/community';
 import { index as games } from '@/routes/games';
-import { index, edit } from '@/routes/players';
+import { index, edit, me } from '@/routes/players';
 import type { PlayerPagination } from '@/types/community';
 
 export default function Players({
@@ -143,7 +143,7 @@ export default function Players({
                         )}
                         {auth.user && (
                             <Link
-                                href={edit()}
+                                href={me()}
                                 className="inline-flex items-center gap-2 rounded-sm text-[#d5cec7] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
                             >
                                 Your player profile{' '}

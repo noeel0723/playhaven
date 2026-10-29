@@ -40,3 +40,25 @@ export type CompletedGame = {
     rating: number | null;
     completed_at: string | null;
 };
+
+export type ProfileGameActivity = {
+    game: CatalogGame;
+    status: 'playing' | 'completed' | 'paused' | 'dropped' | 'backlog';
+    rating: number | null;
+    has_review: boolean;
+    occurred_at: string;
+};
+export type ProfileReview = Omit<CommunityReview, 'author'> & {
+    is_public?: boolean;
+};
+export type ProfileReviewPagination = HistoryPagination<ProfileReview>;
+export type OwnPlayer = {
+    name: string;
+    username: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+    is_public: boolean;
+    followers_count: number;
+    following_count: number;
+    games_count: number;
+};
