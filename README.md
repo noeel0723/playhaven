@@ -25,13 +25,23 @@ Dependensi yang terkunci memerlukan PHP minimal 8.4.1; mesin ini dan konfigurasi
 
 ## Menjalankan di Windows / Laragon
 
+Untuk membuka situs dengan aset yang sudah dibuild: jalankan Apache dari Laragon, lalu klik dua kali **`start-playhaven.cmd`** di folder proyek. Launcher ini hanya menyalakan PostgreSQL khusus PlayHaven, memeriksa situs, dan membukanya di browser. Tidak perlu menjalankan terminal development jika hanya ingin melihat situs.
+
+Untuk development dengan Apache Laragon:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1 -Service laragon
+```
+
+PlayHaven memakai PostgreSQL `5433` dan Vite `5181` yang terpisah dari Literahaven. Vite memakai `strictPort`, sehingga tidak pindah diam-diam ke port lain. Database proyek ini tidak otomatis menyala hanya dengan menyalakan Apache; jalankan launcher lagi setelah restart komputer. Launcher tidak mengubah proyek lain atau mendaftarkan service Windows.
+
 Jalankan dari `D:\laragon\www\playhaven`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
 ```
 
-Script menyalakan PostgreSQL khusus proyek, Laravel pada **http://127.0.0.1:8000**, Vite, dan queue worker. Hentikan proses web dengan `Ctrl+C`.
+Mode `all` menyalakan PostgreSQL khusus proyek, Laravel pada **http://127.0.0.1:8001**, Vite pada `5181`, dan queue worker. Hentikan proses web dengan `Ctrl+C`.
 
 Database tetap berjalan. Hentikan terpisah jika tidak dipakai:
 

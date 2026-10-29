@@ -43,13 +43,27 @@ Verification after the change: the Apache runtime probe loaded Carbon, and `/`, 
 
 ## Daily use
 
+For browsing with compiled assets, start Apache in Laragon and double-click `start-playhaven.cmd` in the PlayHaven root. PostgreSQL is a project-local instance, so starting Apache alone does not start it after a computer restart. The launcher starts the database, clears this project's configuration cache, removes obsolete PlayHaven dev-server references, checks the site, and opens the browser. It does not restart Laragon or change another project. Run `scripts/start.ps1 -NoBrowser` to check startup without opening a browser.
+
 Start Apache from Laragon. For active frontend/backend development:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1 -Service laragon
 ```
 
-This starts the project PostgreSQL instance, Vite, and the queue worker. Apache serves the Laravel web requests, so no `php artisan serve` process is needed in this mode. The Vite plugin already permits local `.test` origins.
+This starts the project PostgreSQL instance, Vite on `127.0.0.1:5181`, and the queue worker. Apache serves the Laravel web requests, so no `php artisan serve` process is needed in this mode. The Vite plugin already permits local `.test` origins.
+
+## Isolation from Literahaven
+
+| Component | PlayHaven | Literahaven (observed local configuration) |
+| --- | --- | --- |
+| Domain | `playhaven.test` | `literahaven.test` |
+| Apache document root | `playhaven/public` | `literahaven/public` |
+| Database | PostgreSQL `127.0.0.1:5433`, `playhaven` | MySQL `127.0.0.1:3306`, `platform_literature` |
+| Vite development port | Fixed `5181`, fails if occupied | Unchanged default configuration (`5173`) |
+| Session/cache namespace | Derived from `APP_NAME=PlayHaven`, host-only session cookie | Derived from `APP_NAME=Literahaven`, host-only session cookie |
+
+Sharing Apache port 80 is normal for name-based virtual hosts; each hostname routes to its own document root. The PlayHaven database helper verifies its expected `.env` target and actual PostgreSQL data directory. If another process occupies port 5433, it stops with a message instead of stopping that process or changing database ports. No Literahaven configuration is modified by the startup helpers.
 
 To view the latest compiled assets without keeping Vite open:
 
@@ -67,4 +81,4 @@ Apache and PostgreSQL must be running. A queue worker is needed when background 
 powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
 ```
 
-This serves the application at `http://127.0.0.1:8000` and does not require hosts-file changes. Use the dedicated virtual host for Apache access; opening a Laravel project directory under `localhost/playhaven` exposes the wrong application root and is not the supported setup here.
+This serves the application at `http://127.0.0.1:8001` and does not require hosts-file changes. Use the dedicated virtual host for Apache access; opening a Laravel project directory under `localhost/playhaven` exposes the wrong application root and is not the supported setup here.
