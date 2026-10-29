@@ -101,4 +101,6 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
+Private statistics at `/stats` read the existing library, ratings, playthroughs, diary, genre, and platform tables using owner-scoped aggregates. No statistics tables or history rewrites are needed. See [statistics definitions and privacy](STATISTICS.md).
+
 The catalog, library, ratings, reviews, diary, repeat playthroughs, custom lists, opt-in player profiles, follows, and public review feeds are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), [playing history](PLAYING_HISTORY.md), [custom lists](LISTS.md), and [community](COMMUNITY.md). Personal statistics and deeper discovery remain next.

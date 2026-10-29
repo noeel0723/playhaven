@@ -12,6 +12,7 @@ use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlaythroughController;
 use App\Http\Controllers\RawgDiscoveryController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('discover/rawg', [RawgDiscoveryController::class, 'index'])->middleware('throttle:rawg-search')->name('catalog.search');
     Route::post('discover/rawg/{rawgId}', [RawgDiscoveryController::class, 'store'])->middleware('throttle:rawg-import')->name('catalog.import');
     Route::get('dashboard', [LibraryController::class, 'dashboard'])->name('dashboard');
+    Route::get('stats', [StatisticsController::class, 'index'])->name('stats.index');
     Route::get('library', [LibraryController::class, 'index'])->name('library.index');
     Route::put('library/{game:slug}', [LibraryController::class, 'save'])->name('library.save');
     Route::delete('library/{game:slug}', [LibraryController::class, 'destroy'])->name('library.destroy');

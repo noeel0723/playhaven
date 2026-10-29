@@ -4,6 +4,7 @@ import LibraryGameCard from '@/components/library-game-card';
 import { Button } from '@/components/ui/button';
 import { index as games } from '@/routes/games';
 import { index as library } from '@/routes/library';
+import { index as statistics } from '@/routes/stats';
 import { libraryStatuses } from '@/types/library';
 import type { LibraryCounts, LibraryEntry } from '@/types/library';
 
@@ -41,6 +42,11 @@ export default function Dashboard({
                     </Button>
                     <Button asChild variant="outline">
                         <Link href={games()}>Discover games</Link>
+                    </Button>
+                    <Button asChild variant="ghost">
+                        <Link href={statistics()}>
+                            Your statistics <ArrowRight aria-hidden="true" />
+                        </Link>
                     </Button>
                 </div>
             </section>

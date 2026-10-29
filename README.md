@@ -70,6 +70,10 @@ PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqli
 
 Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedia. Klik nama developer atau penerbit untuk menjelajahi game lain dalam katalog lokal, atau gunakan filter **Studio & publisher** di `/games`. Game baru yang diimpor dari RAWG langsung menyimpan informasi tersebut. Untuk melengkapi game lama, jalankan `php artisan catalog:enrich --limit=100` setelah memuat `scripts/env.ps1`. Lihat [panduan katalog](docs/CATALOG.md).
 
+## Statistik pribadi
+
+Buka **Your statistics** dari dashboard atau menu akun untuk melihat ringkasan koleksi, distribusi rating, waktu diary, grafik tahunan, game dengan waktu tercatat terbanyak, genre, dan platform playthrough. Statistik hanya dapat dilihat oleh pemilik akun. Pemilihan tahun mengubah bagian aktivitas diary; ringkasan koleksi dan rating tetap mencerminkan data keseluruhan. Lihat [panduan statistik](docs/STATISTICS.md).
+
 ## Community dan profil pemain
 
 Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library tetap privat kecuali empat penyelesaian terakhir yang dibagikan melalui opsi di bawah. Lihat [panduan komunitas](docs/COMMUNITY.md).

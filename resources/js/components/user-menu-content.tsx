@@ -11,6 +11,7 @@ import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import { edit as playerProfile } from '@/routes/players';
+import { index as statistics } from '@/routes/stats';
 import type { User } from '@/types';
 
 type Props = {
@@ -34,6 +35,11 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link href={statistics()} onClick={cleanup}>
+                        Your statistics
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href={playerProfile()} onClick={cleanup}>
                         Your player profile
