@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Game;
+use App\Services\Rawg\CatalogImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +21,7 @@ class GameResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'released_on' => $this->released_on?->format('Y-m-d'),
-            'cover_url' => is_string($imageId) && preg_match('/^[a-zA-Z0-9_]+$/', $imageId) ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/'.$imageId.'.jpg' : null,
+            'cover_url' => $this->rawg_id !== null ? CatalogImage::url($this->getAttribute('cover_url')) : (is_string($imageId) && preg_match('/^[a-zA-Z0-9_]+$/', $imageId) ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/'.$imageId.'.jpg' : null),
             'genres' => $this->genres->map->only(['id', 'name', 'slug'])->values(),
             'platforms' => $this->platforms->map->only(['id', 'name', 'slug'])->values(),
             'rating' => is_numeric($score) ? round((float) $score / 2, 1) : null,

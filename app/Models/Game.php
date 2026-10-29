@@ -12,11 +12,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
+ * @property int|null $rawg_id
  * @property CarbonImmutable|null $released_on
  * @property CarbonImmutable|null $igdb_updated_at
  * @property CarbonImmutable|null $synced_at
+ * @property CarbonImmutable|null $rawg_updated_at
+ * @property CarbonImmutable|null $rawg_details_synced_at
  */
-#[Fillable(['igdb_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'igdb_updated_at', 'synced_at'])]
+#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'synced_at'])]
 class Game extends Model
 {
     /** @use HasFactory<GameFactory> */
@@ -27,6 +30,9 @@ class Game extends Model
     {
         return [
             'igdb_id' => 'integer',
+            'rawg_id' => 'integer',
+            'rawg_updated_at' => 'immutable_datetime',
+            'rawg_details_synced_at' => 'immutable_datetime',
             'released_on' => 'immutable_date',
             'igdb_updated_at' => 'immutable_datetime',
             'synced_at' => 'immutable_datetime',

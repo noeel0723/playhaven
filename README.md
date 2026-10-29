@@ -16,7 +16,7 @@ Fondasi lokal platform social game cataloging menggunakan Laravel dan React. Bah
 | Database aplikasi  | PostgreSQL 16                                        |
 | Web authentication | Laravel Fortify, session, CSRF                       |
 | API authentication | Laravel Sanctum                                      |
-| Game catalog       | IGDB melalui backend Laravel                         |
+| Game catalog       | RAWG melalui backend Laravel                         |
 | Build              | Vite, melalui Vite+ bawaan starter kit resmi terbaru |
 | Mobile mendatang   | React Native + Expo, belum dibuat                    |
 
@@ -66,27 +66,26 @@ Tes default memakai SQLite in-memory sesuai starter kit, sehingga tidak mengubah
 
 PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqlite3`. Jika memakai Apache Laragon yang sudah berjalan sebelum perubahan itu, restart Apache. Document root web server harus menunjuk ke `public/`.
 
-## IGDB
+## RAWG
 
-1. Buat aplikasi **Confidential** di [Twitch Developer Console](https://dev.twitch.tv/console/apps), sesuai [panduan IGDB](https://api-docs.igdb.com/#getting-started).
-2. Isi `IGDB_CLIENT_ID` dan `IGDB_CLIENT_SECRET` di `.env` lokal. Jangan memakai prefix `VITE_` untuk secret.
-3. Uji dari terminal yang sudah memuat `scripts/env.ps1`:
+Provider katalog aktif adalah RAWG. Isi `RAWG_API_KEY` di `.env` lokal, lalu jalankan:
 
 ```powershell
+. .\scripts\env.ps1
 php artisan config:clear
-php artisan igdb:check
+php artisan migrate
+php artisan rawg:check
+php artisan catalog:sync --inline
 ```
 
-`App\Services\Igdb\IgdbClient` menangani OAuth di server, cache token/hasil, timeout, pacing bersama, dan cooldown saat respons 429. Katalog publik tersedia di `/games`, dengan pencarian, filter, pagination, dan halaman detail. Sinkronisasi memakai unique jobs dan upsert yang menjaga riwayat pemain.
+Default import mengambil 20 game dan deskripsi lengkapnya. Untuk background jobs:
 
 ```powershell
-php artisan catalog:sync --inline
-# Atau antrekan beberapa halaman:
-php artisan catalog:sync --pages=5 --per-page=100 --offset=0
+php artisan catalog:sync --page=1 --pages=5 --per-page=20
 php artisan queue:work
 ```
 
-Koneksi IGDB langsung belum diverifikasi karena credential belum diberikan. Katalog development tetap kosong sampai import berhasil. Lihat [panduan katalog](docs/CATALOG.md) untuk alur import dan batasannya.
+ID RAWG dipisahkan dari ID IGDB lama. Import mempertahankan ID lokal, URL, library, rating, dan riwayat pemain. RAWG menggunakan API key langsung; tidak membutuhkan Twitch. Key tidak dicetak di output, dikirim ke frontend, atau disimpan di contoh konfigurasi. Detail ada di [panduan katalog](docs/CATALOG.md).
 
 ## Akses lewat Laragon
 
@@ -119,7 +118,7 @@ php vendor/bin/phpstan analyse --memory-limit=1G
 
 ```text
 app/                 Backend, models, actions, services
-  Services/Igdb/     Client katalog eksternal
+  Services/Rawg/     Client dan sinkronisasi katalog aktif
 resources/js/        React + TypeScript
   components/ui/     Komponen shadcn/ui
   pages/             Halaman Inertia

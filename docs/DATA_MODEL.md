@@ -27,13 +27,13 @@ erDiagram
 
 ## Catalog
 
-| Table                         | Purpose and key rules                                                                                                                                    |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `games`                       | Local primary key, unique slug, nullable unique IGDB ID, name, summary/storyline, release date, IGDB cover image ID, upstream update and sync timestamps |
-| `genres`, `platforms`         | Local primary keys, unique slugs, nullable unique IGDB IDs                                                                                               |
-| `game_genre`, `game_platform` | Many-to-many relationships with composite primary keys, preventing duplicate associations                                                                |
+| Table                         | Purpose and key rules                                                                                                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `games`                       | Local primary key, unique slug, nullable unique RAWG and legacy IGDB IDs, name, summary/storyline, release date, RAWG cover URL, legacy cover ID, provider update and detail-sync timestamps |
+| `genres`, `platforms`         | Local primary keys, unique slugs, nullable unique RAWG and legacy IGDB IDs                                                                                                                   |
+| `game_genre`, `game_platform` | Many-to-many relationships with composite primary keys, preventing duplicate associations                                                                                                    |
 
-Local foreign keys always reference local IDs, never IGDB IDs. This keeps player history independent of the external provider. Metadata can be resynchronized later without recreating a game row. No production game data or demo reviews are seeded at this stage.
+Local foreign keys always reference local IDs, never provider IDs. This keeps player history independent of the external provider. Metadata can be resynchronized later without recreating a game row. RAWG metadata is imported through the explicit catalog command; no demo reviews are seeded.
 
 ## Player experience
 

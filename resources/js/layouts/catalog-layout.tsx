@@ -64,12 +64,12 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                 <span>
                     Game metadata and artwork from{' '}
                     <a
-                        href="https://www.igdb.com"
+                        href="https://rawg.io"
                         target="_blank"
                         rel="noreferrer"
                         className="underline underline-offset-4 hover:text-white"
                     >
-                        IGDB
+                        RAWG
                     </a>
                     .
                 </span>

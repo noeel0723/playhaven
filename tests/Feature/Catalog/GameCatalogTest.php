@@ -80,4 +80,20 @@ class GameCatalogTest extends TestCase
         $this->getJson('/games?q[]=invalid')->assertUnprocessable()->assertJsonValidationErrors('q');
         $this->getJson('/games?sort=sql&year=bad&page=-1')->assertUnprocessable()->assertJsonValidationErrors(['sort', 'year', 'page']);
     }
+
+    public function test_rawg_images_are_rendered_without_exposing_the_api_key(): void
+    {
+        $game = Game::factory()->create(['rawg_id' => 100, 'cover_url' => 'https://media.rawg.io/media/games/test.jpg']);
+        config(['services.rawg.api_key' => 'rawg-test-secret-never-render']);
+        $this->get('/games/'.$game->slug)->assertOk()->assertDontSee('rawg-test-secret-never-render')
+            ->assertInertia(fn (Assert $page) => $page->where('game.cover_url', 'https://media.rawg.io/media/games/test.jpg')->where('game.rating', null));
+    }
+
+    public function test_rawg_image_urls_cannot_point_to_untrusted_hosts_or_include_keys(): void
+    {
+        $game = Game::factory()->create(['rawg_id' => 100, 'cover_url' => 'https://media.rawg.io/media/games/test.jpg?key=not-allowed']);
+        $this->get('/games/'.$game->slug)->assertInertia(fn (Assert $page) => $page->where('game.cover_url', null));
+        $game->update(['cover_url' => 'https://untrusted.example/cover.jpg']);
+        $this->get('/games/'.$game->slug)->assertInertia(fn (Assert $page) => $page->where('game.cover_url', null));
+    }
 }

@@ -36,10 +36,10 @@ Use complementary warm light foregrounds for readable text. The dark reference c
 
 1. **Tooling foundation:** Laravel/React starter, auth, PostgreSQL, Sanctum, IGDB configuration, build and test workflow.
 2. **Domain and database:** agree on user profiles, games, library entries, playthroughs, diary entries, reviews, ratings, lists/list items, and follows. Keep repeat playthroughs separate from the single user/game library status. Store ratings as integers 1–10 and present them divided by two.
-3. **Catalog:** server-side IGDB integration, local persistence, controlled background synchronization, search/filtering, and game detail pages.
+3. **Catalog:** server-side RAWG integration, local persistence, controlled background synchronization, search/filtering, and game detail pages.
 4. **Personal experience:** statuses, ratings, reviews, diary, and repeat playthroughs with authorization and validation.
 5. **Community:** lists, follows, activity feed, profiles, privacy, and moderation controls.
 6. **Statistics and discovery:** aggregates, popular/highly rated games, query optimization, and responsive polish.
 7. **Release and mobile:** production infrastructure, email, backups, monitoring, and a versioned API consumed by React Native + Expo.
 
-Stages 1–3 are implemented as the tooling, domain, and catalog foundation. Public discovery includes local search/filtering, pagination, game details, and a server-side queued importer; live IGDB imports still require user-provided credentials. See [the data model](DATA_MODEL.md) and [catalog workflow](CATALOG.md). Personal/community feature actions and screens in stages 4–7 remain planned work.
+Stages 1–3 are implemented as the tooling, domain, and catalog foundation. Public discovery includes local search/filtering, pagination, game details, and a server-side queued importer; the active provider is RAWG with a server-side API key. See [the data model](DATA_MODEL.md) and [catalog workflow](CATALOG.md). Personal/community feature actions and screens in stages 4–7 remain planned work.

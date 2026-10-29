@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['igdb_id', 'name', 'slug'])]
+#[Fillable(['igdb_id', 'rawg_id', 'name', 'slug'])]
 class Platform extends Model
 {
     /** @use HasFactory<PlatformFactory> */
@@ -19,6 +19,7 @@ class Platform extends Model
     {
         return [
             'igdb_id' => 'integer',
+            'rawg_id' => 'integer',
         ];
     }
 

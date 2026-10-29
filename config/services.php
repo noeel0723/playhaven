@@ -2,6 +2,10 @@
 
 return [
 
+    'rawg' => [
+        'api_key' => env('RAWG_API_KEY'),
+    ],
+
     'igdb' => [
         'client_id' => env('IGDB_CLIENT_ID'),
         'client_secret' => env('IGDB_CLIENT_SECRET'),
