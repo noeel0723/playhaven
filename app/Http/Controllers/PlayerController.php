@@ -41,6 +41,7 @@ class PlayerController extends Controller
                 'name' => $profile?->display_name ?: ($profile?->username ?: $user->name),
                 'username' => $profile?->username,
                 'bio' => $profile?->bio,
+                'location' => $profile?->location,
                 'avatar_url' => $profile ? ProfilePhotos::url($profile, true) : null,
                 'is_public' => (bool) $profile?->is_public,
                 'followers_count' => (int) $user->getAttribute('followers_count'),
@@ -97,7 +98,7 @@ class PlayerController extends Controller
         $search = trim($request->string('q')->value());
 
         return Inertia::render('players/edit', [
-            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'is_public', 'share_recent_completed']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
+            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'location', 'is_public', 'share_recent_completed']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
             'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
             'availableGames' => $search !== '' ? GameResource::collection($showcase->search($search))->resolve($request) : [],
             'query' => $search,

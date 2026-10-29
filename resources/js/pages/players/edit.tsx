@@ -23,6 +23,7 @@ export default function EditPlayer({
         username: profile?.username ?? '',
         display_name: profile?.display_name ?? '',
         bio: profile?.bio ?? '',
+        location: profile?.location ?? '',
         is_public: profile?.is_public ?? false,
     });
     return (
@@ -45,6 +46,18 @@ export default function EditPlayer({
                     Back to your profile
                 </Link>
             </div>
+            {profile && (
+                <div className="mb-12 border-b border-white/10 pb-10">
+                    <ProfilePhotoEditor
+                        name={
+                            profile.display_name || profile.username || 'Player'
+                        }
+                        avatarUrl={profile.avatar_url}
+                        embedded
+                        horizontal
+                    />
+                </div>
+            )}
             <div className="grid items-start gap-12 lg:grid-cols-2 xl:gap-20">
                 <div className="min-w-0">
                     <section aria-labelledby="profile-details-title">
@@ -128,6 +141,45 @@ export default function EditPlayer({
                                         className="text-sm text-red-300"
                                     >
                                         {form.errors.display_name}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="space-y-3">
+                                <Label htmlFor="player-location">
+                                    Location{' '}
+                                    <span className="text-xs font-normal text-[#a9a19b]">
+                                        (optional)
+                                    </span>
+                                </Label>
+                                <Input
+                                    id="player-location"
+                                    name="location"
+                                    value={form.data.location}
+                                    onChange={(event) =>
+                                        form.setData(
+                                            'location',
+                                            event.target.value,
+                                        )
+                                    }
+                                    maxLength={120}
+                                    placeholder="City, country"
+                                    className="border-shadow bg-rein"
+                                    aria-invalid={Boolean(form.errors.location)}
+                                    aria-describedby="location-help"
+                                />
+                                <p
+                                    id="location-help"
+                                    className="text-xs leading-6 text-[#bdb6b1]"
+                                >
+                                    Appears on your public profile when you
+                                    choose to make it public.
+                                </p>
+                                {form.errors.location && (
+                                    <p
+                                        role="alert"
+                                        className="text-sm text-red-300"
+                                    >
+                                        {form.errors.location}
                                     </p>
                                 )}
                             </div>
@@ -219,24 +271,6 @@ export default function EditPlayer({
                             </div>
                         </form>
                     </section>
-                    {profile ? (
-                        <div className="mt-12">
-                            <ProfilePhotoEditor
-                                name={
-                                    profile.display_name ||
-                                    profile.username ||
-                                    'Player'
-                                }
-                                avatarUrl={profile.avatar_url}
-                                embedded
-                            />
-                        </div>
-                    ) : (
-                        <p className="mt-8 text-sm leading-7 text-[#bdb6b1]">
-                            Save the profile details to unlock your photo and
-                            Top 4.
-                        </p>
-                    )}
                 </div>
                 <aside aria-label="Edit your Top 4 games" className="min-w-0">
                     {profile ? (

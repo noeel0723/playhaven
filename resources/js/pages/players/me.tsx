@@ -29,12 +29,13 @@ export default function YourProfile({
 }) {
     return (
         <>
-            <Head title="Your player profile" />
+            <Head title="Profile" />
             <PlayerProfileHeader
                 name={player.name}
                 username={player.username}
                 avatarUrl={player.avatar_url}
                 bio={player.bio}
+                location={player.location}
                 statistics={[
                     { label: 'Games', value: player.games_count },
                     { label: 'Reviews', value: reviews.meta.total },

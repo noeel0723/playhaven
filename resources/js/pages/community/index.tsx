@@ -4,7 +4,7 @@ import CommunityStory from '@/components/community-story';
 import HistoryPagination from '@/components/history-pagination';
 import { Button } from '@/components/ui/button';
 import { index } from '@/routes/community';
-import { index as players, edit } from '@/routes/players';
+import { index as players, me } from '@/routes/players';
 import type { CommunityReviewPagination } from '@/types/community';
 
 export default function Community({
@@ -44,7 +44,7 @@ export default function Community({
                     </Button>
                     {auth.user && (
                         <Button asChild variant="ghost">
-                            <Link href={edit()}>Your player profile</Link>
+                            <Link href={me()}>Profile</Link>
                         </Button>
                     )}
                 </div>

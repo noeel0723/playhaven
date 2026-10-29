@@ -5,6 +5,7 @@ export type PublicPlayer = {
     username: string;
     name: string;
     bio: string | null;
+    location: string | null;
     avatar_url: string | null;
     followers_count: number;
     following_count: number;
@@ -30,6 +31,7 @@ export type PlayerProfile = {
     username: string | null;
     display_name: string | null;
     bio: string | null;
+    location: string | null;
     is_public: boolean;
     share_recent_completed: boolean;
     avatar_url: string | null;
@@ -56,6 +58,7 @@ export type OwnPlayer = {
     name: string;
     username: string | null;
     bio: string | null;
+    location: string | null;
     avatar_url: string | null;
     is_public: boolean;
     followers_count: number;

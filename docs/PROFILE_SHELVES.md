@@ -4,13 +4,13 @@ The public player profile uses a main column with two four-cover shelves, thin s
 
 ## Choose Top 4 games
 
-Open **Your player profile → Edit profile**, save the basic profile if needed, then use **Top 4 Games** in the editor's right column:
+Open **Profile → Edit profile**, save the basic profile if needed, then use **Top 4 Games** in the editor's right column:
 
-1. Search the local catalog by game title. Each search returns at most 12 results and makes no RAWG API request.
-2. Add up to four distinct games. They do not need to be in the player's library. Import missing games through the existing catalog workflow first.
+1. Click an empty card's **+**, or click a selected cover to replace it. The **Pick a favorite game** dialog focuses **Name of game**. Enter a title and submit with Enter or the search button. The local catalog returns at most 12 results and makes no RAWG API request.
+2. Select a result to fill that slot. A game already selected in another slot is disabled. Picks do not need to be in the player's library; import missing games through the existing catalog workflow first. Escape or Close dismisses the dialog and returns focus to the clicked card.
 3. Move picks left/right or remove them using labeled buttons, then choose **Save profile shelves**. Searching keeps the current unsaved picks.
 
-Picks appear in their saved order on a public profile. They are independent of library favorite flags and do not create or modify library entries, ratings, reviews, or diary history. Empty slots remain honest placeholders. Saving an empty array clears the shelf.
+Picks appear in their saved order on a public profile. Unsaved gaps are compacted when the shelf is saved. Searches preserve the current picks and unsaved information fields. Picks are independent of library favorite flags and do not create or modify library entries, ratings, reviews, or diary history. Empty slots remain honest placeholders. Saving an empty array clears the shelf.
 
 `profile_game_favorites` has a profile/game composite primary key, a unique profile/position pair, and a database check limiting positions to 1–4. The update locks the authenticated user's profile and replaces its ordered picks in a transaction. The request validates local game IDs, distinctness, list shape, and the four-game limit. User/profile IDs supplied by the client cannot select another owner's shelf.
 

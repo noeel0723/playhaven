@@ -9,6 +9,7 @@ use App\Models\DiaryEntry;
 use App\Models\Playthrough;
 use App\Services\PlayerHistory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,22 +23,30 @@ class DiaryController extends Controller
         $search = trim($request->string('q')->value());
         $from = $request->string('from')->value();
         $to = $request->string('to')->value();
-        $query = DiaryEntry::query()->whereHas('playthrough.libraryEntry', fn (Builder $query) => $query->where('user_id', $request->user()->id));
+        $query = DiaryEntry::query()->select('diary_entries.*')
+            ->selectSub(DB::table('diary_entries as newer')->selectRaw('COUNT(*)')
+                ->whereColumn('newer.playthrough_id', 'diary_entries.playthrough_id')
+                ->where(fn ($newer) => $newer->whereColumn('newer.logged_on', '>', 'diary_entries.logged_on')
+                    ->orWhere(fn ($sameDay) => $sameDay->whereColumn('newer.logged_on', 'diary_entries.logged_on')->whereColumn('newer.id', '>', 'diary_entries.id'))), 'newer_session_count')
+            ->whereHas('playthrough.libraryEntry', fn (Builder $query) => $query->where('user_id', $request->user()->id));
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
             $query->whereHas('playthrough.libraryEntry.game', fn (Builder $query) => $query->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%']));
         }
         if ($from !== '') {
-            $query->where('logged_on', '>=', $from);
+            $query->whereDate('logged_on', '>=', $from);
         }
         if ($to !== '') {
-            $query->where('logged_on', '<=', $to);
+            $query->whereDate('logged_on', '<=', $to);
         }
         $sessions = (clone $query)->count();
         $minutes = (int) (clone $query)->sum('minutes_played');
 
         return Inertia::render('diary/index', [
-            'sessions' => DiaryEntryResource::collection($query->with('playthrough.libraryEntry.game')->orderByDesc('logged_on')->orderByDesc('id')->paginate(20)->withQueryString()),
+            'sessions' => DiaryEntryResource::collection($query->with(['playthrough' => fn (BelongsTo $run) => $run->select('playthroughs.*')
+                ->selectSub(DB::table('playthroughs as earlier')->selectRaw('1')->whereColumn('earlier.library_entry_id', 'playthroughs.library_entry_id')->whereColumn('earlier.id', '<', 'playthroughs.id')->limit(1), 'is_replay')
+                ->with(['libraryEntry.rating', 'libraryEntry.review:id,library_entry_id,is_public', 'libraryEntry.game.genres', 'libraryEntry.game.platforms'])])
+                ->orderByDesc('logged_on')->orderByDesc('id')->paginate(20)->withQueryString()),
             'totals' => ['sessions' => $sessions, 'minutes' => $minutes],
             'filters' => ['q' => $search, 'from' => $from, 'to' => $to],
             'today' => now()->toDateString(),

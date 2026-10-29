@@ -146,7 +146,7 @@ export default function Players({
                                 href={me()}
                                 className="inline-flex items-center gap-2 rounded-sm text-[#d5cec7] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
                             >
-                                Your player profile{' '}
+                                Profile{' '}
                                 <ArrowRight
                                     className="size-3.5"
                                     aria-hidden="true"

@@ -46,3 +46,9 @@ Delete actions require a confirmation dialog and an accepted `confirm` field. De
 `tests/Feature/PlayerHistoryTest.php` covers all run statuses, replays, dates and bounds, valid/historical platforms, ownership attacks, nullable/zero durations, multiple sessions per date, edits and totals, private filtering, pagination, and confirmed deletion. Default tests use SQLite; `scripts/test-postgres.ps1` targets the isolated `playhaven_testing` database.
 
 The next product stage is community features: custom game lists, player profiles, following, and an activity feed.
+
+## Diary rows
+
+`/diary` groups sessions by month and shows a calendar badge, day, compact game cover/title, release year, current personal rating, library favorite, additional-run indicator, review link, and edit link. The additional-run indicator means an earlier retained playthrough exists for the same library entry; it is not a separate stored replay flag. Duration and playthrough labels remain visible, and session notes can be expanded in each row. Smaller screens condense secondary columns into the game cell.
+
+Search and inclusive From/To dates retain existing ownership checks, totals, and 20-row pagination. Edit links include the correct playthrough session page and anchor, even when the diary is filtered. Diary metadata is loaded from the authenticated user's entries; review bodies and provider IDs are not included. Ratings and favorites reflect the current library rather than historical snapshots. Unavailable art uses the shared cover fallback.

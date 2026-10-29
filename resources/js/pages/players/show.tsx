@@ -37,6 +37,7 @@ export default function Player({
                 username={player.username}
                 avatarUrl={player.avatar_url}
                 bio={player.bio}
+                location={player.location}
                 actions={<FollowPlayer player={player} />}
                 statistics={[
                     { label: 'Public reviews', value: reviews.meta.total },

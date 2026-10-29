@@ -28,6 +28,20 @@ export type DiarySession = {
     updated_at: string;
     playthrough?: { id: number; label: string | null; game: HistoryGame };
 };
+export type DiaryIndexSession = DiarySession & {
+    catalog_game: {
+        id: number;
+        name: string;
+        slug: string;
+        cover_url: string | null;
+        released_on: string | null;
+    };
+    rating: number | null;
+    is_favorite: boolean;
+    has_review: boolean;
+    is_replay: boolean;
+    session_page: number;
+};
 export type HistoryPagination<T> = Omit<CatalogPagination, 'data'> & {
     data: T[];
 };

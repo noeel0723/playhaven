@@ -1,11 +1,22 @@
 import { Form, useForm } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Plus, Search, X } from 'lucide-react';
 import GameCover from '@/components/game-cover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { edit, showcase } from '@/routes/players';
 import type { CatalogGame } from '@/types/catalog';
+
+const slotsFrom = (games: CatalogGame[]): (CatalogGame | null)[] =>
+    Array.from({ length: 4 }, (_, index) => games[index] ?? null);
 
 export default function ProfileShowcaseEditor({
     topGames,
@@ -21,9 +32,13 @@ export default function ProfileShowcaseEditor({
     embedded?: boolean;
 }) {
     const form = useForm({
-        top_games: topGames,
+        top_games: slotsFrom(topGames),
         share_recent_completed: shareRecentCompleted,
     });
+    const [activeSlot, setActiveSlot] = useState<number | null>(null);
+    const [searchText, setSearchText] = useState('');
+    const [submittedText, setSubmittedText] = useState('');
+    const trigger = useRef<HTMLButtonElement | null>(null);
     function move(index: number, direction: number) {
         const picks = [...form.data.top_games];
         [picks[index], picks[index + direction]] = [
@@ -44,207 +59,314 @@ export default function ProfileShowcaseEditor({
         >
             <h2
                 id="profile-shelves-title"
-                className={
-                    embedded
-                        ? 'border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm'
-                        : 'font-serif text-3xl'
-                }
+                className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
             >
-                {embedded ? 'Top 4 Games' : 'Your profile shelves'}
+                Top 4 Games
             </h2>
-            {!embedded && (
-                <p className="mt-4 text-sm leading-7 text-[#bdb6b1]">
-                    Pick up to four games, then arrange them in your order.
-                    These picks appear on your public profile and do not change
-                    your library favorites.
-                </p>
-            )}
-            <div className="mt-7 grid grid-cols-4 items-start gap-2 sm:gap-4">
-                {Array.from({ length: 4 }, (_, index) => {
-                    const game = form.data.top_games[index];
-                    return (
-                        <div
-                            key={game?.id ?? `empty-${index}`}
-                            className="min-w-0"
+            <div className="mt-6 grid grid-cols-4 items-start gap-2 sm:gap-4">
+                {form.data.top_games.map((game, index) => (
+                    <div key={index} className="min-w-0">
+                        <button
+                            type="button"
+                            disabled={form.processing}
+                            aria-haspopup="dialog"
+                            aria-controls="top-four-picker"
+                            aria-label={
+                                game
+                                    ? `Change Top 4 game ${index + 1}: ${game.name}`
+                                    : `Add Top 4 game ${index + 1}`
+                            }
+                            className="group block w-full rounded-md text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                            onClick={(event) => {
+                                trigger.current = event.currentTarget;
+                                setSearchText('');
+                                setSubmittedText('');
+                                setActiveSlot(index);
+                            }}
                         >
                             {game ? (
-                                <>
-                                    <GameCover
-                                        game={game}
-                                        compact
-                                        className="aspect-[2/3] rounded-md"
-                                    />
-                                    <p className="mt-2 line-clamp-2 text-xs leading-5 wrap-break-word text-[#c5bfba]">
-                                        {index + 1}. {game.name}
-                                    </p>
-                                    <div className="mt-2 flex flex-wrap gap-1">
-                                        <Button
-                                            type="button"
-                                            size="icon"
-                                            variant="ghost"
-                                            className="size-7"
-                                            disabled={
-                                                index === 0 || form.processing
-                                            }
-                                            aria-label={`Move ${game.name} left`}
-                                            onClick={() => move(index, -1)}
-                                        >
-                                            <ArrowLeft
-                                                className="size-3.5"
-                                                aria-hidden="true"
-                                            />
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            size="icon"
-                                            variant="ghost"
-                                            className="size-7"
-                                            disabled={
-                                                index ===
-                                                    form.data.top_games.length -
-                                                        1 || form.processing
-                                            }
-                                            aria-label={`Move ${game.name} right`}
-                                            onClick={() => move(index, 1)}
-                                        >
-                                            <ArrowRight
-                                                className="size-3.5"
-                                                aria-hidden="true"
-                                            />
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            size="icon"
-                                            variant="ghost"
-                                            className="size-7"
-                                            disabled={form.processing}
-                                            aria-label={`Remove ${game.name}`}
-                                            onClick={() =>
-                                                form.setData(
-                                                    'top_games',
-                                                    form.data.top_games.filter(
-                                                        (pick) =>
-                                                            pick.id !== game.id,
-                                                    ),
-                                                )
-                                            }
-                                        >
-                                            <X
-                                                className="size-3.5"
-                                                aria-hidden="true"
-                                            />
-                                        </Button>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="flex aspect-[2/3] items-center justify-center rounded-md border border-dashed border-shadow bg-rein/10 text-sm text-[#807d7d]">
-                                    {index + 1}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-            {embedded && (
-                <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
-                    Pick up to four games and arrange them in your order. These
-                    picks appear on your public profile and do not change your
-                    library favorites.
-                </p>
-            )}
-            <Form
-                key={query}
-                action={edit()}
-                method="get"
-                options={{ preserveScroll: true, preserveState: true }}
-                className="mt-7"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <Label htmlFor="top-game-search" className="mb-3">
-                            Find a game for your Top 4
-                        </Label>
-                        <div className="flex gap-2">
-                            <Input
-                                id="top-game-search"
-                                name="q"
-                                defaultValue={query}
-                                maxLength={100}
-                                placeholder="Search your local catalog…"
-                                className="min-w-0 border-shadow bg-rein"
-                            />
-                            <Button type="submit" disabled={processing}>
-                                <Search aria-hidden="true" />
-                                <span className="sr-only">
-                                    Search games for Top 4
-                                </span>
-                            </Button>
-                        </div>
-                        {errors.q && (
-                            <p
-                                role="alert"
-                                className="mt-3 text-sm text-red-300"
-                            >
-                                {errors.q}
-                            </p>
-                        )}
-                    </>
-                )}
-            </Form>
-            {query && (
-                <div className="mt-4 max-h-80 overflow-y-auto rounded-lg border border-shadow">
-                    {availableGames.length ? (
-                        availableGames.map((game) => {
-                            const selected = form.data.top_games.some(
-                                (pick) => pick.id === game.id,
-                            );
-                            return (
-                                <div
+                                <GameCover
                                     key={game.id}
-                                    className="flex items-center justify-between gap-3 border-b border-white/10 p-3 last:border-b-0"
-                                >
-                                    <span className="min-w-0 text-sm leading-6 wrap-break-word text-[#d5cec7]">
-                                        {game.name}
+                                    game={game}
+                                    compact
+                                    hideFallbackTitle
+                                    className="aspect-[2/3] rounded-md group-hover:border-[#c5bfba]"
+                                />
+                            ) : (
+                                <span className="flex aspect-[2/3] items-center justify-center rounded-md border border-dashed border-shadow bg-rein/40 transition-colors group-hover:border-[#bdb6b1] group-hover:bg-rein/70">
+                                    <span className="flex size-8 items-center justify-center rounded-full border border-white/15 bg-shadow/60 sm:size-10">
+                                        <Plus
+                                            className="size-4 sm:size-5"
+                                            aria-hidden="true"
+                                        />
                                     </span>
+                                </span>
+                            )}
+                        </button>
+                        {game && (
+                            <>
+                                <p className="mt-2 line-clamp-2 min-h-10 text-xs leading-5 wrap-break-word text-[#c5bfba]">
+                                    {index + 1}. {game.name}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-1">
                                     <Button
                                         type="button"
-                                        size="sm"
+                                        size="icon"
+                                        variant="ghost"
+                                        className="size-7"
                                         disabled={
-                                            selected ||
-                                            form.data.top_games.length >= 4 ||
-                                            form.processing
+                                            index === 0 || form.processing
                                         }
-                                        aria-label={`Add ${game.name} to Top 4`}
+                                        aria-label={`Move ${game.name} left`}
+                                        onClick={() => move(index, -1)}
+                                    >
+                                        <ArrowLeft
+                                            className="size-3.5"
+                                            aria-hidden="true"
+                                        />
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        size="icon"
+                                        variant="ghost"
+                                        className="size-7"
+                                        disabled={
+                                            index === 3 || form.processing
+                                        }
+                                        aria-label={`Move ${game.name} right`}
+                                        onClick={() => move(index, 1)}
+                                    >
+                                        <ArrowRight
+                                            className="size-3.5"
+                                            aria-hidden="true"
+                                        />
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        size="icon"
+                                        variant="ghost"
+                                        className="size-7"
+                                        disabled={form.processing}
+                                        aria-label={`Remove ${game.name}`}
                                         onClick={() =>
-                                            form.setData('top_games', [
-                                                ...form.data.top_games,
-                                                game,
-                                            ])
+                                            form.setData(
+                                                'top_games',
+                                                form.data.top_games.map(
+                                                    (pick, slot) =>
+                                                        slot === index
+                                                            ? null
+                                                            : pick,
+                                                ),
+                                            )
                                         }
                                     >
-                                        <Plus aria-hidden="true" />
-                                        {selected ? 'Added' : 'Add'}
+                                        <X
+                                            className="size-3.5"
+                                            aria-hidden="true"
+                                        />
                                     </Button>
                                 </div>
-                            );
-                        })
-                    ) : (
-                        <p className="p-4 text-sm leading-7 text-[#bdb6b1]">
-                            No matching games. Import a game through Find more
-                            games in the catalog, then search again here.
-                        </p>
-                    )}
-                </div>
-            )}
+                            </>
+                        )}
+                    </div>
+                ))}
+            </div>
+            <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                Click a card to choose or replace a game. Use the arrows to
+                reorder your picks, then save your shelves.
+            </p>
+            <Dialog
+                open={activeSlot !== null}
+                onOpenChange={(open) => {
+                    if (!open) setActiveSlot(null);
+                }}
+            >
+                <DialogContent
+                    id="top-four-picker"
+                    className="dark max-h-[85svh] overflow-y-auto border-shadow bg-rein text-[#f4f1ed]"
+                    onCloseAutoFocus={(event) => {
+                        event.preventDefault();
+                        trigger.current?.focus();
+                    }}
+                >
+                    <DialogHeader>
+                        <DialogTitle className="pr-6 text-base font-medium tracking-wide">
+                            Pick a favorite game
+                        </DialogTitle>
+                        <DialogDescription className="text-xs leading-6 text-[#bdb6b1]">
+                            Choose a game from the local catalog for spot{' '}
+                            {(activeSlot ?? 0) + 1}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form
+                        action={edit()}
+                        method="get"
+                        options={{
+                            preserveScroll: true,
+                            preserveState: true,
+                            only: ['availableGames', 'query'],
+                        }}
+                        onBefore={() => setSubmittedText(searchText.trim())}
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                <Label
+                                    htmlFor="top-game-search"
+                                    className="mb-3"
+                                >
+                                    Name of game
+                                </Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="top-game-search"
+                                        name="q"
+                                        type="search"
+                                        value={searchText}
+                                        onChange={(event) =>
+                                            setSearchText(event.target.value)
+                                        }
+                                        maxLength={100}
+                                        placeholder="Search games…"
+                                        className="min-w-0 border-shadow bg-caviar/60 text-[#f4f1ed]"
+                                    />
+                                    <Button
+                                        type="submit"
+                                        disabled={
+                                            processing || !searchText.trim()
+                                        }
+                                        aria-label="Search games for Top 4"
+                                        className="shrink-0"
+                                    >
+                                        <Search
+                                            className="size-4"
+                                            aria-hidden="true"
+                                        />
+                                    </Button>
+                                </div>
+                                {errors.q && (
+                                    <p
+                                        role="alert"
+                                        className="mt-3 text-sm text-red-300"
+                                    >
+                                        {errors.q}
+                                    </p>
+                                )}
+                                <div aria-live="polite" className="mt-4">
+                                    {processing ? (
+                                        <p className="text-sm text-[#bdb6b1]">
+                                            Searching…
+                                        </p>
+                                    ) : submittedText &&
+                                      query === submittedText ? (
+                                        availableGames.length ? (
+                                            <ul className="max-h-72 overflow-y-auto rounded-md border border-shadow">
+                                                {availableGames.map(
+                                                    (result) => {
+                                                        const selected =
+                                                            form.data.top_games.some(
+                                                                (pick, slot) =>
+                                                                    slot !==
+                                                                        activeSlot &&
+                                                                    pick?.id ===
+                                                                        result.id,
+                                                            );
+                                                        return (
+                                                            <li key={result.id}>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={
+                                                                        selected
+                                                                    }
+                                                                    aria-label={`Choose ${result.name} for Top 4`}
+                                                                    className="flex w-full items-center gap-3 border-b border-shadow p-3 text-left last:border-b-0 hover:bg-caviar/30 focus-visible:outline-2 focus-visible:outline-offset-[-2px] disabled:opacity-45"
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            activeSlot !==
+                                                                            null
+                                                                        )
+                                                                            form.setData(
+                                                                                'top_games',
+                                                                                form.data.top_games.map(
+                                                                                    (
+                                                                                        pick,
+                                                                                        slot,
+                                                                                    ) =>
+                                                                                        slot ===
+                                                                                        activeSlot
+                                                                                            ? result
+                                                                                            : pick,
+                                                                                ),
+                                                                            );
+                                                                        setActiveSlot(
+                                                                            null,
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <GameCover
+                                                                        game={
+                                                                            result
+                                                                        }
+                                                                        compact
+                                                                        hideFallbackTitle
+                                                                        className="h-14 w-10 shrink-0 rounded-sm"
+                                                                    />
+                                                                    <span className="min-w-0 flex-1 text-sm leading-6 wrap-break-word">
+                                                                        {
+                                                                            result.name
+                                                                        }
+                                                                        {selected && (
+                                                                            <span className="block text-xs text-[#a9a19b]">
+                                                                                Already
+                                                                                selected
+                                                                            </span>
+                                                                        )}
+                                                                    </span>
+                                                                </button>
+                                                            </li>
+                                                        );
+                                                    },
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-sm leading-7 text-[#bdb6b1]">
+                                                No matching games. Try another
+                                                title or add it through Find
+                                                more games in the catalog.
+                                            </p>
+                                        )
+                                    ) : (
+                                        <p className="text-xs leading-6 text-[#bdb6b1]">
+                                            Search by title, then select a game.
+                                            Your other unsaved profile changes
+                                            will be kept.
+                                        </p>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </Form>
+                </DialogContent>
+            </Dialog>
             <form
                 className="mt-7"
                 onSubmit={(event) => {
                     event.preventDefault();
                     form.transform((data) => ({
-                        top_games: data.top_games.map((game) => game.id),
+                        top_games: data.top_games
+                            .filter(
+                                (game): game is CatalogGame => game !== null,
+                            )
+                            .map((game) => game.id),
                         share_recent_completed: data.share_recent_completed,
                     }));
-                    form.put(showcase().url, { preserveScroll: true });
+                    form.put(showcase().url, {
+                        preserveScroll: true,
+                        onSuccess: (page) =>
+                            form.setData(
+                                'top_games',
+                                slotsFrom(page.props.topGames as CatalogGame[]),
+                            ),
+                    });
                 }}
             >
                 <div className="rounded-xl border border-shadow bg-rein/30 p-5">

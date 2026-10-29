@@ -26,7 +26,10 @@ export default function DiarySessionCard({
 }) {
     const [open, setOpen] = useState(false);
     return (
-        <article className="min-w-0 rounded-xl border border-shadow bg-rein/20 p-5 sm:p-6">
+        <article
+            id={`diary-session-${session.id}`}
+            className="min-w-0 scroll-mt-8 rounded-xl border border-shadow bg-rein/20 p-5 sm:p-6"
+        >
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h3 className="text-sm font-medium">
                     <time dateTime={session.logged_on}>

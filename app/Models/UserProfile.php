@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
-#[Fillable(['user_id', 'username', 'display_name', 'bio', 'avatar_path', 'is_public', 'share_recent_completed'])]
+#[Fillable(['user_id', 'username', 'display_name', 'bio', 'location', 'avatar_path', 'is_public', 'share_recent_completed'])]
 class UserProfile extends Model
 {
     /** @use HasFactory<UserProfileFactory> */

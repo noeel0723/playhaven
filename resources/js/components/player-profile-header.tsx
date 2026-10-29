@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { MapPin } from 'lucide-react';
 import PlayerAvatar from '@/components/player-avatar';
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
     username?: string | null;
     avatarUrl?: string | null;
     bio?: string | null;
+    location?: string | null;
     actions: ReactNode;
     statistics: { label: string; value: string | number }[];
 };
@@ -15,6 +17,7 @@ export default function PlayerProfileHeader({
     username,
     avatarUrl,
     bio,
+    location,
     actions,
     statistics,
 }: Props) {
@@ -44,6 +47,15 @@ export default function PlayerProfileHeader({
                     {bio && (
                         <p className="mt-4 max-w-xl text-sm leading-7 wrap-break-word whitespace-pre-wrap text-[#bdb6b1]">
                             {bio}
+                        </p>
+                    )}
+                    {location && (
+                        <p className="mt-3 flex items-start gap-1.5 text-xs leading-6 wrap-break-word text-[#a9a19b]">
+                            <MapPin
+                                className="mt-1 size-3.5 shrink-0"
+                                aria-hidden="true"
+                            />
+                            <span>{location}</span>
                         </p>
                     )}
                 </div>

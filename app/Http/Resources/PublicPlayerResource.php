@@ -17,6 +17,7 @@ class PublicPlayerResource extends JsonResource
             'username' => $this->profile->username,
             'name' => $this->profile->display_name ?: $this->profile->username,
             'bio' => $this->profile->bio,
+            'location' => $this->profile->location,
             'avatar_url' => ProfilePhotos::url($this->profile),
             'followers_count' => (int) $this->getAttribute('followers_count'),
             'following_count' => (int) $this->getAttribute('following_count'),

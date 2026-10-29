@@ -1,8 +1,8 @@
 # Player profile photos
 
-Open **Your player profile → Edit profile → Profile photo** at `/community/profile/edit#profile-photo`, or use **Manage profile photo** in account settings. Save the basic player profile first if it has not been created yet.
+Open **Profile → Edit profile → Profile photo** at `/community/profile/edit#profile-photo`, or use **Manage profile photo** in account settings. Save the basic player profile first if it has not been created yet.
 
-The photo editor follows the information form in the dedicated editor's left column. Top 4 controls occupy the right column on desktop; columns stack on smaller screens. The main Your profile overview has no upload form. Photo upload, preview, replacement, removal, and visibility continue through the existing mutation routes, which return to the editor.
+The photo section is the first section in the dedicated editor, above both Profile information and Top 4 on desktop and phones. Its preview and upload controls sit side by side on wide screens and stack on narrow screens. The main Profile overview has no upload form. Photo upload, preview, replacement, removal, and visibility continue through the existing mutation routes, which return to the editor.
 
 Choose a JPEG, PNG, or WebP image, check the local preview, then choose **Save photo**. **Cancel selection** restores the saved image without uploading anything. **Remove photo** clears the saved image and returns to initials. Uploads and profile details save independently, so changing a photo does not overwrite the bio, username, Top 4, or library.
 

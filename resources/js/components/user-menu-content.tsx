@@ -60,7 +60,7 @@ export function UserMenuContent({ user }: Props) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href={playerProfile()} onClick={cleanup}>
-                        Your player profile
+                        Profile
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
