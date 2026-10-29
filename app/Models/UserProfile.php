@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'username', 'display_name', 'bio', 'avatar_path'])]
+#[Fillable(['user_id', 'username', 'display_name', 'bio', 'avatar_path', 'is_public'])]
 class UserProfile extends Model
 {
     /** @use HasFactory<UserProfileFactory> */
     use HasFactory;
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return ['is_public' => 'boolean'];
+    }
 
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo

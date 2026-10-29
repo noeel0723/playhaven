@@ -74,6 +74,8 @@ $rating->stars;               // 4.5
 
 The schema permits list-position gaps or ties. The implemented list actions order by position/ID and normalize positions when reordering or removing items. Private links are restricted to their owners; unlisted links allow direct access and stay out of discovery; public lists appear in discovery. Current controllers enforce these rules with scoped ownership checks. See [custom lists](LISTS.md).
 
+`user_profiles.is_public` defaults to false and controls player discovery, public profile access, and eligibility for community review feeds. It does not replace each review/list's visibility. Follow actions derive the follower from authentication and keep existing directed-edge constraints. Feeds query current eligible public reviews instead of duplicating private experience records into an activity table. See [community behavior and privacy](COMMUNITY.md).
+
 ## Ownership, deletion, and indexing
 
 - Deleting a user cascades to their profile, library, dependent playthrough/diary/rating/review records, lists/items, and follows.
@@ -97,4 +99,4 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
-The catalog, library, ratings, reviews, diary, repeat playthroughs, and custom lists are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), [playing history](PLAYING_HISTORY.md), and [custom lists](LISTS.md). Next, implement player profiles, follows, and activity.
+The catalog, library, ratings, reviews, diary, repeat playthroughs, custom lists, opt-in player profiles, follows, and public review feeds are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), [playing history](PLAYING_HISTORY.md), [custom lists](LISTS.md), and [community](COMMUNITY.md). Personal statistics and deeper discovery remain next.

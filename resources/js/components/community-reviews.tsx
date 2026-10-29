@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, MessageSquare } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import { Button } from '@/components/ui/button';
 import type { ReviewPagination } from '@/types/reviews';
+import { show as playerProfile } from '@/routes/players';
 
 export default function CommunityReviews({
     reviews,
@@ -37,7 +38,18 @@ export default function CommunityReviews({
                             <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                                 <div className="min-w-0">
                                     <h3 className="text-sm font-medium break-words">
-                                        {review.author.name}
+                                        {review.author.username ? (
+                                            <Link
+                                                href={playerProfile(
+                                                    review.author.username,
+                                                )}
+                                                className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
+                                            >
+                                                {review.author.name}
+                                            </Link>
+                                        ) : (
+                                            review.author.name
+                                        )}
                                     </h3>
                                     <time
                                         dateTime={review.updated_at}

@@ -70,6 +70,10 @@ PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqli
 
 Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedia. Klik nama developer atau penerbit untuk menjelajahi game lain dalam katalog lokal, atau gunakan filter **Studio & publisher** di `/games`. Game baru yang diimpor dari RAWG langsung menyimpan informasi tersebut. Untuk melengkapi game lama, jalankan `php artisan catalog:enrich --limit=100` setelah memuat `scripts/env.ps1`. Lihat [panduan katalog](docs/CATALOG.md).
 
+## Community dan profil pemain
+
+Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Library, diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Lihat [panduan komunitas](docs/COMMUNITY.md).
+
 ## Library pribadi
 
 Buka detail game dari `/games`, pilih status bermain dan favorit di **Your experience**, lalu simpan ke library. Halaman `/library` menyediakan pencarian, filter status/favorit, dan pagination. Dashboard sekarang menampilkan ringkasan serta game terbaru dari koleksi akun yang login. Detail kepemilikan, penghapusan, dan alur fitur ada di [panduan library](docs/LIBRARY.md).
@@ -160,7 +164,7 @@ scripts/             Helper development Windows
 docs/                Product brief dan urutan pengembangan
 ```
 
-Halaman pembuka dan token palet sudah diberi identitas PlayHaven. Fondasi database inti sudah mencakup katalog, profil, library, playthrough, diary, rating, review, lists, dan follows. Model, factory, serta tes integritas tersedia; layar dan endpoint fitur tersebut belum dibuat. Lihat [data model](docs/DATA_MODEL.md) dan [product brief](docs/PRODUCT.md).
+Halaman pembuka dan token palet sudah diberi identitas PlayHaven. Katalog, library, playthrough, diary, rating, review, custom lists, profil pemain, follows, dan feed ulasan publik sudah memiliki layar serta endpoint. Model, factory, dan tes integritas mendukung fitur tersebut. Statistik pribadi serta tahap berikutnya tercantum dalam [data model](docs/DATA_MODEL.md) dan [product brief](docs/PRODUCT.md).
 
 Untuk menjalankan seluruh tes pada PostgreSQL yang terpisah dari database development:
 

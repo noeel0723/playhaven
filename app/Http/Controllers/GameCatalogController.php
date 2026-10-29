@@ -78,7 +78,7 @@ class GameCatalogController extends Controller
         $entry = $request->user()?->libraryEntries()->with(['rating', 'review'])->where('game_id', $game->id)->first();
         $reviews = Review::query()->where('is_public', true)
             ->whereHas('libraryEntry', fn (Builder $query) => $query->where('game_id', $game->id))
-            ->with(['libraryEntry.user:id,name', 'libraryEntry.rating'])
+            ->with(['libraryEntry.user:id,name', 'libraryEntry.user.profile', 'libraryEntry.rating'])
             ->orderByDesc('updated_at')->orderByDesc('id')
             ->paginate(10, ['*'], 'reviews_page')->withQueryString();
 

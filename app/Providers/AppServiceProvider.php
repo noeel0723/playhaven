@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        RateLimiter::for('community-follows', fn (Request $request) => Limit::perMinute(30)->by('community-follows:'.$request->user()->id));
         RateLimiter::for('rawg-search', fn (Request $request) => [Limit::perMinute(12)->by('rawg-search:user:'.$request->user()->id), Limit::perMinute(30)->by('rawg-search:shared')]);
         RateLimiter::for('rawg-import', fn (Request $request) => [Limit::perMinute(6)->by('rawg-import:user:'.$request->user()->id), Limit::perMinute(20)->by('rawg-import:shared')]);
         $connectionsBusy = function (Request $request) {

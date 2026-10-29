@@ -13,6 +13,7 @@ import { dashboard, home, login, register } from '@/routes';
 import { index } from '@/routes/games';
 import { index as library } from '@/routes/library';
 import { index as diary } from '@/routes/diary';
+import { index as community } from '@/routes/community';
 import { discover as discoverLists, index as lists } from '@/routes/lists';
 
 export default function CatalogLayout({ children }: PropsWithChildren) {
@@ -40,6 +41,9 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                     <div className="flex max-w-full flex-wrap items-center gap-1 sm:gap-4">
                         <Button asChild variant="ghost">
                             <Link href={index()}>Games</Link>
+                        </Button>
+                        <Button asChild variant="ghost">
+                            <Link href={community()}>Community</Link>
                         </Button>
                         <Button asChild variant="ghost">
                             <Link href={auth.user ? lists() : discoverLists()}>

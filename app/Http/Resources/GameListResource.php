@@ -12,8 +12,10 @@ class GameListResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
+        $profile = $this->user->profile;
+
         return ['id' => $this->id, 'name' => $this->name, 'slug' => $this->slug, 'description' => $this->description,
             'visibility' => $this->visibility->value, 'items_count' => (int) $this->getAttribute('items_count'),
-            'owner' => ['id' => $this->user->id, 'name' => $this->user->name]];
+            'owner' => ['id' => $this->user->id, 'name' => $profile?->display_name ?: ($profile?->is_public && $profile->username ? $profile->username : $this->user->name)]];
     }
 }

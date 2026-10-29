@@ -9,7 +9,7 @@ export type PersonalReview = {
 };
 
 export type PublicReview = Omit<PersonalReview, 'is_public'> & {
-    author: { name: string };
+    author: { name: string; username?: string | null };
     rating: number | null;
 };
 

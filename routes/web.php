@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DiaryController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GameCatalogController;
 use App\Http\Controllers\GameConnectionController;
 use App\Http\Controllers\GameExperienceController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameListItemController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlaythroughController;
 use App\Http\Controllers\RawgDiscoveryController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +22,11 @@ Route::pattern('gameList', '[1-9][0-9]{0,17}');
 Route::pattern('listItem', '[1-9][0-9]{0,17}');
 Route::pattern('listOwner', '[1-9][0-9]{0,17}');
 Route::pattern('rawgId', '[1-9][0-9]{0,9}');
+Route::pattern('username', '[A-Za-z][A-Za-z0-9_]{2,29}');
+
+Route::get('community', [CommunityController::class, 'index'])->name('community.index');
+Route::get('players', [PlayerController::class, 'index'])->name('players.index');
+Route::get('players/{username}', [PlayerController::class, 'show'])->name('players.show');
 
 Route::get('/games', [GameCatalogController::class, 'index'])->name('games.index');
 Route::get('/games/{game:slug}', [GameCatalogController::class, 'show'])->name('games.show');
@@ -26,6 +34,10 @@ Route::get('lists/discover', [GameListController::class, 'discover'])->name('lis
 Route::get('lists/{listOwner}/{listSlug}', [GameListController::class, 'show'])->name('lists.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('community/profile', [PlayerController::class, 'edit'])->name('players.edit');
+    Route::put('community/profile', [PlayerController::class, 'update'])->name('players.update');
+    Route::post('players/{username}/follow', [FollowController::class, 'store'])->middleware('throttle:community-follows')->name('follows.store');
+    Route::delete('players/{username}/follow', [FollowController::class, 'destroy'])->middleware('throttle:community-follows')->name('follows.destroy');
     Route::post('games/{game:slug}/connections/refresh', [GameConnectionController::class, 'refresh'])->middleware('throttle:rawg-connections')->name('games.connections.refresh');
     Route::get('lists', [GameListController::class, 'index'])->name('lists.index');
     Route::post('my-lists', [GameListController::class, 'store'])->name('lists.store');

@@ -23,13 +23,13 @@ class GameListController extends Controller
 {
     public function index(GameListBrowseRequest $request): Response
     {
-        return Inertia::render('lists/index', ['lists' => GameListResource::collection($request->user()->gameLists()->with('user')->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString())]);
+        return Inertia::render('lists/index', ['lists' => GameListResource::collection($request->user()->gameLists()->with('user.profile')->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString())]);
     }
 
     public function discover(GameListBrowseRequest $request): Response
     {
         $search = trim($request->string('q')->value());
-        $query = GameList::where('visibility', ListVisibility::Public)->with('user')->withCount('items');
+        $query = GameList::where('visibility', ListVisibility::Public)->with('user.profile')->withCount('items');
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
             $query->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%']);
@@ -47,7 +47,7 @@ class GameListController extends Controller
 
     public function show(GameListBrowseRequest $request, User $listOwner, string $listSlug): HttpResponse
     {
-        $list = $listOwner->gameLists()->where('slug', $listSlug)->with('user')->withCount('items')->firstOrFail();
+        $list = $listOwner->gameLists()->where('slug', $listSlug)->with('user.profile')->withCount('items')->firstOrFail();
         $isOwner = $request->user()?->id === $list->user_id;
         abort_if($list->visibility === ListVisibility::Private && ! $isOwner, 404);
         $search = trim($request->string('q')->value());
