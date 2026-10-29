@@ -7,10 +7,12 @@ export default function GameCover({
     game,
     className,
     compact = false,
+    hideFallbackTitle = false,
 }: {
     game: Pick<CatalogGame, 'id' | 'name' | 'cover_url'>;
     className?: string;
     compact?: boolean;
+    hideFallbackTitle?: boolean;
 }) {
     const [failed, setFailed] = useState(false);
     return (
@@ -46,14 +48,16 @@ export default function GameCover({
                         strokeWidth={1}
                         aria-hidden="true"
                     />
-                    <span
-                        className={cn(
-                            'line-clamp-3 font-serif leading-tight text-[#d5cec7]',
-                            compact ? 'text-xs' : 'text-lg',
-                        )}
-                    >
-                        {game.name}
-                    </span>
+                    {!hideFallbackTitle && (
+                        <span
+                            className={cn(
+                                'line-clamp-3 font-serif leading-tight text-[#d5cec7]',
+                                compact ? 'text-xs' : 'text-lg',
+                            )}
+                        >
+                            {game.name}
+                        </span>
+                    )}
                 </div>
             )}
         </div>

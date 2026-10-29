@@ -82,6 +82,8 @@ Buka **Your statistics** dari dashboard atau menu akun untuk melihat ringkasan k
 
 ## Community dan profil pemain
 
+Halaman **Players** menampilkan portrait pemain publik, follower, jumlah review publik, dan Top 4 pilihan mereka. Profil sendiri dikecualikan saat login. Jika belum ada pemain publik lain, halaman menampilkan **No other players yet.**, bukan akun contoh. Layout memakai lima kolom desktop, tiga kolom tablet, dan dua kolom ponsel.
+
 Untuk menambahkan foto, buka **Your player profile → Profile photo**, pilih gambar JPEG/PNG/WebP maksimal 5 MB, lalu **Save photo**. Tersedia pratinjau, pembatalan pilihan, penggantian, dan penghapusan foto. Foto mengikuti visibilitas profil dan tampil di komunitas serta avatar akun. Lihat [panduan foto profil](docs/PROFILE_PHOTOS.md).
 
 Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library tetap privat kecuali empat penyelesaian terakhir yang dibagikan melalui opsi di bawah. Lihat [panduan komunitas](docs/COMMUNITY.md).

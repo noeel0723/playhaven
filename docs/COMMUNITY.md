@@ -10,11 +10,19 @@ Players can upload, replace, preview, and remove a profile photo. Photos follow 
 
 - Usernames contain 3–30 ASCII characters, start with a letter, and permit letters, digits, and underscores. Input is normalized to lowercase; the database also enforces case-insensitive uniqueness. A username change changes the public profile link.
 - Display names are required, up to 80 characters. Bios are optional, up to 1,000 characters, rendered as plain text.
-- `/players` searches public usernames and display names, with literal SQL wildcard handling and 18 results per page. Email and account names are not search fields.
+- `/players` searches public usernames and display names, with literal SQL wildcard handling and 18 results per page. Email and account names are not search fields. Signed-in discovery excludes the viewer's own account; their profile remains accessible from the account menu and profile editor. Guests can discover the first opted-in public player.
 - `/players/{username}` accepts case-insensitive username lookups. It exposes the chosen public identity, follow counts, manually selected Top 4 games, public reviews, public lists, and optionally the latest four completed games. Review and list pagination use separate `reviews_page` and `lists_page` parameters.
 - Private profiles return 404, including to the owner; owners manage them through the authenticated editor.
 - Public data uses explicit resource fields. The profile never exposes login credentials, email, unshared library records, library favorite flags, playthroughs, diary entries, private reviews, or private/unlisted lists. Public reviews and lists use the public alias while the profile is active. Recent completions require their own opt-in; see [profile shelves](PROFILE_SHELVES.md).
 - Switching off the profile hides it from player discovery and community feeds. Existing publicly shared reviews remain on game pages, and public lists remain accessible through their existing list routes and discovery. Their own visibility controls still apply. The chosen display name remains on those public contributions, while the profile link disappears. Follow relationships are retained if a player hides their profile.
+
+## Player discovery layout
+
+The Players page uses a centered introduction, a compact search toolbar, and a row of profile portraits: five columns on desktop, three on tablet, and two on phones. Each real public player card displays a large circular avatar, username, follower count, public review count, and the manually selected Top 4 games in their saved order. Missing favorites use a short text fallback. Counts never include private reviews or private library totals; cover links use the existing validated game artwork resource.
+
+The circular follow action uses the existing follow endpoints and opens the target profile after saving. Guest actions lead to login. Search, pagination, and profile visibility rules still apply. Card data is eager loaded for the directory page, and no external catalog API is called.
+
+When no other public profiles exist, signed-in players see **No other players yet.** with a profile setup link. Guests with no public profiles see **No players here yet.** A search miss in an existing directory uses **No players found.**, and an out-of-range page links back to the first page. These states are based on available public profiles rather than a hardcoded account count. No sample accounts or profiles are inserted into the development database.
 
 ## Following
 

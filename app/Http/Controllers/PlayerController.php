@@ -8,6 +8,7 @@ use App\Http\Requests\SavePlayerProfileRequest;
 use App\Http\Requests\SavePlayerShowcaseRequest;
 use App\Http\Resources\CommunityReviewResource;
 use App\Http\Resources\CompletedGameResource;
+use App\Http\Resources\DiscoveredPlayerResource;
 use App\Http\Resources\GameListResource;
 use App\Http\Resources\GameResource;
 use App\Http\Resources\PublicPlayerResource;
@@ -28,6 +29,12 @@ class PlayerController extends Controller
     {
         $search = trim($request->string('q')->value());
         $players = $community->players($request->user());
+        if ($request->user() !== null) {
+            $players->whereKeyNot($request->user()->id);
+        }
+        $hasDiscoverablePlayers = (clone $players)->exists();
+        $players->with(['profile.topGames.genres', 'profile.topGames.platforms'])
+            ->withCount(['reviews as public_reviews_count' => fn (Builder $query) => $query->where('is_public', true)]);
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
             $players->whereHas('profile', fn (Builder $profile) => $profile->where(fn (Builder $query) => $query
@@ -36,8 +43,9 @@ class PlayerController extends Controller
         }
 
         return Inertia::render('players/index', [
-            'players' => PublicPlayerResource::collection($players->orderByDesc('followers_count')->orderBy('users.id')->paginate(18)->withQueryString()),
+            'players' => DiscoveredPlayerResource::collection($players->orderByDesc('followers_count')->orderBy('users.id')->paginate(18)->withQueryString()),
             'query' => $search,
+            'hasDiscoverablePlayers' => $hasDiscoverablePlayers,
         ]);
     }
 

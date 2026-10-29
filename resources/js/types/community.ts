@@ -20,7 +20,11 @@ export type CommunityReview = {
     rating: number | null;
     game: CatalogGame;
 };
-export type PlayerPagination = HistoryPagination<PublicPlayer>;
+export type DiscoveredPlayer = PublicPlayer & {
+    public_reviews_count: number;
+    top_games: Pick<CatalogGame, 'id' | 'name' | 'slug' | 'cover_url'>[];
+};
+export type PlayerPagination = HistoryPagination<DiscoveredPlayer>;
 export type CommunityReviewPagination = HistoryPagination<CommunityReview>;
 export type PlayerProfile = {
     username: string | null;
