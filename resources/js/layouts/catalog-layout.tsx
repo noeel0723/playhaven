@@ -58,7 +58,11 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                                 <Button asChild variant="ghost">
                                     <Link href={diary()}>Diary</Link>
                                 </Button>
-                                <Button asChild variant="outline">
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    className="border-shadow bg-rein/40 text-[#f4f1ed] hover:bg-rein hover:text-white"
+                                >
                                     <Link href={dashboard()}>Your haven</Link>
                                 </Button>
                                 <DropdownMenu>

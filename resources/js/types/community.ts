@@ -26,4 +26,11 @@ export type PlayerProfile = {
     display_name: string | null;
     bio: string | null;
     is_public: boolean;
+    share_recent_completed: boolean;
+};
+
+export type CompletedGame = {
+    game: CatalogGame;
+    rating: number | null;
+    completed_at: string | null;
 };

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\LibraryStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\LibraryEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,12 +12,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-/** @property LibraryStatus $status */
+/**
+ * @property LibraryStatus $status
+ * @property CarbonImmutable|null $completed_at
+ */
 #[Fillable(['user_id', 'game_id', 'status', 'is_favorite'])]
 class LibraryEntry extends Model
 {
     /** @use HasFactory<LibraryEntryFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::saving(function (LibraryEntry $entry): void {
+            if ($entry->isDirty('status')) {
+                $entry->completed_at = $entry->status === LibraryStatus::Completed ? ($entry->completed_at ?? now()) : null;
+            }
+        });
+    }
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -24,6 +37,7 @@ class LibraryEntry extends Model
         return [
             'status' => LibraryStatus::class,
             'is_favorite' => 'boolean',
+            'completed_at' => 'immutable_datetime',
         ];
     }
 

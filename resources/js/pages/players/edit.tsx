@@ -1,15 +1,23 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import ProfileShowcaseEditor from '@/components/profile-showcase-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { index as community } from '@/routes/community';
 import { update, show } from '@/routes/players';
 import type { PlayerProfile } from '@/types/community';
+import type { CatalogGame } from '@/types/catalog';
 
 export default function EditPlayer({
     profile,
+    topGames,
+    availableGames,
+    query,
 }: {
     profile: PlayerProfile | null;
+    topGames: CatalogGame[];
+    availableGames: CatalogGame[];
+    query: string;
 }) {
     const form = useForm({
         username: profile?.username ?? '',
@@ -136,7 +144,8 @@ export default function EditPlayer({
                         <p className="mt-3 text-sm leading-7 text-[#bdb6b1]">
                             A public profile appears in player discovery and
                             community feeds with your public reviews and public
-                            lists. Your library, diary, private reviews, and
+                            lists. Top 4 picks and recent completions are
+                            managed below. Your diary, private reviews, and
                             private or unlisted lists stay off this profile.
                         </p>
                         <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
@@ -170,6 +179,19 @@ export default function EditPlayer({
                         )}
                     </div>
                 </form>
+                {profile ? (
+                    <ProfileShowcaseEditor
+                        topGames={topGames}
+                        shareRecentCompleted={profile.share_recent_completed}
+                        availableGames={availableGames}
+                        query={query}
+                    />
+                ) : (
+                    <p className="mt-10 border-t border-white/10 pt-6 text-sm leading-7 text-[#bdb6b1]">
+                        Save your player profile first to choose your Top 4
+                        games and manage recent completions.
+                    </p>
+                )}
             </div>
         </>
     );

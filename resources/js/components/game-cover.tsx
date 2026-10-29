@@ -6,9 +6,11 @@ import type { CatalogGame } from '@/types/catalog';
 export default function GameCover({
     game,
     className,
+    compact = false,
 }: {
     game: Pick<CatalogGame, 'id' | 'name' | 'cover_url'>;
     className?: string;
+    compact?: boolean;
 }) {
     const [failed, setFailed] = useState(false);
     return (
@@ -30,13 +32,26 @@ export default function GameCover({
                     onError={() => setFailed(true)}
                 />
             ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-5 p-5 text-center">
+                <div
+                    className={cn(
+                        'flex h-full flex-col items-center justify-center text-center',
+                        compact ? 'gap-2 p-2' : 'gap-5 p-5',
+                    )}
+                >
                     <Gamepad2
-                        className="size-10 text-mustang"
+                        className={cn(
+                            'text-mustang',
+                            compact ? 'size-6' : 'size-10',
+                        )}
                         strokeWidth={1}
                         aria-hidden="true"
                     />
-                    <span className="line-clamp-3 font-serif text-lg leading-tight text-[#d5cec7]">
+                    <span
+                        className={cn(
+                            'line-clamp-3 font-serif leading-tight text-[#d5cec7]',
+                            compact ? 'text-xs' : 'text-lg',
+                        )}
+                    >
                         {game.name}
                     </span>
                 </div>

@@ -76,6 +76,8 @@ The schema permits list-position gaps or ties. The implemented list actions orde
 
 `user_profiles.is_public` defaults to false and controls player discovery, public profile access, and eligibility for community review feeds. It does not replace each review/list's visibility. Follow actions derive the follower from authentication and keep existing directed-edge constraints. Feeds query current eligible public reviews instead of duplicating private experience records into an activity table. See [community behavior and privacy](COMMUNITY.md).
 
+`profile_game_favorites` connects a profile to at most four distinct local games with unique positions 1–4, independently of library favorite flags. `user_profiles.share_recent_completed` defaults to false and permits the explicit public sharing of four current completed games. `library_entries.completed_at` tracks transitions into Completed without using metadata-edit timestamps or changing playthrough history. Old entries with unknown completion dates remain null. See [profile shelves](PROFILE_SHELVES.md).
+
 ## Ownership, deletion, and indexing
 
 - Deleting a user cascades to their profile, library, dependent playthrough/diary/rating/review records, lists/items, and follows.

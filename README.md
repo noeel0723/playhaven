@@ -72,7 +72,9 @@ Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedi
 
 ## Community dan profil pemain
 
-Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Library, diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Lihat [panduan komunitas](docs/COMMUNITY.md).
+Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Your player profile** untuk memilih username, nama publik, dan bio, kemudian aktifkan **Make my player profile public** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library tetap privat kecuali empat penyelesaian terakhir yang dibagikan melalui opsi di bawah. Lihat [panduan komunitas](docs/COMMUNITY.md).
+
+Profil juga memiliki rak **Top 4 Games** yang bisa dipilih dan diurutkan melalui **Your profile shelves**. Aktifkan **Show my recent completed games** jika ingin membagikan empat game terakhir berstatus Completed beserta rating dan tanggal selesainya. Pilihan ini terpisah dari favorit library dan dimulai dalam keadaan nonaktif. Lihat [panduan rak profil](docs/PROFILE_SHELVES.md).
 
 ## Library pribadi
 
