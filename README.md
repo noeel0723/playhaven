@@ -66,6 +66,12 @@ Tes default memakai SQLite in-memory sesuai starter kit, sehingga tidak mengubah
 
 PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqlite3`. Jika memakai Apache Laragon yang sudah berjalan sebelum perubahan itu, restart Apache. Document root web server harus menunjuk ke `public/`.
 
+## Home
+
+Home menampilkan hero sinematik **Red Dead Redemption 2**, navigasi dan pencarian katalog, enam game dari katalog lokal, serta pengenalan fitur PlayHaven. Tombol utama mengarah ke pendaftaran untuk tamu dan library untuk pengguna yang sudah login. Layout menyesuaikan desktop dan ponsel; menu mobile mendukung keyboard dan Escape. Lihat [panduan home dan sumber artwork](docs/HOME.md).
+
+Header tersebut dipakai secara global dengan posisi yang sama sebelum dan setelah login. Halaman **Games** menyediakan toolbar **Browse by**, cover 2:3 dalam enam kolom desktop, tiga kolom tablet, dan dua kolom ponsel. Gunakan **Apply** untuk menerapkan pencarian dan filter; **Studio & publisher** membuka filter studio tambahan.
+
 ## Developer dan discovery
 
 Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedia. Klik nama developer atau penerbit untuk menjelajahi game lain dalam katalog lokal, atau gunakan filter **Studio & publisher** di `/games`. Game baru yang diimpor dari RAWG langsung menyimpan informasi tersebut. Untuk melengkapi game lama, jalankan `php artisan catalog:enrich --limit=100` setelah memuat `scripts/env.ps1`. Lihat [panduan katalog](docs/CATALOG.md).

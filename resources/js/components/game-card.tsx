@@ -4,15 +4,35 @@ import GameCover from '@/components/game-cover';
 import { show } from '@/routes/games';
 import type { CatalogGame } from '@/types/catalog';
 
-export default function GameCard({ game }: { game: CatalogGame }) {
+export default function GameCard({
+    game,
+    poster = false,
+}: {
+    game: CatalogGame;
+    poster?: boolean;
+}) {
     return (
-        <article>
+        <article className="min-w-0">
             <Link
                 href={show(game.slug)}
                 className="group block rounded-lg outline-offset-4 focus-visible:outline-2 focus-visible:outline-[#e0d9d3]"
             >
-                <GameCover game={game} />
-                <h2 className="mt-4 text-sm leading-5 font-semibold text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4">
+                <GameCover
+                    game={game}
+                    compact={poster}
+                    className={
+                        poster
+                            ? 'aspect-[2/3] rounded-md group-hover:border-[#bdb6b1]'
+                            : undefined
+                    }
+                />
+                <h2
+                    className={
+                        poster
+                            ? 'mt-3 line-clamp-2 min-h-10 text-sm leading-5 font-medium text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4'
+                            : 'mt-4 text-sm leading-5 font-semibold text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4'
+                    }
+                >
                     {game.name}
                 </h2>
             </Link>
@@ -33,7 +53,7 @@ export default function GameCard({ game }: { game: CatalogGame }) {
                     <span>Unrated</span>
                 )}
             </div>
-            {game.genres[0] && (
+            {!poster && game.genres[0] && (
                 <p className="mt-2 truncate text-xs text-[#bdb6b1]">
                     {game.genres.map((genre) => genre.name).join(' · ')}
                 </p>

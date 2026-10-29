@@ -2,6 +2,16 @@
 
 The active catalog provider is **RAWG**. Public pages remain at `/games` and `/games/{slug}`; searching and filtering use the local database.
 
+## Catalog layout
+
+The Games page uses a compact **Browse by** toolbar above a poster shelf. Choose a release year, sort order, genre, and platform, enter a title in **Find a game**, then select **Apply**. **Studio & publisher** expands the existing developer and publisher filters. **Clear filters** returns to the default catalog.
+
+Desktop screens show **six cards per row**, with 2:3 covers. Tablet screens show three columns, and phones show two. Pagination still returns up to 24 games per page; filtering, pagination links, community ratings, and local catalog data are unchanged. Shelf headings describe the actual sort order rather than claiming weekly popularity.
+
+The shared PlayHaven header has the same container, logo position, and height on Home, Games, public pages, signed-in pages, authentication, and settings. Desktop navigation highlights the current section. Signed-in account menus include library, diary, lists, statistics, player profile, settings, and logout; mobile navigation closes after a route change and supports Escape.
+
+The header retains PlayHaven's dark styling. Account settings retain their existing Light, Dark, and System appearance controls for the content area.
+
 ## API key
 
 Create an account and key through [RAWG](https://rawg.io/apidocs), then set the server-side value in the ignored project `.env`:

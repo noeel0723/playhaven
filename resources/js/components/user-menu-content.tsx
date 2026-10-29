@@ -10,6 +10,9 @@ import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
+import { index as library } from '@/routes/library';
+import { index as diary } from '@/routes/diary';
+import { index as lists } from '@/routes/lists';
 import { edit as playerProfile } from '@/routes/players';
 import { index as statistics } from '@/routes/stats';
 import type { User } from '@/types';
@@ -35,6 +38,21 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link href={library()} onClick={cleanup}>
+                        Your library
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href={diary()} onClick={cleanup}>
+                        Diary
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href={lists()} onClick={cleanup}>
+                        Your lists
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href={statistics()} onClick={cleanup}>
                         Your statistics

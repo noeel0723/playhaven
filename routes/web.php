@@ -8,6 +8,7 @@ use App\Http\Controllers\GameConnectionController;
 use App\Http\Controllers\GameExperienceController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameListItemController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlaythroughController;
@@ -16,7 +17,7 @@ use App\Http\Controllers\RawgDiscoveryController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::pattern('playthrough', '[1-9][0-9]{0,17}');
 Route::pattern('diaryEntry', '[1-9][0-9]{0,17}');
