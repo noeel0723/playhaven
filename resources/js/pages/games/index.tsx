@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { index } from '@/routes/games';
+import { search as rawgSearch } from '@/routes/catalog';
 import type {
     CatalogFilters,
     CatalogPagination,
@@ -60,10 +61,15 @@ export default function Games({
                         The worlds you know. The ones waiting to be discovered.
                     </p>
                 </div>
-                <p className="text-xs text-[#bdb6b1]">
-                    {catalogCount.toLocaleString()}{' '}
-                    {catalogCount === 1 ? 'game' : 'games'} to explore
-                </p>
+                <div className="space-y-3 text-right">
+                    <Button asChild variant="outline">
+                        <Link href={rawgSearch()}>Find more games</Link>
+                    </Button>
+                    <p className="text-xs text-[#bdb6b1]">
+                        {catalogCount.toLocaleString()}{' '}
+                        {catalogCount === 1 ? 'game' : 'games'} to explore
+                    </p>
+                </div>
             </div>
             <Form
                 action={index()}

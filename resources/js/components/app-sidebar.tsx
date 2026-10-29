@@ -23,9 +23,11 @@ import { dashboard } from '@/routes';
 import { index as games } from '@/routes/games';
 import { index as library } from '@/routes/library';
 import { index as diary } from '@/routes/diary';
+import { index as lists } from '@/routes/lists';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
+    { title: 'Your lists', href: lists(), icon: BookOpen },
     { title: 'Your diary', href: diary(), icon: BookOpen },
     { title: 'Your library', href: library(), icon: Library },
     { title: 'Discover games', href: games(), icon: Gamepad2 },

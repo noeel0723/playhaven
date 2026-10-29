@@ -7,7 +7,7 @@ export default function GameCover({
     game,
     className,
 }: {
-    game: CatalogGame;
+    game: Pick<CatalogGame, 'id' | 'name' | 'cover_url'>;
     className?: string;
 }) {
     const [failed, setFailed] = useState(false);

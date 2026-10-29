@@ -23,6 +23,25 @@ php artisan catalog:sync --inline
 
 The default imports 20 popular games and fetches their full descriptions. It is an initial selection, not a copy of the entire RAWG catalog. Popularity for selection comes from RAWG's `added` ordering; displayed community ratings remain PlayHaven ratings.
 
+## Search and import from the website
+
+The catalog search on `/games` searches already imported games. Select **Find more games**, or open `/discover/rawg`, to search the wider RAWG catalog by title. Sign in, enter a title such as **Balatro**, **Elden Ring**, or **Stardew Valley**, and select **Search RAWG**. RAWG supports this through its documented `search` parameter: [official documentation](https://rawg.io/apidocs).
+
+Results show **Open game** when the title is already available locally. Otherwise select **Add to catalog** to import that game's metadata, artwork, and description, then open its local detail page. Adding a catalog game does not automatically add it to the player's library. From its detail page, add it to a library; from a custom list, search its title again to add it to that list.
+
+Search is submitted explicitly, returns twelve results per page, and caches responses for one hour. Provider pagination URLs are reduced to a boolean; the browser receives locally generated page links. Results are limited to ID, title, release date, validated artwork, and an existing local slug. The API key stays in the backend.
+
+Routes require authentication and the existing verification middleware. Search has limits of 12 requests/minute per user and 30 across the application; imports have limits of 6 per user and 20 across the application. Existing shared RAWG pacing/cooldown applies. Busy or failed requests show sanitized retry messages. A successful import is idempotent and reuses recently synchronized details.
+
+To import another selection of popular games from the terminal, continue the existing page-based workflow:
+
+```powershell
+. .\scripts\env.ps1
+php artisan catalog:sync --inline --page=2 --per-page=20
+```
+
+This bulk command uses popularity ordering. Use the website's RAWG search for a particular title. API searches and uncached details consume provider requests; the current free-plan allowance is described in [RAWG's API page](https://rawg.io/apidocs).
+
 ## Background synchronization
 
 ```powershell
@@ -63,7 +82,7 @@ The RAWG documentation lists 20,000 monthly requests on its free plan and requir
 | `sort`              | `recent`, `name`, `popular`, `rating`                                               |
 | `page`              | Catalog page number; 24 local games per page                                        |
 
-Most collected counts PlayHaven library entries. Highest rated uses the average of PlayHaven scores divided by two, with unrated games last. No RAWG score is converted into a user's rating or review. Browser search/detail requests do not call the RAWG API.
+Most collected counts PlayHaven library entries. Highest rated uses the average of PlayHaven scores divided by two, with unrated games last. No RAWG score is converted into a user's rating or review. Local catalog search/detail requests use the database; the explicit **Find more games** screen calls RAWG through the backend.
 
 The footer links to RAWG on catalog and detail pages. Missing descriptions, missing artwork, empty catalogs, and no-result filters have visible fallbacks. Large-scale text-search optimization remains future work.
 

@@ -23,13 +23,13 @@ Library status, favorites, rating, and review remain independent. Starting, comp
 
 ## Private routes and ownership
 
-| Route | Purpose |
-| --- | --- |
-| `GET/POST /library/{game:slug}/playthroughs` | List/create runs for an owned library entry |
-| `GET/PUT/DELETE /playthroughs/{playthrough}` | Read/edit/remove an owned run |
-| `POST /playthroughs/{playthrough}/sessions` | Log a session |
-| `PUT/DELETE /playthroughs/{playthrough}/sessions/{diaryEntry}` | Edit/remove a session within its owned run |
-| `GET /diary` | Private timeline with `q`, `from`, `to`, and `page` filters |
+| Route                                                          | Purpose                                                     |
+| -------------------------------------------------------------- | ----------------------------------------------------------- |
+| `GET/POST /library/{game:slug}/playthroughs`                   | List/create runs for an owned library entry                 |
+| `GET/PUT/DELETE /playthroughs/{playthrough}`                   | Read/edit/remove an owned run                               |
+| `POST /playthroughs/{playthrough}/sessions`                    | Log a session                                               |
+| `PUT/DELETE /playthroughs/{playthrough}/sessions/{diaryEntry}` | Edit/remove a session within its owned run                  |
+| `GET /diary`                                                   | Private timeline with `q`, `from`, `to`, and `page` filters |
 
 Authentication and the existing verification middleware protect all routes; the configured local email bypass remains supported. Reads are scoped through the authenticated user's library. Writes lock the library entry and then its playthrough in a transaction, maintaining a consistent lock order with rating/review actions. Submitted ownership and parent IDs are excluded by validation, and session IDs must belong to the exact run in the URL.
 

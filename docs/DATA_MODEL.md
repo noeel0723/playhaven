@@ -68,7 +68,7 @@ $rating->stars;               // 4.5
 | `game_list_items` | A game appears at most once per list; positive position and optional notes. Items sort by position then ID for deterministic ordering.          |
 | `follows`         | Directed follower/followed pairs; duplicate pairs and self-following are rejected. Both relationships cascade when the related user is deleted. |
 
-List positions can have gaps or ties; they do not need to be consecutive. Reordering and visibility enforcement belong to the later feature/action layer. An unlisted list is intended for direct-link access; private lists are intended for their owners. These flags do not themselves implement access control, and no feature endpoints have been exposed yet.
+The schema permits list-position gaps or ties. The implemented list actions order by position/ID and normalize positions when reordering or removing items. Private links are restricted to their owners; unlisted links allow direct access and stay out of discovery; public lists appear in discovery. Current controllers enforce these rules with scoped ownership checks. See [custom lists](LISTS.md).
 
 ## Ownership, deletion, and indexing
 
@@ -93,4 +93,4 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
-The catalog, library, ratings, reviews, diary, and repeat playthroughs are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), and [playing history](PLAYING_HISTORY.md). Next, implement community lists, profiles, follows, and activity.
+The catalog, library, ratings, reviews, diary, repeat playthroughs, and custom lists are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), [playing history](PLAYING_HISTORY.md), and [custom lists](LISTS.md). Next, implement player profiles, follows, and activity.

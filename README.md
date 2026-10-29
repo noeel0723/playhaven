@@ -78,6 +78,12 @@ Setelah menambahkan game ke library, gunakan **Your rating** pada detail game un
 
 Dari detail game yang sudah ada di library, pilih **Playthroughs & diary** untuk membuat perjalanan pertama atau replay. Catat sesi beserta tanggal, durasi, dan catatan pribadi; buka **Diary** untuk mencari riwayat dari semua game. Status library, rating, dan review tetap dipertahankan saat mengelola playthrough. Lihat [panduan riwayat bermain](docs/PLAYING_HISTORY.md).
 
+## Custom lists dan pencarian game lain
+
+Buka **Lists** untuk membuat koleksi privat, unlisted, atau publik. Tambahkan game lewat pencarian dalam list, lalu atur catatan dan posisinya. List publik dapat ditemukan pada **Community lists**. Lihat [panduan list](docs/LISTS.md).
+
+Untuk mencari judul yang belum ada di katalog, buka **Games → Find more games**, masukkan nama game di **Search RAWG**, lalu pilih **Add to catalog**. Game yang sudah tersedia menampilkan **Open game**. Pencarian ini memakai API key di backend; detail ada di [panduan katalog](docs/CATALOG.md#search-and-import-from-the-website).
+
 ## Verifikasi email saat development
 
 Untuk pengembangan lokal, gunakan `APP_ENV=local` dan `AUTH_REQUIRE_EMAIL_VERIFICATION=false` di `.env`. Akun baru maupun akun lama bisa membuka dashboard dan pengaturan tanpa verifikasi, dan email verifikasi tidak dikirim. Status `email_verified_at` tetap mengikuti verifikasi asli.

@@ -45,6 +45,27 @@ class RawgClient
         return $data;
     }
 
+    /** @return array{results: list<array<string, mixed>>, has_next: bool} */
+    public function search(string $query, int $page = 1): array
+    {
+        $query = trim($query);
+        if (mb_strlen($query) < 2 || mb_strlen($query) > 100 || $page < 1 || $page > 1000) {
+            throw new InvalidArgumentException('Enter 2–100 characters and a valid RAWG page.');
+        }
+        $data = $this->request('games', ['search' => $query, 'page' => $page, 'page_size' => 12], 3600);
+        $results = $data['results'] ?? null;
+        if (! is_array($results) || ! array_is_list($results) || count($results) > 12) {
+            throw new RuntimeException('RAWG returned an invalid search result.');
+        }
+        foreach ($results as $result) {
+            if (! is_array($result)) {
+                throw new RuntimeException('RAWG returned an invalid search record.');
+            }
+        }
+
+        return ['results' => $results, 'has_next' => ! empty($data['next'])];
+    }
+
     public function forgetGame(int $id): void
     {
         $key = config('services.rawg.api_key');
