@@ -6,9 +6,11 @@ use App\Http\Requests\CatalogRequest;
 use App\Http\Requests\GameDetailsRequest;
 use App\Http\Resources\GameResource;
 use App\Http\Resources\PublicReviewResource;
+use App\Models\Developer;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\Platform;
+use App\Models\Publisher;
 use App\Models\Review;
 use App\Services\GameConnections;
 use App\Services\Rawg\ConnectionSynchronizer;
@@ -23,6 +25,8 @@ class GameCatalogController extends Controller
     {
         $search = trim($request->string('q')->value());
         $genre = $request->string('genre')->value();
+        $developer = $request->string('developer')->value();
+        $publisher = $request->string('publisher')->value();
         $platform = $request->string('platform')->value();
         $year = $request->filled('year') ? $request->integer('year') : null;
         $sort = $request->filled('sort') ? $request->string('sort')->value() : 'recent';
@@ -39,6 +43,12 @@ class GameCatalogController extends Controller
         if ($platform !== '') {
             $query->whereHas('platforms', fn (Builder $query) => $query->where('slug', $platform));
         }
+        if ($developer !== '') {
+            $query->whereHas('developers', fn (Builder $query) => $query->where('slug', $developer));
+        }
+        if ($publisher !== '') {
+            $query->whereHas('publishers', fn (Builder $query) => $query->where('slug', $publisher));
+        }
         if ($year !== null) {
             $query->whereBetween('released_on', ["{$year}-01-01", "{$year}-12-31"]);
         }
@@ -52,7 +62,9 @@ class GameCatalogController extends Controller
 
         return Inertia::render('games/index', [
             'games' => GameResource::collection($query->orderBy('games.id')->paginate(24)->withQueryString()),
-            'filters' => ['q' => $search, 'genre' => $genre, 'platform' => $platform, 'year' => $year, 'sort' => $sort],
+            'filters' => ['q' => $search, 'genre' => $genre, 'platform' => $platform, 'developer' => $developer, 'publisher' => $publisher, 'year' => $year, 'sort' => $sort],
+            'developers' => Developer::whereHas('games')->orderBy('name')->get(['id', 'name', 'slug']),
+            'publishers' => Publisher::whereHas('games')->orderBy('name')->get(['id', 'name', 'slug']),
             'genres' => Genre::whereHas('games')->orderBy('name')->get(['id', 'name', 'slug']),
             'platforms' => Platform::whereHas('games')->orderBy('name')->get(['id', 'name', 'slug']),
             'catalogCount' => Game::count(),
@@ -61,7 +73,7 @@ class GameCatalogController extends Controller
 
     public function show(GameDetailsRequest $request, Game $game, GameConnections $connections, ConnectionSynchronizer $synchronizer): Response
     {
-        $game->load(['genres', 'platforms'])->loadCount(['ratings', 'libraryEntries as players_count'])->loadAvg('ratings', 'score');
+        $game->load(['genres', 'platforms', 'developers', 'publishers'])->loadCount(['ratings', 'libraryEntries as players_count'])->loadAvg('ratings', 'score');
 
         $entry = $request->user()?->libraryEntries()->with(['rating', 'review'])->where('game_id', $game->id)->first();
         $reviews = Review::query()->where('is_public', true)

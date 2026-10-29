@@ -23,6 +23,8 @@ type Props = {
     filters: CatalogFilters;
     genres: CatalogTerm[];
     platforms: CatalogTerm[];
+    developers: CatalogTerm[];
+    publishers: CatalogTerm[];
     catalogCount: number;
 };
 const selectClass =
@@ -33,10 +35,17 @@ export default function Games({
     filters,
     genres,
     platforms,
+    developers,
+    publishers,
     catalogCount,
 }: Props) {
     const filtered = Boolean(
-        filters.q || filters.genre || filters.platform || filters.year,
+        filters.q ||
+        filters.genre ||
+        filters.platform ||
+        filters.year ||
+        filters.developer ||
+        filters.publisher,
     );
     return (
         <>
@@ -179,6 +188,56 @@ export default function Games({
                                 {processing ? 'Searching…' : 'Apply'}
                             </Button>
                         </div>
+                        <details
+                            open={Boolean(
+                                filters.developer || filters.publisher,
+                            )}
+                            className="mt-5 border-t border-white/10 pt-4"
+                        >
+                            <summary className="w-fit cursor-pointer rounded-sm text-sm text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-4">
+                                Studio & publisher
+                            </summary>
+                            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="developer">Developer</Label>
+                                    <select
+                                        id="developer"
+                                        name="developer"
+                                        defaultValue={filters.developer}
+                                        className={selectClass}
+                                    >
+                                        <option value="">All developers</option>
+                                        {developers.map((developer) => (
+                                            <option
+                                                key={developer.id}
+                                                value={developer.slug}
+                                            >
+                                                {developer.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="publisher">Publisher</Label>
+                                    <select
+                                        id="publisher"
+                                        name="publisher"
+                                        defaultValue={filters.publisher}
+                                        className={selectClass}
+                                    >
+                                        <option value="">All publishers</option>
+                                        {publishers.map((publisher) => (
+                                            <option
+                                                key={publisher.id}
+                                                value={publisher.slug}
+                                            >
+                                                {publisher.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </details>
                         {Object.values(errors).length > 0 && (
                             <p
                                 role="alert"

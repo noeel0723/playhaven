@@ -35,6 +35,8 @@ erDiagram
 
 Local foreign keys always reference local IDs, never provider IDs. This keeps player history independent of the external provider. Metadata can be resynchronized later without recreating a game row. RAWG metadata is imported through the explicit catalog command; no demo reviews are seeded.
 
+`developers` and `publishers` store a unique RAWG company ID, stable unique local slug, and name. `developer_game` and `game_publisher` connect companies to games through composite primary keys and cascading foreign keys. Games may have multiple developers and publishers. `games.website_url` holds the validated official website; `credits_synced_at` distinguishes older entries awaiting enrichment from checked entries with no available credits. These additive tables and columns do not modify player history.
+
 `game_connections` stores provider relationship snapshots and curated bidirectional edges with a RAWG target ID, type, source, title/artwork/date snapshot, optional note, and source URL. `games.connections_synced_at`, `connections_checked_at`, and `connections_truncated` track refresh state. Selecting an external target imports its full local catalog record. See [game connections](GAME_CONNECTIONS.md).
 
 ## Player experience

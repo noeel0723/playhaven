@@ -13,12 +13,17 @@ export type CatalogGame = {
     players_count: number;
     summary?: string | null;
     storyline?: string | null;
+    developers?: CatalogTerm[];
+    publishers?: CatalogTerm[];
+    official_website?: string | null;
 };
 
 export type CatalogFilters = {
     q: string;
     genre: string;
     platform: string;
+    developer: string;
+    publisher: string;
     year: number | null;
     sort: string;
 };

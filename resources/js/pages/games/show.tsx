@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Star, Users } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Star, Users } from 'lucide-react';
 import GameCover from '@/components/game-cover';
 import CommunityReviews from '@/components/community-reviews';
 import GameConnections from '@/components/game-connections';
@@ -75,6 +75,30 @@ export default function GameDetails({
                     <h1 className="max-w-3xl text-4xl leading-tight font-medium tracking-tight sm:text-5xl lg:text-6xl">
                         {game.name}
                     </h1>
+                    <p className="mt-4 text-sm leading-7 text-[#bdb6b1]">
+                        {game.developers?.length ? (
+                            <>
+                                Developed by{' '}
+                                {game.developers.map((developer, position) => (
+                                    <span key={developer.id}>
+                                        {position > 0 && ', '}
+                                        <Link
+                                            href={index({
+                                                query: {
+                                                    developer: developer.slug,
+                                                },
+                                            })}
+                                            className="wrap-break-word text-[#e0d9d3] underline decoration-shadow underline-offset-4 hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                                        >
+                                            {developer.name}
+                                        </Link>
+                                    </span>
+                                ))}
+                            </>
+                        ) : (
+                            'Developer not listed yet'
+                        )}
+                    </p>
                     <div className="mt-6 flex flex-wrap gap-2">
                         {game.genres.map((genre) => (
                             <Link
@@ -177,6 +201,55 @@ export default function GameDetails({
                         </section>
                     )}
                     <dl className="mt-10 grid gap-8 border-t border-white/10 pt-7 sm:grid-cols-2">
+                        <div>
+                            <dt className="mb-3 text-xs text-[#bdb6b1]">
+                                Publisher
+                            </dt>
+                            <dd className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                                {game.publishers?.length
+                                    ? game.publishers.map((publisher) => (
+                                          <Link
+                                              key={publisher.id}
+                                              href={index({
+                                                  query: {
+                                                      publisher: publisher.slug,
+                                                  },
+                                              })}
+                                              className="wrap-break-word underline decoration-shadow underline-offset-4 hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                                          >
+                                              {publisher.name}
+                                          </Link>
+                                      ))
+                                    : 'Not specified'}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt className="mb-3 text-xs text-[#bdb6b1]">
+                                Official website
+                            </dt>
+                            <dd className="text-sm">
+                                {game.official_website ? (
+                                    <a
+                                        href={game.official_website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 rounded-sm underline decoration-shadow underline-offset-4 hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                                    >
+                                        Visit website
+                                        <ExternalLink
+                                            className="size-3.5"
+                                            aria-hidden="true"
+                                        />
+                                        <span className="sr-only">
+                                            {' '}
+                                            (opens in a new tab)
+                                        </span>
+                                    </a>
+                                ) : (
+                                    'Not available'
+                                )}
+                            </dd>
+                        </div>
                         <div>
                             <dt className="mb-3 text-xs text-[#bdb6b1]">
                                 First release

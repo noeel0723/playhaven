@@ -20,8 +20,9 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable|null $rawg_details_synced_at
  * @property CarbonImmutable|null $connections_synced_at
  * @property CarbonImmutable|null $connections_checked_at
+ * @property CarbonImmutable|null $credits_synced_at
  */
-#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'synced_at'])]
+#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'website_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'credits_synced_at', 'synced_at'])]
 class Game extends Model
 {
     /** @use HasFactory<GameFactory> */
@@ -38,6 +39,7 @@ class Game extends Model
             'connections_synced_at' => 'immutable_datetime',
             'connections_checked_at' => 'immutable_datetime',
             'connections_truncated' => 'boolean',
+            'credits_synced_at' => 'immutable_datetime',
             'released_on' => 'immutable_date',
             'igdb_updated_at' => 'immutable_datetime',
             'synced_at' => 'immutable_datetime',
@@ -78,5 +80,17 @@ class Game extends Model
     public function connections(): HasMany
     {
         return $this->hasMany(GameConnection::class);
+    }
+
+    /** @return BelongsToMany<Developer, $this> */
+    public function developers(): BelongsToMany
+    {
+        return $this->belongsToMany(Developer::class);
+    }
+
+    /** @return BelongsToMany<Publisher, $this> */
+    public function publishers(): BelongsToMany
+    {
+        return $this->belongsToMany(Publisher::class);
     }
 }

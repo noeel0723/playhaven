@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Game;
 use App\Services\Rawg\CatalogImage;
+use App\Services\Rawg\OfficialWebsite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,6 +30,9 @@ class GameResource extends JsonResource
             'players_count' => (int) $this->getAttribute('players_count'),
             'summary' => $this->when($request->routeIs('games.show'), $this->summary),
             'storyline' => $this->when($request->routeIs('games.show'), $this->storyline),
+            'developers' => $this->when($request->routeIs('games.show'), fn () => $this->developers->map->only(['id', 'name', 'slug'])->values()),
+            'publishers' => $this->when($request->routeIs('games.show'), fn () => $this->publishers->map->only(['id', 'name', 'slug'])->values()),
+            'official_website' => $this->when($request->routeIs('games.show'), fn () => OfficialWebsite::url($this->getAttribute('website_url'))),
         ];
     }
 }

@@ -18,6 +18,8 @@ class CatalogRequest extends FormRequest
         return [
             'q' => ['nullable', 'string', 'max:100'],
             'genre' => ['nullable', 'string', 'max:255'],
+            'developer' => ['nullable', 'string', 'max:255'],
+            'publisher' => ['nullable', 'string', 'max:255'],
             'platform' => ['nullable', 'string', 'max:255'],
             'year' => ['nullable', 'integer', 'between:1970,2100'],
             'sort' => ['nullable', Rule::in(['recent', 'name', 'popular', 'rating'])],

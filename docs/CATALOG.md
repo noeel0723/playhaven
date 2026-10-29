@@ -55,6 +55,19 @@ Inline mode performs both stages immediately and waits briefly for request pacin
 
 ## Data mapping and history
 
+Game details show all credited developers, publishers, and an official website when RAWG provides them. Developer and publisher names link to filtered **local** catalog results; these results do not search RAWG. The **Studio & publisher** catalog filters can be combined with title, genre, platform, and release year.
+
+Credits are stored as local many-to-many relationships keyed by RAWG company identity. Detail imports update them automatically. List-only imports and absent detail keys preserve existing credits; explicit empty credit arrays remove those associations. Website links accept public HTTP(S) URLs without embedded credentials and open in a separate tab. Unknown developers and publishers have visible fallbacks.
+
+To fill credits for games imported before this feature:
+
+```powershell
+. .\scripts\env.ps1
+php artisan catalog:enrich --limit=100
+```
+
+The command processes at most 1–500 existing RAWG games whose `credits_synced_at` is missing. It reuses cached detail responses, respects request pacing, and safely resumes remaining games after a failure. It preserves local game IDs, slugs, and player data. A checked game with no upstream company data is still marked as checked. Future ordinary detail refreshes can update changed credits.
+
 - `games`, `genres`, and `platforms` have nullable unique `rawg_id` columns. IGDB columns remain for existing records; RAWG IDs are never stored in `igdb_id`.
 - Existing local game IDs, URLs, and player records are preserved. A RAWG record updates by its RAWG ID; unrelated local or IGDB records are not merged by title or numeric ID. Cross-provider deduplication requires explicit identity mapping if legacy catalog data is added later.
 - Slug collisions get a `-rawg-ID` suffix. Future upstream name or slug changes do not change an existing local URL.
@@ -74,13 +87,14 @@ The RAWG documentation lists 20,000 monthly requests on its free plan and requir
 
 ## Public discovery
 
-| Parameter           | Behavior                                                                            |
-| ------------------- | ----------------------------------------------------------------------------------- |
-| `q`                 | Case-insensitive title containment, up to 100 characters; SQL wildcards are literal |
-| `genre`, `platform` | Local taxonomy slug filters, combined with other filters                            |
-| `year`              | Release year, 1970–2100                                                             |
-| `sort`              | `recent`, `name`, `popular`, `rating`                                               |
-| `page`              | Catalog page number; 24 local games per page                                        |
+| Parameter                | Behavior                                                                            |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `q`                      | Case-insensitive title containment, up to 100 characters; SQL wildcards are literal |
+| `genre`, `platform`      | Local taxonomy slug filters, combined with other filters                            |
+| `developer`, `publisher` | Local company slug filters; linked from game details                                |
+| `year`                   | Release year, 1970–2100                                                             |
+| `sort`                   | `recent`, `name`, `popular`, `rating`                                               |
+| `page`                   | Catalog page number; 24 local games per page                                        |
 
 Most collected counts PlayHaven library entries. Highest rated uses the average of PlayHaven scores divided by two, with unrated games last. No RAWG score is converted into a user's rating or review. Local catalog search/detail requests use the database; the explicit **Find more games** screen calls RAWG through the backend.
 

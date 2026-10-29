@@ -2,9 +2,11 @@
 
 namespace App\Services\Rawg;
 
+use App\Models\Developer;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\Platform;
+use App\Models\Publisher;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -28,7 +30,7 @@ class CatalogSynchronizer
     public function syncGame(int $id): void
     {
         $game = Game::where('rawg_id', $id)->first();
-        if ($game?->rawg_details_synced_at?->greaterThan(now()->subDay())) {
+        if ($game?->rawg_details_synced_at?->greaterThan(now()->subDay()) && $game->credits_synced_at !== null) {
             return;
         }
         $this->import([$this->client->game($id)], true);
@@ -47,6 +49,15 @@ class CatalogSynchronizer
             'games.*.background_image' => ['nullable', 'string'],
             'games.*.description_raw' => ['nullable', 'string'],
             'games.*.description' => ['nullable', 'string'],
+            'games.*.website' => ['nullable', 'string'],
+            'games.*.developers' => ['nullable', 'array', 'list', 'max:100'],
+            'games.*.developers.*.id' => ['required', 'integer', 'min:1'],
+            'games.*.developers.*.name' => ['required', 'string', 'max:255'],
+            'games.*.developers.*.slug' => ['required', 'string', 'max:200'],
+            'games.*.publishers' => ['nullable', 'array', 'list', 'max:100'],
+            'games.*.publishers.*.id' => ['required', 'integer', 'min:1'],
+            'games.*.publishers.*.name' => ['required', 'string', 'max:255'],
+            'games.*.publishers.*.slug' => ['required', 'string', 'max:200'],
             'games.*.genres' => ['nullable', 'array', 'list'],
             'games.*.genres.*.id' => ['required', 'integer', 'min:1'],
             'games.*.genres.*.name' => ['required', 'string', 'max:255'],
@@ -82,6 +93,10 @@ class CatalogSynchronizer
                         $description = $data['description_raw'] ?? $data['description'] ?? null;
                         $game->summary = is_string($description) ? trim(html_entity_decode(strip_tags($description), ENT_QUOTES | ENT_HTML5, 'UTF-8')) : null;
                         $game->rawg_details_synced_at = now();
+                        $game->credits_synced_at = now();
+                        if (array_key_exists('website', $data)) {
+                            $game->website_url = OfficialWebsite::url($data['website']);
+                        }
                     }
                     $game->save();
                     $game->genres()->sync($this->terms(Genre::class, $data['genres'] ?? []));
@@ -90,6 +105,12 @@ class CatalogSynchronizer
                         $platforms[] = ['id' => (int) $entry['platform']['id'], 'name' => (string) $entry['platform']['name'], 'slug' => (string) $entry['platform']['slug']];
                     }
                     $game->platforms()->sync($this->terms(Platform::class, $platforms));
+                    if ($withDetails && array_key_exists('developers', $data)) {
+                        $game->developers()->sync($this->terms(Developer::class, $data['developers'] ?? []));
+                    }
+                    if ($withDetails && array_key_exists('publishers', $data)) {
+                        $game->publishers()->sync($this->terms(Publisher::class, $data['publishers'] ?? []));
+                    }
                     $count++;
                 }
 
@@ -99,7 +120,7 @@ class CatalogSynchronizer
     }
 
     /**
-     * @param  class-string<Genre|Platform>  $model
+     * @param  class-string<Genre|Platform|Developer|Publisher>  $model
      * @param  list<array{id: int, name: string, slug: string}>  $terms
      * @return list<int>
      */

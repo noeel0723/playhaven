@@ -8,11 +8,11 @@ Searching remains a read operation. Related entries are stored as lightweight sn
 
 The [official RAWG OpenAPI schema](https://api.rawg.io/docs/?format=openapi) documents:
 
-| RAWG endpoint | PlayHaven section |
-| --- | --- |
-| `/games/{id}/game-series` | More in this series |
-| `/games/{id}/additions` | Expansions, editions & extras |
-| `/games/{id}/parent-games` | Parent games |
+| RAWG endpoint              | PlayHaven section             |
+| -------------------------- | ----------------------------- |
+| `/games/{id}/game-series`  | More in this series           |
+| `/games/{id}/additions`    | Expansions, editions & extras |
+| `/games/{id}/parent-games` | Parent games                  |
 
 Additions include DLC, editions, companion apps, and similar entries. Series membership alone does not establish shared continuity or narrative chronology. Provider entries sort by release date for browsing.
 
