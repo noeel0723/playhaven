@@ -93,4 +93,4 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
-The catalog importer, public discovery, and personal library are implemented; see [catalog workflow](CATALOG.md) and [personal library](LIBRARY.md). Next, introduce scoped actions for ratings, reviews, diary entries, and repeat playthroughs.
+The catalog importer, public discovery, personal library, ratings, and reviews are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), and [ratings/reviews](RATINGS_REVIEWS.md). Next, introduce scoped actions for diary entries and repeat playthroughs.

@@ -1,5 +1,6 @@
 import { Heart } from 'lucide-react';
 import GameCard from '@/components/game-card';
+import StarRating from '@/components/star-rating';
 import { libraryStatuses } from '@/types/library';
 import type { LibraryEntry } from '@/types/library';
 
@@ -23,6 +24,14 @@ export default function LibraryGameCard({ entry }: { entry: LibraryEntry }) {
                     />
                 )}
             </div>
+            {entry.your_rating !== null && (
+                <div className="mt-3 space-y-1.5">
+                    <p className="text-xs text-[#bdb6b1]">
+                        Your rating · {entry.your_rating.toFixed(1)}
+                    </p>
+                    <StarRating value={entry.your_rating} />
+                </div>
+            )}
         </div>
     );
 }

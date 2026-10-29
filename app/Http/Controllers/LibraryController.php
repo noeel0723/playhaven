@@ -24,7 +24,7 @@ class LibraryController extends Controller
         $status = $request->string('status')->value();
         $favorite = $request->boolean('favorite');
         $sort = $request->input('sort') ?: 'updated';
-        $query = $user->libraryEntries()->with(['game' => fn (BelongsTo $query) => $query
+        $query = $user->libraryEntries()->with(['rating', 'game' => fn (BelongsTo $query) => $query
             ->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')]);
 
         if ($search !== '') {
@@ -53,7 +53,7 @@ class LibraryController extends Controller
     public function dashboard(Request $request): Response
     {
         $user = $request->user();
-        $entries = $user->libraryEntries()->with(['game' => fn (BelongsTo $query) => $query
+        $entries = $user->libraryEntries()->with(['rating', 'game' => fn (BelongsTo $query) => $query
             ->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')])
             ->orderByDesc('updated_at')->orderByDesc('id')->limit(6)->get();
 

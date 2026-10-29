@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CatalogRequest;
+use App\Http\Requests\GameDetailsRequest;
 use App\Http\Resources\GameResource;
+use App\Http\Resources\PublicReviewResource;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\Platform;
+use App\Models\Review;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -54,15 +56,29 @@ class GameCatalogController extends Controller
         ]);
     }
 
-    public function show(Request $request, Game $game): Response
+    public function show(GameDetailsRequest $request, Game $game): Response
     {
         $game->load(['genres', 'platforms'])->loadCount(['ratings', 'libraryEntries as players_count'])->loadAvg('ratings', 'score');
 
-        $entry = $request->user()?->libraryEntries()->where('game_id', $game->id)->first();
+        $entry = $request->user()?->libraryEntries()->with(['rating', 'review'])->where('game_id', $game->id)->first();
+        $reviews = Review::query()->where('is_public', true)
+            ->whereHas('libraryEntry', fn (Builder $query) => $query->where('game_id', $game->id))
+            ->with(['libraryEntry.user:id,name', 'libraryEntry.rating'])
+            ->orderByDesc('updated_at')->orderByDesc('id')
+            ->paginate(10, ['*'], 'reviews_page')->withQueryString();
 
         return Inertia::render('games/show', [
             'game' => (new GameResource($game))->resolve($request),
             'libraryEntry' => $entry ? ['status' => $entry->status->value, 'is_favorite' => $entry->is_favorite] : null,
+            'personalRating' => $entry?->rating?->stars,
+            'personalReview' => $entry?->review ? [
+                'id' => $entry->review->id,
+                'body' => $entry->review->body,
+                'contains_spoilers' => $entry->review->contains_spoilers,
+                'is_public' => $entry->review->is_public,
+                'updated_at' => $entry->review->updated_at?->toISOString(),
+            ] : null,
+            'reviews' => PublicReviewResource::collection($reviews),
         ]);
     }
 }

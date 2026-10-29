@@ -1,17 +1,27 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Star, Users } from 'lucide-react';
 import GameCover from '@/components/game-cover';
+import CommunityReviews from '@/components/community-reviews';
 import LibraryEditor from '@/components/library-editor';
+import RatingEditor from '@/components/rating-editor';
+import ReviewEditor from '@/components/review-editor';
 import { index } from '@/routes/games';
 import type { CatalogGame } from '@/types/catalog';
 import type { LibraryState } from '@/types/library';
+import type { PersonalReview, ReviewPagination } from '@/types/reviews';
 
 export default function GameDetails({
     game,
     libraryEntry,
+    personalRating,
+    personalReview,
+    reviews,
 }: {
     game: CatalogGame;
     libraryEntry: LibraryState | null;
+    personalRating: number | null;
+    personalReview: PersonalReview | null;
+    reviews: ReviewPagination;
 }) {
     const release = game.released_on
         ? new Intl.DateTimeFormat('en', {
@@ -50,7 +60,7 @@ export default function GameDetails({
                         {game.released_on?.slice(0, 4) ?? 'Release TBA'}
                     </p>
                 </aside>
-                <div>
+                <div className="min-w-0">
                     <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
                         A world to explore
                     </p>
@@ -114,6 +124,15 @@ export default function GameDetails({
                         gameName={game.name}
                         entry={libraryEntry}
                     />
+                    {libraryEntry && (
+                        <>
+                            <RatingEditor
+                                key={`${game.id}:rating:${personalRating}`}
+                                gameSlug={game.slug}
+                                rating={personalRating}
+                            />
+                        </>
+                    )}
                     <section aria-labelledby="about-game">
                         <h2
                             id="about-game"
@@ -174,6 +193,14 @@ export default function GameDetails({
                             </dd>
                         </div>
                     </dl>
+                    {libraryEntry && (
+                        <ReviewEditor
+                            key={`${game.id}:review:${personalReview?.id}:${personalReview?.updated_at}`}
+                            gameSlug={game.slug}
+                            review={personalReview}
+                        />
+                    )}
+                    <CommunityReviews reviews={reviews} />
                 </div>
             </article>
         </>

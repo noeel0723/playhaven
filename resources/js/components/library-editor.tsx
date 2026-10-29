@@ -70,7 +70,7 @@ export default function LibraryEditor({
                     <p className="mb-5 text-sm text-[#bdb6b1]">
                         {entry
                             ? 'Keep your shelf up to date, one adventure at a time.'
-                            : 'Make room for your next adventure.'}
+                            : 'Add this game to your library to rate it and write your story.'}
                     </p>
                     <form
                         onSubmit={(event) => {

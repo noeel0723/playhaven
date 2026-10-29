@@ -70,6 +70,10 @@ PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqli
 
 Buka detail game dari `/games`, pilih status bermain dan favorit di **Your experience**, lalu simpan ke library. Halaman `/library` menyediakan pencarian, filter status/favorit, dan pagination. Dashboard sekarang menampilkan ringkasan serta game terbaru dari koleksi akun yang login. Detail kepemilikan, penghapusan, dan alur fitur ada di [panduan library](docs/LIBRARY.md).
 
+## Rating dan review
+
+Setelah menambahkan game ke library, gunakan **Your rating** pada detail game untuk memberi 0,5–5 bintang. Tulis review di **Your story**, tandai spoiler bila diperlukan, dan pilih apakah ingin membagikannya ke publik. Review baru dimulai sebagai privat; review publik tampil pada **From the community**. Rating pribadi juga tampil pada kartu library. Lihat [panduan rating dan review](docs/RATINGS_REVIEWS.md).
+
 ## Verifikasi email saat development
 
 Untuk pengembangan lokal, gunakan `APP_ENV=local` dan `AUTH_REQUIRE_EMAIL_VERIFICATION=false` di `.env`. Akun baru maupun akun lama bisa membuka dashboard dan pengaturan tanpa verifikasi, dan email verifikasi tidak dikirim. Status `email_verified_at` tetap mengikuti verifikasi asli.

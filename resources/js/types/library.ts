@@ -13,6 +13,7 @@ export type LibraryState = { status: LibraryStatus; is_favorite: boolean };
 export type LibraryEntry = LibraryState & {
     id: number;
     updated_at: string;
+    your_rating: number | null;
     game: CatalogGame;
 };
 export type LibraryCounts = Record<
