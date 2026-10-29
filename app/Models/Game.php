@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable|null $synced_at
  * @property CarbonImmutable|null $rawg_updated_at
  * @property CarbonImmutable|null $rawg_details_synced_at
+ * @property CarbonImmutable|null $connections_synced_at
+ * @property CarbonImmutable|null $connections_checked_at
  */
 #[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'synced_at'])]
 class Game extends Model
@@ -33,6 +35,9 @@ class Game extends Model
             'rawg_id' => 'integer',
             'rawg_updated_at' => 'immutable_datetime',
             'rawg_details_synced_at' => 'immutable_datetime',
+            'connections_synced_at' => 'immutable_datetime',
+            'connections_checked_at' => 'immutable_datetime',
+            'connections_truncated' => 'boolean',
             'released_on' => 'immutable_date',
             'igdb_updated_at' => 'immutable_datetime',
             'synced_at' => 'immutable_datetime',
@@ -67,5 +72,11 @@ class Game extends Model
     public function reviews(): HasManyThrough
     {
         return $this->hasManyThrough(Review::class, LibraryEntry::class);
+    }
+
+    /** @return HasMany<GameConnection, $this> */
+    public function connections(): HasMany
+    {
+        return $this->hasMany(GameConnection::class);
     }
 }

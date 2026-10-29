@@ -27,7 +27,7 @@ The default imports 20 popular games and fetches their full descriptions. It is 
 
 The catalog search on `/games` searches already imported games. Select **Find more games**, or open `/discover/rawg`, to search the wider RAWG catalog by title. Sign in, enter a title such as **Balatro**, **Elden Ring**, or **Stardew Valley**, and select **Search RAWG**. RAWG supports this through its documented `search` parameter: [official documentation](https://rawg.io/apidocs).
 
-Results show **Open game** when the title is already available locally. Otherwise select **Add to catalog** to import that game's metadata, artwork, and description, then open its local detail page. Adding a catalog game does not automatically add it to the player's library. From its detail page, add it to a library; from a custom list, search its title again to add it to that list.
+Select a cover, title, or **Open game**. PlayHaven automatically saves a missing game's metadata, artwork, and description before opening its local detail page. Existing entries open directly, and repeated selection reuses the same local record. From its detail page, add it to a library; from a custom list, search its title again to add it to that list. Related entries are described in [Connected worlds](GAME_CONNECTIONS.md).
 
 Search is submitted explicitly, returns twelve results per page, and caches responses for one hour. Provider pagination URLs are reduced to a boolean; the browser receives locally generated page links. Results are limited to ID, title, release date, validated artwork, and an existing local slug. The API key stays in the backend.
 

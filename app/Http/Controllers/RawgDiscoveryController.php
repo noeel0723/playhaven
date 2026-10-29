@@ -58,14 +58,26 @@ class RawgDiscoveryController extends Controller
     public function store(RawgImportRequest $request, CatalogSynchronizer $synchronizer): RedirectResponse
     {
         try {
-            $synchronizer->syncGame($request->integer('rawg_id'));
+            $started = microtime(true);
+            $attempt = 0;
+            while (true) {
+                try {
+                    $synchronizer->syncGame($request->integer('rawg_id'));
+                    break;
+                } catch (RawgRateLimited $exception) {
+                    if ($attempt++ >= 1 || $exception->retryAfter > 2 || microtime(true) - $started > 2) {
+                        throw $exception;
+                    }
+                    usleep(1100000 * $exception->retryAfter);
+                }
+            }
             $game = Game::where('rawg_id', $request->integer('rawg_id'))->firstOrFail();
         } catch (RawgRateLimited) {
             throw ValidationException::withMessages(['import' => 'RAWG is busy. Wait a few seconds, then import again.']);
         } catch (Throwable) {
             throw ValidationException::withMessages(['import' => 'This game could not be imported. Please try again later.']);
         }
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Game is ready in the catalog. You can now add it to your library or lists.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Game saved to the catalog.']);
 
         return to_route('games.show', $game->slug);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Game;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -29,6 +30,14 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         RateLimiter::for('rawg-search', fn (Request $request) => [Limit::perMinute(12)->by('rawg-search:user:'.$request->user()->id), Limit::perMinute(30)->by('rawg-search:shared')]);
         RateLimiter::for('rawg-import', fn (Request $request) => [Limit::perMinute(6)->by('rawg-import:user:'.$request->user()->id), Limit::perMinute(20)->by('rawg-import:shared')]);
+        $connectionsBusy = function (Request $request) {
+            $game = $request->route('game');
+            $reviewPage = filter_var($request->input('reviews_page'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100000]]);
+
+            return to_route('games.show', ['game' => $game instanceof Game ? $game->slug : $game, ...($reviewPage > 1 ? ['reviews_page' => $reviewPage] : [])])
+                ->withErrors(['connections' => 'Connected games are busy. Please try again shortly.']);
+        };
+        RateLimiter::for('rawg-connections', fn (Request $request) => [Limit::perMinute(6)->by('rawg-connections:user:'.$request->user()->id)->response($connectionsBusy), Limit::perMinute(20)->by('rawg-connections:shared')->response($connectionsBusy)]);
     }
 
     /**

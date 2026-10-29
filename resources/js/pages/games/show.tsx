@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Star, Users } from 'lucide-react';
 import GameCover from '@/components/game-cover';
 import CommunityReviews from '@/components/community-reviews';
+import GameConnections from '@/components/game-connections';
 import LibraryEditor from '@/components/library-editor';
 import RatingEditor from '@/components/rating-editor';
 import ReviewEditor from '@/components/review-editor';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { index } from '@/routes/games';
 import { index as playthroughs } from '@/routes/playthroughs';
 import type { CatalogGame } from '@/types/catalog';
+import type { ConnectionState, GameConnection } from '@/types/connections';
 import type { LibraryState } from '@/types/library';
 import type { PersonalReview, ReviewPagination } from '@/types/reviews';
 
@@ -18,12 +20,16 @@ export default function GameDetails({
     personalRating,
     personalReview,
     reviews,
+    connections,
+    connectionState,
 }: {
     game: CatalogGame;
     libraryEntry: LibraryState | null;
     personalRating: number | null;
     personalReview: PersonalReview | null;
     reviews: ReviewPagination;
+    connections: GameConnection[];
+    connectionState: ConnectionState;
 }) {
     const release = game.released_on
         ? new Intl.DateTimeFormat('en', {
@@ -200,6 +206,13 @@ export default function GameDetails({
                             </dd>
                         </div>
                     </dl>
+                    <GameConnections
+                        key={game.id}
+                        gameSlug={game.slug}
+                        connections={connections}
+                        state={connectionState}
+                        reviewsPage={reviews.meta.current_page}
+                    />
                     {libraryEntry && (
                         <ReviewEditor
                             key={`${game.id}:review:${personalReview?.id}:${personalReview?.updated_at}`}

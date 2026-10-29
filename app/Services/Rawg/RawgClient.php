@@ -75,6 +75,26 @@ class RawgClient
         Cache::forget($this->cacheKey('games/'.$id, []));
     }
 
+    /** @return array{results: list<array<string, mixed>>, has_next: bool} */
+    public function related(int $id, string $kind): array
+    {
+        if ($id < 1 || ! in_array($kind, ['game-series', 'additions', 'parent-games'], true)) {
+            throw new InvalidArgumentException('Invalid RAWG relationship request.');
+        }
+        $data = $this->request('games/'.$id.'/'.$kind, ['page' => 1, 'page_size' => 40], 86400, 5, 1);
+        $results = $data['results'] ?? null;
+        if (! is_array($results) || ! array_is_list($results) || count($results) > 40) {
+            throw new RuntimeException('RAWG returned an invalid relationship list.');
+        }
+        foreach ($results as $result) {
+            if (! is_array($result)) {
+                throw new RuntimeException('RAWG returned an invalid related game.');
+            }
+        }
+
+        return ['results' => $results, 'has_next' => ! empty($data['next'])];
+    }
+
     private function apiKey(): string
     {
         $key = config('services.rawg.api_key');
@@ -95,14 +115,14 @@ class RawgClient
      * @param  array<string, int|string>  $parameters
      * @return array<string, mixed>
      */
-    private function request(string $path, array $parameters, int $ttl): array
+    private function request(string $path, array $parameters, int $ttl, int $timeout = 15, int $lockWait = 5): array
     {
         $apiKey = $this->apiKey();
 
-        return Cache::remember($this->cacheKey($path, $parameters), $ttl, function () use ($apiKey, $path, $parameters): array {
+        return Cache::remember($this->cacheKey($path, $parameters), $ttl, function () use ($apiKey, $path, $parameters, $timeout, $lockWait): array {
             $paceKey = 'rawg.pacing.'.hash('sha256', $apiKey);
             try {
-                return Cache::lock($paceKey.'.lock', 25)->block(5, function () use ($apiKey, $path, $parameters, $paceKey): array {
+                return Cache::lock($paceKey.'.lock', 25)->block($lockWait, function () use ($apiKey, $path, $parameters, $paceKey, $timeout): array {
                     $now = now()->getTimestampMs();
                     $availableAt = Cache::get($paceKey, 0);
                     if (is_numeric($availableAt) && $availableAt > $now) {
@@ -111,7 +131,7 @@ class RawgClient
                     // A conservative local policy: serialize requests and start at most once a second.
                     Cache::put($paceKey, $now + 1000, now()->addMinutes(5));
                     try {
-                        $response = Http::acceptJson()->connectTimeout(5)->timeout(15)
+                        $response = Http::acceptJson()->connectTimeout(5)->timeout($timeout)
                             ->withOptions(['allow_redirects' => false])
                             ->get('https://api.rawg.io/api/'.$path, [...$parameters, 'key' => $apiKey]);
                     } catch (Throwable) {

@@ -82,7 +82,9 @@ Dari detail game yang sudah ada di library, pilih **Playthroughs & diary** untuk
 
 Buka **Lists** untuk membuat koleksi privat, unlisted, atau publik. Tambahkan game lewat pencarian dalam list, lalu atur catatan dan posisinya. List publik dapat ditemukan pada **Community lists**. Lihat [panduan list](docs/LISTS.md).
 
-Untuk mencari judul yang belum ada di katalog, buka **Games → Find more games**, masukkan nama game di **Search RAWG**, lalu pilih **Add to catalog**. Game yang sudah tersedia menampilkan **Open game**. Pencarian ini memakai API key di backend; detail ada di [panduan katalog](docs/CATALOG.md#search-and-import-from-the-website).
+Untuk mencari judul yang belum ada di katalog, buka **Games → Find more games**, masukkan nama game di **Search RAWG**, lalu pilih cover, judul, atau **Open game**. Game yang dipilih otomatis tersimpan di katalog lokal sebelum detail dibuka. API key tetap di backend; detail ada di [panduan katalog](docs/CATALOG.md#search-and-import-from-the-website).
+
+Halaman detail juga menampilkan **Connected worlds** untuk game dalam seri yang sama, ekspansi/edisi, game induk, dan relasi cerita terkurasi. Lihat [panduan relasi game](docs/GAME_CONNECTIONS.md) untuk menambahkan prequel/sequel/shared universe dengan sumber yang jelas.
 
 ## Verifikasi email saat development
 

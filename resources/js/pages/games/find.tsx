@@ -1,12 +1,12 @@
-import { Form, Head, Link, useForm } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
-import GameCover from '@/components/game-cover';
+import RawgResult from '@/components/rawg-game-card';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { importMethod, search } from '@/routes/catalog';
-import { index, show } from '@/routes/games';
+import { search } from '@/routes/catalog';
+import { index } from '@/routes/games';
 
 type Result = {
     id: number;
@@ -15,48 +15,6 @@ type Result = {
     cover_url: string | null;
     local_slug: string | null;
 };
-
-function RawgResult({ game }: { game: Result }) {
-    const form = useForm<{ rawg_id: number; import?: string }>({
-        rawg_id: game.id,
-    });
-    return (
-        <article className="min-w-0">
-            <GameCover game={game} />
-            <h2 className="mt-4 text-sm leading-6 font-semibold break-words">
-                {game.name}
-            </h2>
-            <p className="mt-2 text-xs text-[#bdb6b1]">
-                {game.released_on?.slice(0, 4) ?? 'Release TBA'}
-            </p>
-            {game.local_slug ? (
-                <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="mt-4 w-full"
-                >
-                    <Link href={show(game.local_slug)}>Open game</Link>
-                </Button>
-            ) : (
-                <Button
-                    type="button"
-                    size="sm"
-                    disabled={form.processing}
-                    className="mt-4 w-full"
-                    onClick={() => form.post(importMethod(game.id).url)}
-                >
-                    {form.processing ? 'Adding…' : 'Add to catalog'}
-                </Button>
-            )}
-            <InputError
-                message={form.errors.import}
-                role="alert"
-                className="mt-3"
-            />
-        </article>
-    );
-}
 
 export default function FindGames({
     results,
@@ -94,8 +52,9 @@ export default function FindGames({
                 </span>
             </h1>
             <p className="mt-5 mb-9 max-w-xl text-sm leading-7 text-[#bdb6b1]">
-                Find a game beyond the current PlayHaven catalog. Add it here,
-                then track it in your library or curate it in a list.
+                Find a game beyond the current PlayHaven catalog. Open a result
+                to save it automatically, then track it in your library or
+                lists.
             </p>
             <Form action={search()} method="get" key={`${query}:${page}`}>
                 {({ processing, errors }) => (

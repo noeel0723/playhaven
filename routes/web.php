@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DiaryController;
 use App\Http\Controllers\GameCatalogController;
+use App\Http\Controllers\GameConnectionController;
 use App\Http\Controllers\GameExperienceController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameListItemController;
@@ -25,6 +26,7 @@ Route::get('lists/discover', [GameListController::class, 'discover'])->name('lis
 Route::get('lists/{listOwner}/{listSlug}', [GameListController::class, 'show'])->name('lists.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('games/{game:slug}/connections/refresh', [GameConnectionController::class, 'refresh'])->middleware('throttle:rawg-connections')->name('games.connections.refresh');
     Route::get('lists', [GameListController::class, 'index'])->name('lists.index');
     Route::post('my-lists', [GameListController::class, 'store'])->name('lists.store');
     Route::put('my-lists/{gameList}', [GameListController::class, 'update'])->name('lists.update');

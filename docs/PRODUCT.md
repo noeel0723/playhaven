@@ -18,6 +18,8 @@ A polished consumer application where players discover games, remember their pla
 - Custom lists, following, community activity, and personal statistics.
 - Discovery by popularity and community ratings.
 
+Game details now include **Connected worlds**: provider series/addition/parent snapshots and curated bidirectional narrative/shared-universe links. Selecting a RAWG result or an external connection saves that specific game locally before opening it. See [game connections](GAME_CONNECTIONS.md).
+
 ## Visual foundation
 
 Palette transcribed from the supplied reference:

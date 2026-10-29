@@ -67,6 +67,7 @@ class RawgDiscoveryTest extends TestCase
         $this->post(route('catalog.import', 123456))->assertRedirect(route('games.show', 'new-world'));
         $this->assertDatabaseCount('games', 1);
         $this->assertDatabaseHas('games', ['rawg_id' => 123456, 'summary' => 'A new catalog game.']);
+        $this->get(route('games.show', 'new-world'))->assertInertia(fn (Assert $page) => $page->where('connectionState.can_refresh', true));
         $this->assertDatabaseCount('library_entries', 0);
         Http::assertSentCount(1);
     }
@@ -103,5 +104,13 @@ class RawgDiscoveryTest extends TestCase
             ->where('error', fn ($message) => str_contains($message, 'busy')));
         $this->post(route('catalog.import', 123456))->assertSessionHasErrors('import');
         Http::assertSentCount(1);
+    }
+
+    public function test_opening_a_game_retries_a_brief_provider_cooldown_then_saves_it(): void
+    {
+        Http::fake(['api.rawg.io/api/games/123456?*' => Http::sequence()->push([], 429, ['Retry-After' => '1'])->push($this->gameData())]);
+        $this->actingAs(User::factory()->create())->post(route('catalog.import', 123456))->assertRedirect(route('games.show', 'new-world'));
+        $this->assertDatabaseHas('games', ['rawg_id' => 123456, 'summary' => 'A new catalog game.']);
+        Http::assertSentCount(2);
     }
 }
