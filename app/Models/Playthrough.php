@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PlaythroughStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\PlaythroughFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property PlaythroughStatus $status
+ * @property CarbonImmutable|null $started_on
+ * @property CarbonImmutable|null $finished_on
+ */
 #[Fillable(['library_entry_id', 'platform_id', 'label', 'status', 'started_on', 'finished_on'])]
 class Playthrough extends Model
 {

@@ -28,4 +28,4 @@ Public game details expose only the current visitor's own status and favorite st
 
 Run SQLite tests with `php artisan test` or the isolated PostgreSQL suite with `powershell -ExecutionPolicy Bypass -File .\scripts\test-postgres.ps1`. Tests must never refresh the development database.
 
-Half-star ratings and editable reviews are implemented; see [ratings and reviews](RATINGS_REVIEWS.md). Personal ratings now appear on library/dashboard cards. Playthroughs and diary sessions are the next stage.
+Half-star ratings, editable reviews, multiple playthroughs, and private diary sessions are implemented; see [ratings and reviews](RATINGS_REVIEWS.md) and [playing history](PLAYING_HISTORY.md). Personal ratings appear on library/dashboard cards. Community lists and profiles are the next stage.

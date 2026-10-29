@@ -17,6 +17,8 @@ void createInertiaApp({
                 return null;
             case name.startsWith('games/'):
             case name.startsWith('library/'):
+            case name.startsWith('playthroughs/'):
+            case name.startsWith('diary/'):
             case name === 'dashboard':
                 return CatalogLayout;
             case name.startsWith('auth/'):

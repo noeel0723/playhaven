@@ -12,6 +12,7 @@ import { UserMenuContent } from '@/components/user-menu-content';
 import { dashboard, home, login, register } from '@/routes';
 import { index } from '@/routes/games';
 import { index as library } from '@/routes/library';
+import { index as diary } from '@/routes/diary';
 
 export default function CatalogLayout({ children }: PropsWithChildren) {
     const { auth } = usePage().props;
@@ -43,6 +44,9 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                             <>
                                 <Button asChild variant="ghost">
                                     <Link href={library()}>Your library</Link>
+                                </Button>
+                                <Button asChild variant="ghost">
+                                    <Link href={diary()}>Diary</Link>
                                 </Button>
                                 <Button asChild variant="outline">
                                     <Link href={dashboard()}>Your haven</Link>

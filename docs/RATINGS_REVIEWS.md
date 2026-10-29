@@ -34,4 +34,4 @@ Private reviews are excluded from community records, counts, and pagination. Pub
 
 `tests/Feature/GameExperienceTest.php` covers all ten half-star values, invalid inputs, clearing ratings, edits without duplicate rows, history preservation, ownership spoofing, privacy changes, public pagination, spoiler flags, confirmed deletion, and aggregate updates. Both SQLite and the isolated PostgreSQL test database are supported.
 
-The next personal-experience stage is multiple playthroughs and dated diary sessions.
+Multiple playthroughs and dated private diary sessions are now implemented; see [playing history](PLAYING_HISTORY.md). Their actions preserve the overall rating and review.

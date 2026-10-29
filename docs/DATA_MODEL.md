@@ -48,7 +48,7 @@ Local foreign keys always reference local IDs, never provider IDs. This keeps pl
 
 Playthroughs, ratings, and reviews inherit their user and game through `library_entry_id`. Diary entries inherit them through their playthrough. There are no separate user/game columns that could contradict each other.
 
-Library status and playthrough status are independent. Starting a replay does not overwrite the completion state or rating of a previous run. Future feature actions should decide when to change the user's library status explicitly.
+Library status and playthrough status are independent. Starting a replay preserves the earlier run and the game's overall rating. Current history actions preserve the user's library status; changes to that status remain explicit in the library editor.
 
 Ratings describe a player's overall opinion of a game. Replaying a game does not add another vote to community averages. A review and a rating can exist independently. A player may review/rate a game without marking it completed.
 
@@ -93,4 +93,4 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
-The catalog importer, public discovery, personal library, ratings, and reviews are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), and [ratings/reviews](RATINGS_REVIEWS.md). Next, introduce scoped actions for diary entries and repeat playthroughs.
+The catalog, library, ratings, reviews, diary, and repeat playthroughs are implemented; see [catalog workflow](CATALOG.md), [personal library](LIBRARY.md), [ratings/reviews](RATINGS_REVIEWS.md), and [playing history](PLAYING_HISTORY.md). Next, implement community lists, profiles, follows, and activity.

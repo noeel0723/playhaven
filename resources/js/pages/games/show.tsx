@@ -5,7 +5,9 @@ import CommunityReviews from '@/components/community-reviews';
 import LibraryEditor from '@/components/library-editor';
 import RatingEditor from '@/components/rating-editor';
 import ReviewEditor from '@/components/review-editor';
+import { Button } from '@/components/ui/button';
 import { index } from '@/routes/games';
+import { index as playthroughs } from '@/routes/playthroughs';
 import type { CatalogGame } from '@/types/catalog';
 import type { LibraryState } from '@/types/library';
 import type { PersonalReview, ReviewPagination } from '@/types/reviews';
@@ -126,6 +128,11 @@ export default function GameDetails({
                     />
                     {libraryEntry && (
                         <>
+                            <Button asChild variant="outline" className="mb-6">
+                                <Link href={playthroughs(game.slug)}>
+                                    Playthroughs & diary
+                                </Link>
+                            </Button>
                             <RatingEditor
                                 key={`${game.id}:rating:${personalRating}`}
                                 gameSlug={game.slug}
