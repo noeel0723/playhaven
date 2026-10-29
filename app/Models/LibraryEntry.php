@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/** @property LibraryStatus $status */
 #[Fillable(['user_id', 'game_id', 'status', 'is_favorite'])]
 class LibraryEntry extends Model
 {

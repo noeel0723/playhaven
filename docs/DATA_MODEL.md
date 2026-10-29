@@ -1,6 +1,6 @@
 # PlayHaven domain and database
 
-Stage 2 defines the storage model and Eloquent relationships. Game import, feature controllers, authorization policies, and product screens are implemented in later stages.
+Stage 2 defines the storage model and Eloquent relationships. The catalog importer, public discovery screens, and scoped personal-library actions are now implemented on this foundation.
 
 ## Relationships
 
@@ -73,7 +73,7 @@ List positions can have gaps or ties; they do not need to be consecutive. Reorde
 ## Ownership, deletion, and indexing
 
 - Deleting a user cascades to their profile, library, dependent playthrough/diary/rating/review records, lists/items, and follows.
-- Deleting a library entry cascades to its player history. Future UI actions must treat removing a library entry as a destructive action with history consequences; changing status should update the existing entry.
+- Deleting a library entry cascades to its player history. The library UI requires confirmation with an explicit history warning; changing status updates the existing entry and preserves that history.
 - A game referenced by a library entry or list item is protected by a restrictive foreign key. Catalog synchronization should update records and avoid deleting referenced games.
 - Deleting a genre/platform removes its catalog associations. A deleted platform clears the optional playthrough platform reference while preserving the run.
 - Indexes support user/status library filters, game lookups, diary/playthrough chronology, list ordering, and both directions of following.
@@ -93,4 +93,4 @@ Factories cover all 12 domain models. Tests exercise constraints, rating convers
 
 ## Next implementation stage
 
-The catalog importer and public discovery pages are implemented; see [catalog workflow](CATALOG.md). Next, introduce scoped user actions, authorization, and validation for library statuses, ratings, reviews, diary entries, and repeat playthroughs.
+The catalog importer, public discovery, and personal library are implemented; see [catalog workflow](CATALOG.md) and [personal library](LIBRARY.md). Next, introduce scoped actions for ratings, reviews, diary entries, and repeat playthroughs.

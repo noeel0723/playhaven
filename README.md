@@ -66,6 +66,10 @@ Tes default memakai SQLite in-memory sesuai starter kit, sehingga tidak mengubah
 
 PHP Laragon sudah diaktifkan untuk `pdo_pgsql`, `pgsql`, `pdo_sqlite`, dan `sqlite3`. Jika memakai Apache Laragon yang sudah berjalan sebelum perubahan itu, restart Apache. Document root web server harus menunjuk ke `public/`.
 
+## Library pribadi
+
+Buka detail game dari `/games`, pilih status bermain dan favorit di **Your experience**, lalu simpan ke library. Halaman `/library` menyediakan pencarian, filter status/favorit, dan pagination. Dashboard sekarang menampilkan ringkasan serta game terbaru dari koleksi akun yang login. Detail kepemilikan, penghapusan, dan alur fitur ada di [panduan library](docs/LIBRARY.md).
+
 ## Verifikasi email saat development
 
 Untuk pengembangan lokal, gunakan `APP_ENV=local` dan `AUTH_REQUIRE_EMAIL_VERIFICATION=false` di `.env`. Akun baru maupun akun lama bisa membuka dashboard dan pengaturan tanpa verifikasi, dan email verifikasi tidak dikirim. Status `email_verified_at` tetap mengikuti verifikasi asli.

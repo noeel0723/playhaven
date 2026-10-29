@@ -1,10 +1,18 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Star, Users } from 'lucide-react';
 import GameCover from '@/components/game-cover';
+import LibraryEditor from '@/components/library-editor';
 import { index } from '@/routes/games';
 import type { CatalogGame } from '@/types/catalog';
+import type { LibraryState } from '@/types/library';
 
-export default function GameDetails({ game }: { game: CatalogGame }) {
+export default function GameDetails({
+    game,
+    libraryEntry,
+}: {
+    game: CatalogGame;
+    libraryEntry: LibraryState | null;
+}) {
     const release = game.released_on
         ? new Intl.DateTimeFormat('en', {
               month: 'long',
@@ -100,6 +108,12 @@ export default function GameDetails({ game }: { game: CatalogGame }) {
                             </p>
                         </div>
                     </div>
+                    <LibraryEditor
+                        key={`${game.id}:${libraryEntry?.status}:${libraryEntry?.is_favorite}`}
+                        gameSlug={game.slug}
+                        gameName={game.name}
+                        entry={libraryEntry}
+                    />
                     <section aria-labelledby="about-game">
                         <h2
                             id="about-game"

@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\Genre;
 use App\Models\Platform;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -53,10 +54,15 @@ class GameCatalogController extends Controller
         ]);
     }
 
-    public function show(Game $game): Response
+    public function show(Request $request, Game $game): Response
     {
         $game->load(['genres', 'platforms'])->loadCount(['ratings', 'libraryEntries as players_count'])->loadAvg('ratings', 'score');
 
-        return Inertia::render('games/show', ['game' => (new GameResource($game))->resolve(request())]);
+        $entry = $request->user()?->libraryEntries()->where('game_id', $game->id)->first();
+
+        return Inertia::render('games/show', [
+            'game' => (new GameResource($game))->resolve($request),
+            'libraryEntry' => $entry ? ['status' => $entry->status->value, 'is_favorite' => $entry->is_favorite] : null,
+        ]);
     }
 }

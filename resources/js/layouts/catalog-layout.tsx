@@ -1,9 +1,17 @@
 import { Link, usePage } from '@inertiajs/react';
+import { CircleUserRound } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UserMenuContent } from '@/components/user-menu-content';
 import { dashboard, home, login, register } from '@/routes';
 import { index } from '@/routes/games';
+import { index as library } from '@/routes/library';
 
 export default function CatalogLayout({ children }: PropsWithChildren) {
     const { auth } = usePage().props;
@@ -27,14 +35,36 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                         <AppLogoIcon className="size-7" />
                         PlayHaven
                     </Link>
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex max-w-full flex-wrap items-center gap-1 sm:gap-4">
                         <Button asChild variant="ghost">
                             <Link href={index()}>Games</Link>
                         </Button>
                         {auth.user ? (
-                            <Button asChild variant="outline">
-                                <Link href={dashboard()}>Your account</Link>
-                            </Button>
+                            <>
+                                <Button asChild variant="ghost">
+                                    <Link href={library()}>Your library</Link>
+                                </Button>
+                                <Button asChild variant="outline">
+                                    <Link href={dashboard()}>Your haven</Link>
+                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label="Account menu"
+                                        >
+                                            <CircleUserRound aria-hidden="true" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="dark w-60 border-shadow bg-rein text-[#f4f1ed]"
+                                    >
+                                        <UserMenuContent user={auth.user} />
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </>
                         ) : (
                             <>
                                 <Button asChild variant="ghost">
