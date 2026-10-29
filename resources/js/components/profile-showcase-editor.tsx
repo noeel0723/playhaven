@@ -12,11 +12,13 @@ export default function ProfileShowcaseEditor({
     shareRecentCompleted,
     availableGames,
     query,
+    embedded = false,
 }: {
     topGames: CatalogGame[];
     shareRecentCompleted: boolean;
     availableGames: CatalogGame[];
     query: string;
+    embedded?: boolean;
 }) {
     const form = useForm({
         top_games: topGames,
@@ -34,16 +36,29 @@ export default function ProfileShowcaseEditor({
         <section
             id="profile-shelves"
             aria-labelledby="profile-shelves-title"
-            className="mt-12 scroll-mt-8 border-t border-white/10 pt-9"
+            className={
+                embedded
+                    ? 'scroll-mt-8'
+                    : 'mt-12 scroll-mt-8 border-t border-white/10 pt-9'
+            }
         >
-            <h2 id="profile-shelves-title" className="font-serif text-3xl">
-                Your profile shelves
+            <h2
+                id="profile-shelves-title"
+                className={
+                    embedded
+                        ? 'border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm'
+                        : 'font-serif text-3xl'
+                }
+            >
+                {embedded ? 'Top 4 Games' : 'Your profile shelves'}
             </h2>
-            <p className="mt-4 text-sm leading-7 text-[#bdb6b1]">
-                Pick up to four games, then arrange them in your order. These
-                picks appear on your public profile and do not change your
-                library favorites.
-            </p>
+            {!embedded && (
+                <p className="mt-4 text-sm leading-7 text-[#bdb6b1]">
+                    Pick up to four games, then arrange them in your order.
+                    These picks appear on your public profile and do not change
+                    your library favorites.
+                </p>
+            )}
             <div className="mt-7 grid grid-cols-4 items-start gap-2 sm:gap-4">
                 {Array.from({ length: 4 }, (_, index) => {
                     const game = form.data.top_games[index];
@@ -130,6 +145,13 @@ export default function ProfileShowcaseEditor({
                     );
                 })}
             </div>
+            {embedded && (
+                <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                    Pick up to four games and arrange them in your order. These
+                    picks appear on your public profile and do not change your
+                    library favorites.
+                </p>
+            )}
             <Form
                 key={query}
                 action={edit()}

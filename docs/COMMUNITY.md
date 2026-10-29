@@ -4,6 +4,8 @@ Open **Community** in the main navigation. The first community feed contains pub
 
 ## Player profiles
 
+The profile layout places the circular avatar, public name, username, actions, and bio on the left of the profile header, with existing summary values on the right. Public profiles show public review/list totals and follow counts; the owner editor shows saved Top 4 picks and profile visibility. There is no additional profile tab bar. The public profile keeps Top 4, shared recent completions, and reviews in the main column, with public lists in the sidebar. The owner editor places Top 4 first, profile details below it, and the photo editor in the right sidebar on desktop; columns stack on smaller screens. **Edit profile** and **Change photo** jump to the existing forms. Routes, permissions, publishing settings, and stored data are unchanged.
+
 **Your player profile** at `/community/profile` lets the signed-in user choose a username, display name, bio, and whether to publish the profile. Existing and new profiles default to **nonpublic**. Accounts are not automatically listed in discovery.
 
 Players can upload, replace, preview, and remove a profile photo. Photos follow profile visibility and appear consistently across the public profile, discovery, public contributions, and account avatar. See [photo storage, formats, and cleanup](PROFILE_PHOTOS.md).

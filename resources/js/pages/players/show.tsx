@@ -4,7 +4,7 @@ import FollowPlayer from '@/components/follow-player';
 import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
-import PlayerAvatar from '@/components/player-avatar';
+import PlayerProfileHeader from '@/components/player-profile-header';
 import { index } from '@/routes/players';
 import type {
     CommunityReviewPagination,
@@ -32,50 +32,20 @@ export default function Player({
     return (
         <>
             <Head title={`${player.name} (@${player.username})`} />
-            <Link
-                href={index()}
-                className="mb-8 inline-block text-sm text-[#bdb6b1] underline underline-offset-4"
-            >
-                All players
-            </Link>
-            <header className="mb-12 flex flex-wrap items-start justify-between gap-6 border-b border-white/10 pb-10">
-                <div className="max-w-3xl min-w-0">
-                    <PlayerAvatar
-                        name={player.name}
-                        src={player.avatar_url}
-                        className="mb-6 size-24 border-2 sm:size-28"
-                    />
-                    <p className="mb-3 text-xs tracking-[0.16em] text-[#bdb6b1]">
-                        @{player.username}
-                    </p>
-                    <h1 className="font-serif text-4xl wrap-break-word sm:text-6xl">
-                        {player.name}
-                    </h1>
-                    {player.bio && (
-                        <p className="mt-5 text-sm leading-7 wrap-break-word whitespace-pre-wrap text-[#c5bfba]">
-                            {player.bio}
-                        </p>
-                    )}
-                    <div className="mt-6 flex flex-wrap gap-6 text-sm text-[#bdb6b1]">
-                        <p>
-                            <strong className="text-[#f4f1ed]">
-                                {player.followers_count}
-                            </strong>{' '}
-                            {player.followers_count === 1
-                                ? 'follower'
-                                : 'followers'}
-                        </p>
-                        <p>
-                            <strong className="text-[#f4f1ed]">
-                                {player.following_count}
-                            </strong>{' '}
-                            following
-                        </p>
-                    </div>
-                </div>
-                <FollowPlayer player={player} />
-            </header>
-            <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10 xl:gap-14">
+            <PlayerProfileHeader
+                name={player.name}
+                username={player.username}
+                avatarUrl={player.avatar_url}
+                bio={player.bio}
+                actions={<FollowPlayer player={player} />}
+                statistics={[
+                    { label: 'Public reviews', value: reviews.meta.total },
+                    { label: 'Public lists', value: lists.meta.total },
+                    { label: 'Following', value: player.following_count },
+                    { label: 'Followers', value: player.followers_count },
+                ]}
+            />
+            <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-14">
                 <div className="min-w-0">
                     <ProfileGameShelves
                         topGames={topGames}
@@ -116,39 +86,6 @@ export default function Player({
                     </section>
                 </div>
                 <aside className="min-w-0 border-t border-shadow pt-7 lg:border-t-0 lg:pt-0">
-                    <section
-                        aria-labelledby="player-profile-overview"
-                        className="mb-10"
-                    >
-                        <h2
-                            id="player-profile-overview"
-                            className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
-                        >
-                            A little perspective
-                        </h2>
-                        <div className="mt-5 grid grid-cols-2 gap-4">
-                            <div>
-                                <p className="font-serif text-3xl">
-                                    {reviews.meta.total}
-                                </p>
-                                <p className="mt-1 text-xs text-[#bdb6b1]">
-                                    Public reviews
-                                </p>
-                            </div>
-                            <div>
-                                <p className="font-serif text-3xl">
-                                    {lists.meta.total}
-                                </p>
-                                <p className="mt-1 text-xs text-[#bdb6b1]">
-                                    Public lists
-                                </p>
-                            </div>
-                        </div>
-                        <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
-                            Four favorites. New worlds finished. The stories
-                            this player chooses to share.
-                        </p>
-                    </section>
                     <section aria-labelledby="player-lists">
                         <div className="mb-6 flex flex-wrap items-baseline justify-between gap-4 border-b border-shadow pb-3">
                             <h2
@@ -177,6 +114,12 @@ export default function Player({
                             label="Player list pages"
                         />
                     </section>
+                    <Link
+                        href={index()}
+                        className="mt-8 inline-block rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+                    >
+                        All players
+                    </Link>
                 </aside>
             </div>
         </>

@@ -2,6 +2,8 @@
 
 Open **Your player profile → Profile photo** at `/community/profile#profile-photo`, or use **Manage profile photo** in account settings. Save the basic player profile first if it has not been created yet.
 
+On desktop, the photo editor sits in the right sidebar beside Top 4. On smaller screens it follows the profile fields. The **Change photo** link beside the avatar jumps directly to it. Photo upload, preview, replacement, removal, and visibility continue to work through the same forms and routes.
+
 Choose a JPEG, PNG, or WebP image, check the local preview, then choose **Save photo**. **Cancel selection** restores the saved image without uploading anything. **Remove photo** clears the saved image and returns to initials. Uploads and profile details save independently, so changing a photo does not overwrite the bio, username, Top 4, or library.
 
 ## Image processing

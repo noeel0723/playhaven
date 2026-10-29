@@ -10,9 +10,11 @@ import { store, destroy } from '@/routes/players/photo';
 export default function ProfilePhotoEditor({
     name,
     avatarUrl,
+    embedded = false,
 }: {
     name: string;
     avatarUrl: string | null;
+    embedded?: boolean;
 }) {
     const form = useForm<{ avatar: File | null }>({ avatar: null });
     const removal = useForm({});
@@ -35,10 +37,21 @@ export default function ProfilePhotoEditor({
         <section
             id="profile-photo"
             aria-labelledby="profile-photo-title"
-            className="mt-9 scroll-mt-8 rounded-xl border border-shadow bg-rein/15 p-5 sm:p-6"
+            className={
+                embedded
+                    ? 'scroll-mt-8'
+                    : 'mt-9 scroll-mt-8 rounded-xl border border-shadow bg-rein/15 p-5 sm:p-6'
+            }
             aria-busy={busy}
         >
-            <h2 id="profile-photo-title" className="font-serif text-2xl">
+            <h2
+                id="profile-photo-title"
+                className={
+                    embedded
+                        ? 'border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm'
+                        : 'font-serif text-2xl'
+                }
+            >
                 Profile photo
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#bdb6b1]">
