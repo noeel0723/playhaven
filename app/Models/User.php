@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EmailVerification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,6 +39,13 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    public function sendEmailVerificationNotification(): void
+    {
+        if (EmailVerification::required()) {
+            parent::sendEmailVerificationNotification();
+        }
+    }
 
     /** @return HasOne<UserProfile, $this> */
     public function profile(): HasOne

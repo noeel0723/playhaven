@@ -4,6 +4,9 @@ use App\Models\User;
 
 return [
 
+    // Disabling verification is supported only in the local environment.
+    'require_email_verification' => env('AUTH_REQUIRE_EMAIL_VERIFICATION', true),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
