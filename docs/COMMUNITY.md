@@ -4,6 +4,16 @@ Open **Community** in the main navigation. The first community feed contains pub
 
 The feed uses a simple Community heading and compact review cards aligned with the left edge of the content. Cards retain author and game links, ratings, dates, full review text, and spoiler disclosure. Pagination shares the review column width, preserves the selected feed, and returns to the top when changing pages.
 
+## Friend game shelves
+
+Signed-in visitors see **New from friends** and **Popular with friends** above the reviews on the first review page, in both Everyone and Following views. Friends means players the viewer follows; reciprocal follows are not required. Guest pages and later review pages retain the review feed without loading these personalized shelves. Responses use `Cache-Control: private, no-store`.
+
+Only current Playing, Paused, and Completed entries from followed players with an active public profile and username qualify. The viewer's own library, non-followed users, private profiles, Dropped entries, and entries without status are excluded. Hiding a profile, unfollowing, deleting an entry, or leaving an eligible status removes it on the next read. The profile visibility helper explains status sharing to followers.
+
+New from friends shows the current most recent status per player/game, rather than an immutable event log. `library_entries.status_changed_at` changes only when the status changes, including initial assignment; rating, review, favorite, and diary edits do not refresh it. The new nullable column has no historical backfill. A known legacy Completed timestamp is used as a fallback; other unknown dates sort last and say **Date not recorded**. Client requests cannot set this timestamp.
+
+Popular with friends ranks games by distinct eligible followed players, then their latest known status time and game ID. It measures current shared playing states, not weekly activity, ratings, or favorites. Both shelves initially show six compact covers; native expandable rows show up to twelve results. Cards include validated game artwork and titles; activity cards add a public alias/avatar, status, and date, while popular cards show a friend count. Payloads omit library IDs, favorites, individual ratings, reviews, diary text, and login identity.
+
 ## Player profiles
 
 The profile layout places the circular avatar, name, actions, and bio on the left, with summary values on the right. There is no additional profile tab bar. Public profiles keep Top 4, recent completions, and recent public reviews in the main column, with public lists in the sidebar. Review rows show a thumbnail, title, release year, rating, date, and spoiler-aware body.
@@ -37,7 +47,7 @@ When no other public profiles exist, signed-in players see **No other players ye
 
 Follow or unfollow from another public player's profile. Login is required; publishing one's own profile is optional. The server derives the follower from the authenticated session, rejects following oneself, validates that the target is public, and treats repeated follow/unfollow operations idempotently. Follow mutations share a limit of 30 per minute per user. Existing email verification rules apply, including the configured local-development bypass.
 
-No email, push notification, recurring import, or external API request is triggered by following. Community activity currently includes published reviews; private library and diary events are not published. Spoiler reviews remain collapsed until expanded.
+No email, push notification, recurring import, or external API request is triggered by following. Community reviews require publication. Personalized friend shelves separately expose the eligible current statuses described above; the full library, private reviews, and diary remain private. Spoiler reviews remain collapsed until expanded.
 
 ## Storage and verification
 

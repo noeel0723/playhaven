@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property LibraryStatus|null $status
  * @property CarbonImmutable|null $completed_at
+ * @property CarbonImmutable|null $status_changed_at
  */
 #[Fillable(['user_id', 'game_id', 'status', 'is_favorite'])]
 class LibraryEntry extends Model
@@ -26,6 +27,7 @@ class LibraryEntry extends Model
     {
         static::saving(function (LibraryEntry $entry): void {
             if ($entry->isDirty('status')) {
+                $entry->status_changed_at = $entry->status === null ? null : now();
                 $entry->completed_at = $entry->status === LibraryStatus::Completed ? ($entry->completed_at ?? now()) : null;
             }
         });
@@ -38,6 +40,7 @@ class LibraryEntry extends Model
             'status' => LibraryStatus::class,
             'is_favorite' => 'boolean',
             'completed_at' => 'immutable_datetime',
+            'status_changed_at' => 'immutable_datetime',
         ];
     }
 

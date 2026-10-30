@@ -82,13 +82,15 @@ Buka **Your statistics** dari dashboard atau menu akun untuk melihat ringkasan k
 
 ## Community dan profil pemain
 
+Saat login, Community menampilkan **New from friends** dan **Popular with friends** di atas review pada halaman pertama. Sumbernya adalah pemain yang kamu follow dengan profil Public dan status Playing, Paused, atau Completed. Popular dihitung dari jumlah pemain berbeda; tanggal perubahan status terpisah dari edit rating/review. Tiap section menampilkan enam cover compact dengan pilihan Show more sampai dua belas game/aktivitas.
+
 **Profile** kini merupakan ringkasan pribadi dengan Top 4, empat game yang paling baru aktif, dan review terbaru. Tombol **Edit profile** membuka `/community/profile/edit`, dengan informasi profil di kiri dan pengaturan Top 4 di kanan pada desktop. Aktivitas dan review privat dalam ringkasan hanya dapat dilihat pemilik akun.
 
 Halaman **Players** menampilkan portrait pemain publik, follower, jumlah review publik, dan Top 4 pilihan mereka. Profil sendiri dikecualikan saat login. Jika belum ada pemain publik lain, halaman menampilkan **No other players yet.**, bukan akun contoh. Layout memakai lima kolom desktop, tiga kolom tablet, dan dua kolom ponsel.
 
 Untuk menambahkan foto, buka **Profile → Edit profile → Profile photo**, pilih gambar JPEG/PNG/WebP maksimal 5 MB, lalu **Save photo**. Foto dan Top 4 dapat disimpan tanpa menyimpan informasi profil terlebih dahulu. Profil baru tetap privat. Tersedia pratinjau, pembatalan pilihan, penggantian, dan penghapusan foto. Foto mengikuti visibilitas profil dan tampil di komunitas serta avatar akun. Lihat [panduan foto profil](docs/PROFILE_PHOTOS.md).
 
-Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Profile → Edit profile** untuk memilih username, nama publik, dan bio, kemudian pilih **Public** pada menu **Profile visibility** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library tetap privat kecuali empat game Completed terbaru pada profil Public. Lihat [panduan komunitas](docs/COMMUNITY.md).
+Buka **Community** untuk membaca ulasan publik, lalu **Find players** untuk mencari pemain. Gunakan **Profile → Edit profile** untuk memilih username, nama publik, dan bio, kemudian pilih **Public** pada menu **Profile visibility** jika ingin profilmu tampil di komunitas. Profil tidak dipublikasikan otomatis. Dari profil pemain lain, pilih **Follow**; ulasan publik mereka muncul di tab **Following**. Diary, review privat, serta list privat/unlisted tidak tampil di profil publik. Library lengkap tetap privat. Profil Public membagikan empat Completed terbaru serta status Playing, Paused, dan Completed kepada followers melalui Community. Lihat [panduan komunitas](docs/COMMUNITY.md).
 
 Profil juga memiliki rak **Top 4 Games** yang bisa dipilih dan diurutkan melalui **Edit profile → Top 4 Games**. Gunakan menu kecil **Profile visibility** untuk memilih Private atau Public. Profil Public otomatis menampilkan empat game Completed terbaru beserta rating dan tanggal selesai; tidak ada pengaturan berbagi terpisah. Lihat [panduan rak profil](docs/PROFILE_SHELVES.md).
 

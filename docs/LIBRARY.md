@@ -18,7 +18,7 @@ Library routes require authentication and the existing email-verification middle
 
 All reads, writes, counts, and deletion queries start from the authenticated user's `libraryEntries()` relation. The target game is resolved by its local slug; client-provided user IDs, entry IDs, and game IDs are not accepted as ownership input. An upsert updates the existing user/game row or creates one protected by the database's unique constraint.
 
-Public game details expose only the current visitor's own status and favorite state. Guests receive no personal entry. The library is not a public profile.
+Public game details expose only the current visitor's own status and favorite state. Guests receive no personal entry. The library is not a public profile. An active Public player profile shares current Playing, Paused, and Completed statuses with its followers through the personalized Community shelves; favorites, private reviews, diary, and the full library are not returned there. Status-change timestamps are separate from ordinary metadata edits.
 
 **Remove from library** opens a confirmation dialog explaining that the entry's ratings, review, playthroughs, and diary entries will also be deleted. The delete endpoint additionally requires an accepted `confirm` value. Removing an entry keeps the catalog game and other players' entries. Changing a status is the way to retain history.
 

@@ -238,8 +238,9 @@ export default function EditPlayer({
                                     id="profile-visibility-help"
                                     className="text-xs leading-5 text-[#bdb6b1]"
                                 >
-                                    Public profiles also show your four latest
-                                    completed games.
+                                    Public profiles show your four latest
+                                    completed games and share Playing, Paused,
+                                    and Completed updates with followers.
                                 </p>
                                 {form.errors.is_public && (
                                     <p

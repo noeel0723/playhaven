@@ -64,3 +64,18 @@ export type OwnPlayer = {
     following_count: number;
     games_count: number;
 };
+
+export type FriendShelfGame = Pick<
+    CatalogGame,
+    'id' | 'name' | 'slug' | 'cover_url'
+>;
+export type FriendStatusActivity = {
+    game: FriendShelfGame;
+    status: 'playing' | 'paused' | 'completed';
+    changed_at: string | null;
+    player: { username: string; name: string; avatar_url: string | null };
+};
+export type FriendShelves = {
+    recent: FriendStatusActivity[];
+    popular: { game: FriendShelfGame; friends_count: number }[];
+};

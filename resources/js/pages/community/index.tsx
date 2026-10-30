@@ -1,18 +1,24 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Users } from 'lucide-react';
 import CommunityStory from '@/components/community-story';
+import FriendGameShelves from '@/components/friend-game-shelves';
 import HistoryPagination from '@/components/history-pagination';
 import { Button } from '@/components/ui/button';
 import { index } from '@/routes/community';
 import { index as players, me } from '@/routes/players';
-import type { CommunityReviewPagination } from '@/types/community';
+import type {
+    CommunityReviewPagination,
+    FriendShelves,
+} from '@/types/community';
 
 export default function Community({
     reviews,
     feed,
+    friendShelves,
 }: {
     reviews: CommunityReviewPagination;
     feed: 'everyone' | 'following';
+    friendShelves: FriendShelves | null;
 }) {
     const { auth } = usePage().props;
     return (
@@ -36,6 +42,10 @@ export default function Community({
                     )}
                 </div>
             </header>
+            {friendShelves && <FriendGameShelves shelves={friendShelves} />}
+            <h2 className="mb-3 text-sm font-medium" id="community-reviews">
+                Reviews
+            </h2>
             <nav
                 aria-label="Community feed"
                 className="mb-5 flex gap-6 border-b border-white/10"

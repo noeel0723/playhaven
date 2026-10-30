@@ -22,7 +22,7 @@ The compact **Profile visibility** menu in the information form offers Private a
 
 Existing completed entries retain a null completion date; migration and unrelated edits do not invent a historical date. Known completion times sort newest first, followed by undated entries with a deterministic ID tie-break. Undated cards say **Date not recorded**. No automatic backfill rewrites the user's history.
 
-The completion resource exposes only `game`, `rating`, and `completed_at`. It excludes library IDs, favorite flags, private reviews, diary text, session durations, and other statuses. This shelf does not publish activity into the community feed, which continues to contain eligible public reviews.
+The completion resource exposes only `game`, `rating`, and `completed_at`. It excludes library IDs, favorite flags, private reviews, diary text, session durations, and other statuses. Community reviews remain separately published; the personalized friend shelves can also show current Playing, Paused, and Completed states to followers of a Public profile. See [friend shelves](COMMUNITY.md#friend-game-shelves).
 
 ## Verification
 
