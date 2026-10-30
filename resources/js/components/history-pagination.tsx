@@ -6,15 +6,17 @@ import type { CatalogPagination } from '@/types/catalog';
 export default function HistoryPagination({
     pagination,
     label,
+    compact = false,
 }: {
     pagination: Pick<CatalogPagination, 'links' | 'meta'>;
     label: string;
+    compact?: boolean;
 }) {
     if (!pagination.links.prev && !pagination.links.next) return null;
     return (
         <nav
             aria-label={label}
-            className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6"
+            className={`flex flex-wrap items-center justify-between border-t border-white/10 ${compact ? 'mt-5 gap-3 pt-4' : 'mt-8 gap-4 pt-6'}`}
         >
             <p className="text-xs text-[#bdb6b1]">
                 Page {pagination.meta.current_page} of{' '}
@@ -22,16 +24,40 @@ export default function HistoryPagination({
             </p>
             <div className="flex gap-3">
                 {pagination.links.prev && (
-                    <Button asChild variant="outline">
-                        <Link href={pagination.links.prev} preserveScroll>
+                    <Button
+                        asChild
+                        variant="outline"
+                        size={compact ? 'sm' : 'default'}
+                        className={
+                            compact
+                                ? 'border-shadow bg-rein/30 text-[#f4f1ed] hover:bg-rein hover:text-white'
+                                : undefined
+                        }
+                    >
+                        <Link
+                            href={pagination.links.prev}
+                            preserveScroll={!compact}
+                        >
                             <ArrowLeft aria-hidden="true" />
                             Previous
                         </Link>
                     </Button>
                 )}
                 {pagination.links.next && (
-                    <Button asChild variant="outline">
-                        <Link href={pagination.links.next} preserveScroll>
+                    <Button
+                        asChild
+                        variant="outline"
+                        size={compact ? 'sm' : 'default'}
+                        className={
+                            compact
+                                ? 'border-shadow bg-rein/30 text-[#f4f1ed] hover:bg-rein hover:text-white'
+                                : undefined
+                        }
+                    >
+                        <Link
+                            href={pagination.links.next}
+                            preserveScroll={!compact}
+                        >
                             Next
                             <ArrowRight aria-hidden="true" />
                         </Link>

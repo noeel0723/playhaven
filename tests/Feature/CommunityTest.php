@@ -224,8 +224,13 @@ class CommunityTest extends TestCase
             $this->review($writer);
         }
         GameList::factory()->for($writer)->count(7)->create(['visibility' => 'public']);
+        $this->get('/community')->assertInertia(fn (Assert $page) => $page
+            ->has('reviews.data', 8)->where('reviews.meta.per_page', 8)->where('reviews.meta.last_page', 2));
         $this->actingAs($viewer)->get('/community?feed=following')->assertInertia(fn (Assert $page) => $page
-            ->has('reviews.data', 12)->where('reviews.meta.total', 13)->where('reviews.links.next', fn ($url) => str_contains($url, 'feed=following') && str_contains($url, 'page=2')));
+            ->has('reviews.data', 8)->where('reviews.meta.total', 13)->where('reviews.links.next', fn ($url) => str_contains($url, 'feed=following') && str_contains($url, 'page=2')));
+        $this->get('/community?feed=following&page=2')->assertInertia(fn (Assert $page) => $page
+            ->has('reviews.data', 5)->where('feed', 'following')->where('reviews.meta.current_page', 2)
+            ->where('reviews.links.prev', fn ($url) => str_contains($url, 'feed=following'))->where('reviews.links.next', null));
         $this->get('/players/many_stories')->assertInertia(fn (Assert $page) => $page->has('reviews.data', 12)->has('lists.data', 6)
             ->where('reviews.links.next', fn ($url) => str_contains($url, 'reviews_page=2'))->where('lists.links.next', fn ($url) => str_contains($url, 'lists_page=2')));
     }

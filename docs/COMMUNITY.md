@@ -1,6 +1,8 @@
 # Players, follows, and community stories
 
-Open **Community** in the main navigation. The first community feed contains public reviews from authors who have opted into a public player profile. **Everyone** shows all eligible reviews; **Following** requires login and limits the same query to followed authors. Reviews sort by most recently edited, then ID, with 12 per page. This is a view of current published reviews, not an immutable event history. Deleted reviews, unpublished reviews, and hidden profiles leave the feed immediately on the next request.
+Open **Community** in the main navigation. The first community feed contains public reviews from authors who have opted into a public player profile. **Everyone** shows all eligible reviews; **Following** requires login and limits the same query to followed authors. Reviews sort by most recently edited, then ID, with 8 per page. This is a view of current published reviews, not an immutable event history. Deleted reviews, unpublished reviews, and hidden profiles leave the feed immediately on the next request.
+
+The feed uses a simple Community heading and compact review cards aligned with the left edge of the content. Cards retain author and game links, ratings, dates, full review text, and spoiler disclosure. Pagination shares the review column width, preserves the selected feed, and returns to the top when changing pages.
 
 ## Player profiles
 

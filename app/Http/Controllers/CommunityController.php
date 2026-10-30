@@ -24,7 +24,7 @@ class CommunityController extends Controller
         }
 
         return Inertia::render('community/index', [
-            'reviews' => CommunityReviewResource::collection($reviews->paginate(12)->withQueryString()),
+            'reviews' => CommunityReviewResource::collection($reviews->paginate(8)->withQueryString()),
             'feed' => $feed,
         ]);
     }
