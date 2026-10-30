@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Gamepad2, LockKeyhole } from 'lucide-react';
+import { Gamepad2 } from 'lucide-react';
 import GameCover from '@/components/game-cover';
 import StarRating from '@/components/star-rating';
 import { show } from '@/routes/games';
@@ -52,7 +52,6 @@ function Poster({
 export default function ProfileGameShelves({
     topGames,
     recentCompleted,
-    recentCompletedShared,
     isOwner,
     showEditLinks = true,
     showRecentCompleted = true,
@@ -60,7 +59,6 @@ export default function ProfileGameShelves({
 }: {
     topGames: CatalogGame[];
     recentCompleted: CompletedGame[];
-    recentCompletedShared: boolean;
     isOwner: boolean;
     showEditLinks?: boolean;
     showRecentCompleted?: boolean;
@@ -144,19 +142,7 @@ export default function ProfileGameShelves({
                             </Link>
                         )}
                     </div>
-                    {!recentCompletedShared ? (
-                        <div className="flex items-start gap-3 rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
-                            <LockKeyhole
-                                className="mt-1 size-4 shrink-0"
-                                aria-hidden="true"
-                            />
-                            <p>
-                                {isOwner
-                                    ? 'Recent completions are private. Turn on sharing in your profile shelves to display your latest four.'
-                                    : 'This player keeps their recent completions private.'}
-                            </p>
-                        </div>
-                    ) : recentCompleted.length ? (
+                    {recentCompleted.length ? (
                         <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
                             {recentCompleted.map((entry) => (
                                 <div key={entry.game.id} className="min-w-0">

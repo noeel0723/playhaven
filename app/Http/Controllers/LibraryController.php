@@ -90,7 +90,7 @@ class LibraryController extends Controller
         foreach (LibraryStatus::cases() as $status) {
             $counts[$status->value] = (int) ($grouped[$status->value] ?? 0);
         }
-        $counts['total'] = array_sum($counts);
+        $counts['total'] = (int) $grouped->sum();
         $counts['favorites'] = $user->libraryEntries()->where('is_favorite', true)->count();
 
         return $counts;

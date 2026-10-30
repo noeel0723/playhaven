@@ -11,12 +11,10 @@ export default function ProfilePhotoEditor({
     name,
     avatarUrl,
     embedded = false,
-    horizontal = false,
 }: {
     name: string;
     avatarUrl: string | null;
     embedded?: boolean;
-    horizontal?: boolean;
 }) {
     const form = useForm<{ avatar: File | null }>({ avatar: null });
     const removal = useForm({});
@@ -42,7 +40,7 @@ export default function ProfilePhotoEditor({
             className={
                 embedded
                     ? 'scroll-mt-8'
-                    : 'mt-9 scroll-mt-8 rounded-xl border border-shadow bg-rein/15 p-5 sm:p-6'
+                    : 'mt-9 scroll-mt-8 rounded-lg border border-shadow p-4'
             }
             aria-busy={busy}
         >
@@ -51,53 +49,28 @@ export default function ProfilePhotoEditor({
                 className={
                     embedded
                         ? 'border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm'
-                        : 'font-serif text-2xl'
+                        : 'text-sm font-medium'
                 }
             >
                 Profile photo
             </h2>
-            <p className="mt-3 text-sm leading-7 text-[#bdb6b1]">
-                A familiar face for your haven. Your photo follows your player
-                profile visibility.
-            </p>
-            <div
-                className={
-                    horizontal
-                        ? 'mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12'
-                        : undefined
-                }
-            >
-                <div
-                    className={
-                        horizontal
-                            ? 'flex flex-wrap items-center gap-5'
-                            : 'mt-6 flex flex-wrap items-center gap-5'
-                    }
-                >
-                    <PlayerAvatar
-                        key={preview ?? avatarUrl ?? 'initials'}
-                        name={name}
-                        src={preview ?? avatarUrl}
-                        className="size-24 border-2 sm:size-28"
-                    />
-                    <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-[#e0d9d3]">
-                            {preview
-                                ? 'Preview · save to apply'
-                                : avatarUrl
-                                  ? 'Your current photo'
-                                  : 'Make this profile yours'}
-                        </p>
-                        <p className="mt-2 text-xs leading-6 text-[#bdb6b1]">
-                            JPEG, PNG, or WebP. Up to 5 MB and 64–4096 pixels
-                            per side. Saved as a centered square; a face near
-                            the center works best.
-                        </p>
-                    </div>
-                </div>
-                <div className="min-w-0">
+            <div className="mt-4 flex max-w-xl items-start gap-4">
+                <PlayerAvatar
+                    key={preview ?? avatarUrl ?? 'initials'}
+                    name={name}
+                    src={preview ?? avatarUrl}
+                    className="size-16 shrink-0 border sm:size-20"
+                />
+                <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-[#e0d9d3]">
+                        {preview
+                            ? 'Preview · save to apply'
+                            : avatarUrl
+                              ? 'Your current photo'
+                              : 'Add your profile photo'}
+                    </p>
                     <form
-                        className={horizontal ? 'space-y-4' : 'mt-6 space-y-4'}
+                        className="mt-2 space-y-2"
                         onSubmit={(event) => {
                             event.preventDefault();
                             form.post(store().url, {
@@ -107,7 +80,10 @@ export default function ProfilePhotoEditor({
                             });
                         }}
                     >
-                        <Label htmlFor="profile-photo-file">
+                        <Label
+                            htmlFor="profile-photo-file"
+                            className="text-xs text-[#bdb6b1]"
+                        >
                             Choose a photo
                         </Label>
                         <Input
@@ -117,7 +93,7 @@ export default function ProfilePhotoEditor({
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
                             disabled={busy}
-                            className="h-auto min-h-10 w-full min-w-0 border-shadow bg-rein text-xs file:mr-3 file:rounded file:border-0 file:bg-[#4e4949] file:px-3 file:py-2 file:text-xs file:text-white"
+                            className="h-auto min-h-8 w-full min-w-0 border-shadow bg-rein px-2 py-1 text-xs file:mr-2 file:rounded file:border-0 file:bg-[#4e4949] file:px-2 file:py-1 file:text-xs file:text-white"
                             aria-invalid={Boolean(form.errors.avatar)}
                             aria-describedby="profile-photo-help"
                             onChange={(event) => {
@@ -149,14 +125,13 @@ export default function ProfilePhotoEditor({
                         />
                         <p
                             id="profile-photo-help"
-                            className="text-xs leading-6 text-[#bdb6b1]"
+                            className="text-[11px] leading-5 text-[#bdb6b1]"
                         >
-                            If your profile is private, only you can access the
-                            photo. Turning the profile public shares it on your
-                            profile and public contributions.
+                            JPEG, PNG or WebP · Up to 5 MB · 64–4096 px. Cropped
+                            to a square.
                         </p>
                         {form.errors.avatar && (
-                            <p role="alert" className="text-sm text-red-300">
+                            <p role="alert" className="text-xs text-red-300">
                                 {form.errors.avatar}
                             </p>
                         )}
@@ -165,10 +140,12 @@ export default function ProfilePhotoEditor({
                                 {form.progress.percentage}% uploaded
                             </p>
                         )}
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                             <Button
                                 type="submit"
+                                size="sm"
                                 disabled={!form.data.avatar || busy}
+                                className="h-8 text-xs"
                             >
                                 <Camera aria-hidden="true" />
                                 {form.processing ? 'Uploading…' : 'Save photo'}
@@ -176,41 +153,39 @@ export default function ProfilePhotoEditor({
                             {preview && (
                                 <Button
                                     type="button"
+                                    size="sm"
                                     variant="ghost"
                                     disabled={busy}
                                     onClick={clearSelection}
+                                    className="h-8 text-xs"
                                 >
                                     Cancel selection
                                 </Button>
                             )}
+                            {avatarUrl && (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="ghost"
+                                    disabled={busy}
+                                    className="h-8 text-xs text-[#bdb6b1]"
+                                    onClick={() =>
+                                        removal.delete(destroy().url, {
+                                            preserveScroll: true,
+                                            onSuccess: clearSelection,
+                                        })
+                                    }
+                                >
+                                    <Trash2 aria-hidden="true" />
+                                    {removal.processing
+                                        ? 'Removing…'
+                                        : 'Remove photo'}
+                                </Button>
+                            )}
                         </div>
                     </form>
-                    {avatarUrl && (
-                        <form
-                            className="mt-4"
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                removal.delete(destroy().url, {
-                                    preserveScroll: true,
-                                    onSuccess: clearSelection,
-                                });
-                            }}
-                        >
-                            <Button
-                                type="submit"
-                                variant="ghost"
-                                disabled={busy}
-                                className="text-[#bdb6b1]"
-                            >
-                                <Trash2 aria-hidden="true" />
-                                {removal.processing
-                                    ? 'Removing…'
-                                    : 'Remove photo'}
-                            </Button>
-                        </form>
-                    )}
                     {Object.values(removal.errors).length > 0 && (
-                        <p role="alert" className="mt-3 text-sm text-red-300">
+                        <p role="alert" className="mt-2 text-xs text-red-300">
                             {Object.values(removal.errors).join(' ')}
                         </p>
                     )}

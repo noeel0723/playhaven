@@ -14,7 +14,7 @@ class ProfileActivityResource extends JsonResource
     {
         return [
             'game' => (new GameResource($this->game))->resolve($request),
-            'status' => $this->status->value,
+            'status' => $this->status?->value,
             'rating' => $this->rating?->stars,
             'has_review' => $this->review !== null,
             'occurred_at' => $this->getAttribute('activity_at'),

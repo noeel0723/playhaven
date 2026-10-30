@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Game;
 use App\Models\GameList;
 use App\Models\GameListItem;
 use Illuminate\Http\RedirectResponse;
@@ -14,7 +15,7 @@ class GameListItemController extends Controller
 {
     public function store(Request $request, GameList $gameList): RedirectResponse
     {
-        $data = $request->validate(['game_id' => ['required', 'integer', 'exists:games,id'], 'notes' => ['nullable', 'string', 'max:2000']]);
+        $data = $request->validate(['game_id' => ['required', 'integer', 'exists:games,id'], 'notes' => ['nullable', 'string', 'max:2000'], 'return_to_game' => ['sometimes', 'boolean']]);
         $list = DB::transaction(function () use ($request, $gameList, $data): GameList {
             $list = $request->user()->gameLists()->whereKey($gameList->id)->lockForUpdate()->firstOrFail();
             $list->items()->firstOrCreate(['game_id' => $data['game_id']], ['position' => (int) $list->items()->max('position') + 1, 'notes' => $data['notes'] ?? null]);
@@ -22,6 +23,12 @@ class GameListItemController extends Controller
 
             return $list;
         });
+
+        if ($request->boolean('return_to_game')) {
+            Inertia::flash('toast', ['type' => 'success', 'message' => 'Game added to your list.']);
+
+            return to_route('games.show', Game::whereKey($data['game_id'])->firstOrFail()->slug);
+        }
 
         return $this->redirect($list, 'Game added to your list.');
     }

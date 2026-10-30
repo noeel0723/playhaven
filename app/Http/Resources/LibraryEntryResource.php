@@ -14,7 +14,7 @@ class LibraryEntryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'status' => $this->status->value,
+            'status' => $this->status?->value,
             'is_favorite' => $this->is_favorite,
             'your_rating' => $this->whenLoaded('rating', fn () => $this->rating?->stars),
             'updated_at' => $this->updated_at?->toISOString(),

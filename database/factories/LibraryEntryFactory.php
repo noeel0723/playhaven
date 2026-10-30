@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\LibraryStatus;
 use App\Models\Game;
 use App\Models\LibraryEntry;
 use App\Models\User;
@@ -17,7 +16,7 @@ class LibraryEntryFactory extends Factory
         return [
             'user_id' => User::factory(),
             'game_id' => Game::factory(),
-            'status' => LibraryStatus::Backlog,
+            'status' => null,
             'is_favorite' => false,
         ];
     }

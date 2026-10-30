@@ -17,7 +17,7 @@ class SaveLibraryEntryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::enum(LibraryStatus::class)],
+            'status' => ['present', 'nullable', Rule::enum(LibraryStatus::class)],
             'is_favorite' => ['required', 'boolean'],
         ];
     }

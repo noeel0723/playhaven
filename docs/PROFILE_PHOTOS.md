@@ -1,6 +1,6 @@
 # Player profile photos
 
-Open **Profile → Edit profile → Profile photo** at `/community/profile/edit#profile-photo`, or use **Manage profile photo** in account settings. Save the basic player profile first if it has not been created yet.
+Open **Profile → Edit profile → Profile photo** at `/community/profile/edit#profile-photo`, or use **Manage profile photo** in account settings. A compact block places the file picker immediately below the current-photo label, beside the avatar, with small Save/Remove controls. Photo upload works immediately, independently of profile information and Top 4. A successful first upload creates a private profile with no username or display name; browsing the editor or an invalid upload creates nothing.
 
 The photo section is the first section in the dedicated editor, above both Profile information and Top 4 on desktop and phones. Its preview and upload controls sit side by side on wide screens and stack on narrow screens. The main Profile overview has no upload form. Photo upload, preview, replacement, removal, and visibility continue through the existing mutation routes, which return to the editor.
 

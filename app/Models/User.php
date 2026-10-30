@@ -65,6 +65,14 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->hasOne(UserProfile::class);
     }
 
+    public function ensurePlayerProfile(): UserProfile
+    {
+        $profile = $this->profile()->firstOrCreate([], ['is_public' => false]);
+        $this->setRelation('profile', $profile);
+
+        return $profile;
+    }
+
     /** @param Builder<User> $query */
     public function scopePublicPlayer(Builder $query): void
     {

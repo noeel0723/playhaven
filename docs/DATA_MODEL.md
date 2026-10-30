@@ -44,7 +44,7 @@ Local foreign keys always reference local IDs, never provider IDs. This keeps pl
 | Table             | Purpose and key rules                                                                                                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `user_profiles`   | Optional profile per user; username, display name, bio, avatar path. A unique index on `LOWER(username)` prevents case-only duplicates. Multiple unset usernames are allowed. |
-| `library_entries` | One row per user/game. Status is `playing`, `completed`, `paused`, `dropped`, or `backlog`. Also stores favorite state.                                                       |
+| `library_entries` | One row per user/game. Status is nullable: `playing`, `completed`, `paused`, or `dropped`. Null means saved without a playing status. Also stores favorite state.             |
 | `playthroughs`    | Multiple runs per library entry. Optional label and platform, status, start and finish dates. A run has no backlog status; finish date cannot precede a known start date.     |
 | `diary_entries`   | Sessions attached to a playthrough, with log date, optional nonnegative minutes, and notes. Multiple sessions on the same day are valid.                                      |
 | `ratings`         | At most one current rating per library entry. Integer `score` between 1 and 10; no row means unrated.                                                                         |
@@ -78,7 +78,7 @@ The schema permits list-position gaps or ties. The implemented list actions orde
 
 The existing `user_profiles.avatar_path` stores a generated normalized-photo path on the private local disk. Controlled image routes enforce ownership/profile visibility and resource DTOs expose only photo URLs. Replacements and account/profile deletion retire stored images after commit; no avatar migration is required. See [profile photos](PROFILE_PHOTOS.md).
 
-`profile_game_favorites` connects a profile to at most four distinct local games with unique positions 1–4, independently of library favorite flags. `user_profiles.share_recent_completed` defaults to false and permits the explicit public sharing of four current completed games. `library_entries.completed_at` tracks transitions into Completed without using metadata-edit timestamps or changing playthrough history. Old entries with unknown completion dates remain null. See [profile shelves](PROFILE_SHELVES.md).
+`profile_game_favorites` connects a profile to at most four distinct local games with unique positions 1–4, independently of library favorite flags. Completion sharing follows `user_profiles.is_public`. The legacy `share_recent_completed` column is retained for migration compatibility but is no longer read, accepted, or returned by the application. `library_entries.completed_at` tracks transitions into Completed without using metadata-edit timestamps or changing playthrough history. Old entries with unknown completion dates remain null. See [profile shelves](PROFILE_SHELVES.md).
 
 ## Ownership, deletion, and indexing
 

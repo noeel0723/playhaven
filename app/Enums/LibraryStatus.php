@@ -8,5 +8,4 @@ enum LibraryStatus: string
     case Completed = 'completed';
     case Paused = 'paused';
     case Dropped = 'dropped';
-    case Backlog = 'backlog';
 }

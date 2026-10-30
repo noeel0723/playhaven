@@ -496,7 +496,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                 <section aria-labelledby="played-genres">
                     <SectionTitle
                         id="played-genres"
-                        detail="Current library · excludes backlog"
+                        detail="Current library · games with a playing status"
                     >
                         Your played genres
                     </SectionTitle>
@@ -537,8 +537,8 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         </div>
                     ) : (
                         <p className="rounded-lg border border-dashed border-shadow p-6 text-sm leading-7 text-[#bdb6b1]">
-                            Genre insights appear when games beyond your backlog
-                            have genre information.
+                            Genre insights appear when games with a playing
+                            status have genre information.
                         </p>
                     )}
                     <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">

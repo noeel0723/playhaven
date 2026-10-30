@@ -16,7 +16,7 @@ class PlayerStatistics
         foreach (LibraryStatus::cases() as $status) {
             $statuses[$status->value] = (int) ($statusRows[$status->value] ?? 0);
         }
-        $total = array_sum($statuses);
+        $total = (int) $statusRows->sum();
         $ratingRows = $user->ratings()->selectRaw('score, COUNT(*) AS votes')->groupBy('score')->pluck('votes', 'score');
         $ratings = [];
         $ratingCount = 0;
@@ -56,7 +56,7 @@ class PlayerStatistics
             ->map(fn (object $row): array => ['id' => (int) $row->id, 'name' => $row->name, 'slug' => $row->slug, 'minutes' => (int) $row->minutes, 'sessions' => (int) $row->sessions])->all();
         $genres = DB::table('genres')->join('game_genre', 'game_genre.genre_id', '=', 'genres.id')
             ->join('library_entries', 'library_entries.game_id', '=', 'game_genre.game_id')
-            ->where('library_entries.user_id', $user->id)->where('library_entries.status', '<>', LibraryStatus::Backlog->value)
+            ->where('library_entries.user_id', $user->id)->whereNotNull('library_entries.status')
             ->select(['genres.id', 'genres.name', 'genres.slug'])->selectRaw('COUNT(DISTINCT library_entries.game_id) AS games')
             ->groupBy('genres.id', 'genres.name', 'genres.slug')->orderByDesc('games')->orderBy('genres.name')->orderBy('genres.id')->limit(8)->get()
             ->map(fn (object $row): array => ['id' => (int) $row->id, 'name' => $row->name, 'slug' => $row->slug, 'games' => (int) $row->games])->all();

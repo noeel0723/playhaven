@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
-#[Fillable(['user_id', 'username', 'display_name', 'bio', 'location', 'avatar_path', 'is_public', 'share_recent_completed'])]
+#[Fillable(['user_id', 'username', 'display_name', 'bio', 'location', 'avatar_path', 'is_public'])]
 class UserProfile extends Model
 {
     /** @use HasFactory<UserProfileFactory> */
@@ -28,7 +28,7 @@ class UserProfile extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['is_public' => 'boolean', 'share_recent_completed' => 'boolean'];
+        return ['is_public' => 'boolean'];
     }
 
     /** @return BelongsToMany<Game, $this> */

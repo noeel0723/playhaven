@@ -10,11 +10,9 @@ export default function LibraryGameCard({ entry }: { entry: LibraryEntry }) {
             <GameCard game={entry.game} />
             <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/10 pt-3 text-xs text-[#d5cec7]">
                 <span>
-                    {
-                        libraryStatuses.find(
-                            (status) => status.value === entry.status,
-                        )?.label
-                    }
+                    {libraryStatuses.find(
+                        (status) => status.value === entry.status,
+                    )?.label ?? 'In library'}
                 </span>
                 {entry.is_favorite && (
                     <Heart

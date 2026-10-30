@@ -30,7 +30,7 @@ export default function LibraryEditor({
 }) {
     const { auth } = usePage().props;
     const form = useForm<LibraryState>({
-        status: entry?.status ?? 'backlog',
+        status: entry?.status ?? null,
         is_favorite: entry?.is_favorite ?? false,
     });
     const removal = useForm({ confirm: true });
@@ -89,7 +89,7 @@ export default function LibraryEditor({
                                 <select
                                     id="library-status"
                                     name="status"
-                                    value={form.data.status}
+                                    value={form.data.status ?? ''}
                                     onChange={(event) =>
                                         form.setData(
                                             'status',
@@ -100,6 +100,9 @@ export default function LibraryEditor({
                                     disabled={busy}
                                     className="h-11 w-full rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                                 >
+                                    <option value="" disabled>
+                                        Choose a playing status
+                                    </option>
                                     {libraryStatuses.map((status) => (
                                         <option
                                             key={status.value}

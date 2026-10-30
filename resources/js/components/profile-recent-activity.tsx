@@ -10,7 +10,6 @@ const statusLabels = {
     completed: 'Completed',
     paused: 'Paused',
     dropped: 'Dropped',
-    backlog: 'Backlog',
 };
 
 export default function ProfileRecentActivity({
@@ -67,7 +66,9 @@ export default function ProfileRecentActivity({
                                 {activity.game.name}
                             </p>
                             <p className="mt-1 text-[10px] text-[#bdb6b1] sm:text-xs">
-                                {statusLabels[activity.status]}
+                                {activity.status === null
+                                    ? 'In library'
+                                    : statusLabels[activity.status]}
                             </p>
                             <time
                                 dateTime={activity.occurred_at}

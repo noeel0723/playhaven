@@ -46,18 +46,15 @@ export default function EditPlayer({
                     Back to your profile
                 </Link>
             </div>
-            {profile && (
-                <div className="mb-12 border-b border-white/10 pb-10">
-                    <ProfilePhotoEditor
-                        name={
-                            profile.display_name || profile.username || 'Player'
-                        }
-                        avatarUrl={profile.avatar_url}
-                        embedded
-                        horizontal
-                    />
-                </div>
-            )}
+            <div className="mb-8 border-b border-white/10 pb-6">
+                <ProfilePhotoEditor
+                    name={
+                        profile?.display_name || profile?.username || 'Player'
+                    }
+                    avatarUrl={profile?.avatar_url ?? null}
+                    embedded
+                />
+            </div>
             <div className="grid items-start gap-12 lg:grid-cols-2 xl:gap-20">
                 <div className="min-w-0">
                     <section aria-labelledby="profile-details-title">
@@ -207,40 +204,42 @@ export default function EditPlayer({
                                     </p>
                                 )}
                             </div>
-                            <div className="rounded-xl border border-shadow bg-rein/30 p-5">
+                            <div className="space-y-2">
                                 <Label
                                     htmlFor="public-profile"
-                                    className="flex items-start gap-3 leading-6"
+                                    className="text-sm"
                                 >
-                                    <input
-                                        id="public-profile"
-                                        name="is_public"
-                                        type="checkbox"
-                                        checked={form.data.is_public}
-                                        onChange={(event) =>
-                                            form.setData(
-                                                'is_public',
-                                                event.target.checked,
-                                            )
-                                        }
-                                        className="mt-1 size-4 shrink-0 accent-[#807d7d]"
-                                    />
-                                    <span>Make my player profile public</span>
+                                    Profile visibility
                                 </Label>
-                                <p className="mt-3 text-sm leading-7 text-[#bdb6b1]">
-                                    A public profile appears in player discovery
-                                    and community feeds with your public reviews
-                                    and public lists. Top 4 picks and recent
-                                    completions are managed alongside these
-                                    details. Your diary, private reviews, and
-                                    private or unlisted lists stay off this
-                                    profile.
-                                </p>
-                                <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
-                                    Switch this off to hide your player profile
-                                    from the community. Reviews and lists you
-                                    already made public remain accessible on
-                                    their existing game and list pages.
+                                <select
+                                    id="public-profile"
+                                    name="is_public"
+                                    value={
+                                        form.data.is_public
+                                            ? 'public'
+                                            : 'private'
+                                    }
+                                    onChange={(event) =>
+                                        form.setData(
+                                            'is_public',
+                                            event.target.value === 'public',
+                                        )
+                                    }
+                                    aria-describedby="profile-visibility-help"
+                                    aria-invalid={Boolean(
+                                        form.errors.is_public,
+                                    )}
+                                    className="h-9 w-36 rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                                >
+                                    <option value="private">Private</option>
+                                    <option value="public">Public</option>
+                                </select>
+                                <p
+                                    id="profile-visibility-help"
+                                    className="text-xs leading-5 text-[#bdb6b1]"
+                                >
+                                    Public profiles also show your four latest
+                                    completed games.
                                 </p>
                                 {form.errors.is_public && (
                                     <p
@@ -273,27 +272,12 @@ export default function EditPlayer({
                     </section>
                 </div>
                 <aside aria-label="Edit your Top 4 games" className="min-w-0">
-                    {profile ? (
-                        <ProfileShowcaseEditor
-                            topGames={topGames}
-                            shareRecentCompleted={
-                                profile.share_recent_completed
-                            }
-                            availableGames={availableGames}
-                            query={query}
-                            embedded
-                        />
-                    ) : (
-                        <section id="profile-shelves">
-                            <h2 className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm">
-                                Top 4 Games
-                            </h2>
-                            <p className="mt-5 text-sm leading-7 text-[#bdb6b1]">
-                                Save your profile information first, then choose
-                                and arrange up to four favorites here.
-                            </p>
-                        </section>
-                    )}
+                    <ProfileShowcaseEditor
+                        topGames={topGames}
+                        availableGames={availableGames}
+                        query={query}
+                        embedded
+                    />
                 </aside>
             </div>
         </>

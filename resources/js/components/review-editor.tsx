@@ -20,9 +20,11 @@ import type { PersonalReview } from '@/types/reviews';
 export default function ReviewEditor({
     gameSlug,
     review,
+    onSaved,
 }: {
     gameSlug: string;
     review: PersonalReview | null;
+    onSaved?: () => void;
 }) {
     const form = useForm({
         body: review?.body ?? '',
@@ -68,7 +70,10 @@ export default function ReviewEditor({
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
-                    form.put(update(gameSlug).url, { preserveScroll: true });
+                    form.put(update(gameSlug).url, {
+                        preserveScroll: true,
+                        onSuccess: onSaved,
+                    });
                 }}
                 className="space-y-4"
             >

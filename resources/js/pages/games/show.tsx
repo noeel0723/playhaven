@@ -1,14 +1,13 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, ExternalLink, Star, Users } from 'lucide-react';
 import GameCover from '@/components/game-cover';
+import GameActionCard from '@/components/game-action-card';
+import type { GameActionList } from '@/components/game-action-card';
 import CommunityReviews from '@/components/community-reviews';
 import GameConnections from '@/components/game-connections';
-import LibraryEditor from '@/components/library-editor';
-import RatingEditor from '@/components/rating-editor';
-import ReviewEditor from '@/components/review-editor';
-import { Button } from '@/components/ui/button';
+
 import { index } from '@/routes/games';
-import { index as playthroughs } from '@/routes/playthroughs';
+
 import type { CatalogGame } from '@/types/catalog';
 import type { ConnectionState, GameConnection } from '@/types/connections';
 import type { LibraryState } from '@/types/library';
@@ -22,6 +21,7 @@ export default function GameDetails({
     reviews,
     connections,
     connectionState,
+    availableLists = [],
 }: {
     game: CatalogGame;
     libraryEntry: LibraryState | null;
@@ -30,6 +30,7 @@ export default function GameDetails({
     reviews: ReviewPagination;
     connections: GameConnection[];
     connectionState: ConnectionState;
+    availableLists?: GameActionList[];
 }) {
     const release = game.released_on
         ? new Intl.DateTimeFormat('en', {
@@ -57,8 +58,8 @@ export default function GameDetails({
                 <ArrowLeft className="size-4" aria-hidden="true" />
                 All games
             </Link>
-            <article className="grid gap-10 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] lg:gap-16">
-                <aside>
+            <article className="grid items-start gap-8 md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)_260px] xl:grid-cols-[240px_minmax(0,1fr)_280px] xl:gap-10">
+                <aside className="md:row-span-2">
                     <GameCover
                         key={game.id}
                         game={game}
@@ -68,7 +69,7 @@ export default function GameDetails({
                         {game.released_on?.slice(0, 4) ?? 'Release TBA'}
                     </p>
                 </aside>
-                <div className="min-w-0">
+                <div className="min-w-0 md:col-start-2 lg:col-start-2">
                     <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
                         A world to explore
                     </p>
@@ -150,26 +151,19 @@ export default function GameDetails({
                             </p>
                         </div>
                     </div>
-                    <LibraryEditor
-                        key={`${game.id}:${libraryEntry?.status}:${libraryEntry?.is_favorite}`}
+                </div>
+                <aside className="min-w-0 self-start md:col-start-2 lg:sticky lg:top-6 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+                    <GameActionCard
+                        gameId={game.id}
                         gameSlug={game.slug}
                         gameName={game.name}
                         entry={libraryEntry}
+                        rating={personalRating}
+                        review={personalReview}
+                        availableLists={availableLists}
                     />
-                    {libraryEntry && (
-                        <>
-                            <Button asChild variant="outline" className="mb-6">
-                                <Link href={playthroughs(game.slug)}>
-                                    Playthroughs & diary
-                                </Link>
-                            </Button>
-                            <RatingEditor
-                                key={`${game.id}:rating:${personalRating}`}
-                                gameSlug={game.slug}
-                                rating={personalRating}
-                            />
-                        </>
-                    )}
+                </aside>
+                <div className="min-w-0 md:col-start-2 lg:col-start-2 lg:row-start-2">
                     <section aria-labelledby="about-game">
                         <h2
                             id="about-game"
@@ -279,23 +273,18 @@ export default function GameDetails({
                             </dd>
                         </div>
                     </dl>
-                    <GameConnections
-                        key={game.id}
-                        gameSlug={game.slug}
-                        connections={connections}
-                        state={connectionState}
-                        reviewsPage={reviews.meta.current_page}
-                    />
-                    {libraryEntry && (
-                        <ReviewEditor
-                            key={`${game.id}:review:${personalReview?.id}:${personalReview?.updated_at}`}
-                            gameSlug={game.slug}
-                            review={personalReview}
-                        />
-                    )}
-                    <CommunityReviews reviews={reviews} />
                 </div>
             </article>
+            <div className="mt-12">
+                <GameConnections
+                    key={game.id}
+                    gameSlug={game.slug}
+                    connections={connections}
+                    state={connectionState}
+                    reviewsPage={reviews.meta.current_page}
+                />
+                <CommunityReviews reviews={reviews} />
+            </div>
         </>
     );
 }

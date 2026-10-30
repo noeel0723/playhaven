@@ -33,7 +33,6 @@ export type PlayerProfile = {
     bio: string | null;
     location: string | null;
     is_public: boolean;
-    share_recent_completed: boolean;
     avatar_url: string | null;
 };
 
@@ -45,7 +44,7 @@ export type CompletedGame = {
 
 export type ProfileGameActivity = {
     game: CatalogGame;
-    status: 'playing' | 'completed' | 'paused' | 'dropped' | 'backlog';
+    status: 'playing' | 'completed' | 'paused' | 'dropped' | null;
     rating: number | null;
     has_review: boolean;
     occurred_at: string;

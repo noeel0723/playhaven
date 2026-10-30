@@ -38,7 +38,7 @@ class LibraryTest extends TestCase
     {
         $user = User::factory()->create();
         $game = Game::factory()->create();
-        $this->actingAs($user)->put(route('library.save', $game->slug), ['status' => 'backlog', 'is_favorite' => false])->assertRedirect(route('games.show', $game->slug));
+        $this->actingAs($user)->put(route('library.save', $game->slug), ['status' => null, 'is_favorite' => false])->assertRedirect(route('games.show', $game->slug));
         $id = $user->libraryEntries()->sole()->id;
 
         $this->put(route('library.save', $game->slug), ['status' => $status, 'is_favorite' => true])->assertRedirect(route('games.show', $game->slug));
@@ -108,24 +108,24 @@ class LibraryTest extends TestCase
         $user = User::factory()->create();
         $match = LibraryEntry::factory()->for($user)->for(Game::factory()->state(['name' => '100%_Adventure']))->create(['status' => 'playing', 'is_favorite' => true]);
         LibraryEntry::factory()->for($user)->for(Game::factory()->state(['name' => '100 Days']))->create(['status' => 'playing', 'is_favorite' => true]);
-        LibraryEntry::factory()->for($user)->create(['status' => 'backlog', 'is_favorite' => false]);
+        LibraryEntry::factory()->for($user)->create(['status' => null, 'is_favorite' => false]);
         LibraryEntry::factory()->for(Game::factory()->state(['name' => '100%_Private']))->create(['status' => 'playing', 'is_favorite' => true]);
 
         $this->actingAs($user)->get(route('library.index', ['q' => '%_', 'status' => 'playing', 'favorite' => 1]))->assertOk()->assertInertia(fn (Assert $page) => $page
             ->component('library/index')->has('entries.data', 1)->where('entries.data.0.id', $match->id)
             ->where('entries.data.0.game.name', '100%_Adventure')->missing('entries.data.0.user_id')
-            ->where('counts.total', 3)->where('counts.playing', 2)->where('counts.backlog', 1)->where('counts.favorites', 2));
+            ->where('counts.total', 3)->where('counts.playing', 2)->missing('counts.backlog')->where('counts.favorites', 2));
     }
 
     public function test_name_sort_and_pagination_preserve_filters(): void
     {
         $user = User::factory()->create();
         foreach (range(1, 25) as $number) {
-            LibraryEntry::factory()->for($user)->for(Game::factory()->state(['name' => sprintf('Adventure %02d', $number)]))->create(['status' => 'backlog']);
+            LibraryEntry::factory()->for($user)->for(Game::factory()->state(['name' => sprintf('Adventure %02d', $number)]))->create(['status' => 'playing']);
         }
-        $this->actingAs($user)->get(route('library.index', ['status' => 'backlog', 'sort' => 'name']))->assertOk()->assertInertia(fn (Assert $page) => $page
+        $this->actingAs($user)->get(route('library.index', ['status' => 'playing', 'sort' => 'name']))->assertOk()->assertInertia(fn (Assert $page) => $page
             ->has('entries.data', 24)->where('entries.data.0.game.name', 'Adventure 01')->where('entries.meta.total', 25)
-            ->where('entries.links.next', fn ($url) => str_contains($url, 'status=backlog') && str_contains($url, 'sort=name') && str_contains($url, 'page=2')));
+            ->where('entries.links.next', fn ($url) => str_contains($url, 'status=playing') && str_contains($url, 'sort=name') && str_contains($url, 'page=2')));
     }
 
     public function test_dashboard_shows_only_the_owners_recent_entries_and_empty_counts(): void

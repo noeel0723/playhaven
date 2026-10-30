@@ -89,6 +89,7 @@ class PlayerExperienceTest extends TestCase
     public static function invalidStoredValues(): array
     {
         return [
+            'removed backlog status' => [LibraryEntry::class, 'status', 'backlog'],
             'unknown library status' => [LibraryEntry::class, 'status', 'wishlist'],
             'backlog is not a playthrough' => [Playthrough::class, 'status', 'backlog'],
             'zero rating' => [Rating::class, 'score', 0],
@@ -232,7 +233,7 @@ class PlayerExperienceTest extends TestCase
     {
         $user = User::factory()->create();
         $this->expectException(QueryException::class);
-        DB::table('library_entries')->insert(['user_id' => $user->id, 'game_id' => 999999, 'status' => 'backlog']);
+        DB::table('library_entries')->insert(['user_id' => $user->id, 'game_id' => 999999, 'status' => null]);
     }
 
     public function test_follow_relationships_are_directional(): void

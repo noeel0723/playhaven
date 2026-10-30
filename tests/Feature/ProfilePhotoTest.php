@@ -150,14 +150,16 @@ class ProfilePhotoTest extends TestCase
         $this->assertCount(0, Storage::disk('local')->allFiles('avatars'));
     }
 
-    public function test_guest_unverified_and_profileless_accounts_cannot_upload_photos(): void
+    public function test_guests_and_unverified_users_cannot_upload_photos_but_verified_new_players_can(): void
     {
         $this->post(route('players.photo.store'))->assertRedirect(route('login'));
         $this->delete(route('players.photo.destroy'))->assertRedirect(route('login'));
         $this->actingAs(User::factory()->unverified()->create())->post(route('players.photo.store'))->assertRedirect(route('verification.notice'));
-        $this->actingAs(User::factory()->create())->post(route('players.photo.store'), ['avatar' => UploadedFile::fake()->image('photo.jpg', 80, 80)])->assertSessionHasErrors('avatar');
-        $this->assertDatabaseCount('user_profiles', 0);
-        $this->assertCount(0, Storage::disk('local')->allFiles('avatars'));
+        $newPlayer = User::factory()->create();
+        $this->actingAs($newPlayer)->post(route('players.photo.store'), ['avatar' => UploadedFile::fake()->image('photo.jpg', 80, 80)])->assertSessionHasNoErrors();
+        $this->assertDatabaseCount('user_profiles', 1);
+        $this->assertFalse($newPlayer->profile()->firstOrFail()->is_public);
+        $this->assertCount(1, Storage::disk('local')->allFiles('avatars'));
     }
 
     public function test_public_surfaces_use_the_photo_url_and_hidden_profiles_never_publish_it(): void

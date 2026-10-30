@@ -18,7 +18,6 @@ class SavePlayerShowcaseRequest extends FormRequest
         return [
             'top_games' => ['present', 'array', 'list', 'max:4'],
             'top_games.*' => ['required', 'integer', 'min:1', 'distinct', Rule::exists('games', 'id')],
-            'share_recent_completed' => ['required', 'boolean'],
         ];
     }
 }

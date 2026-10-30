@@ -33,9 +33,9 @@ class PlayerShowcaseTest extends TestCase
         $entry = LibraryEntry::factory()->for($user)->for($games[0])->create(['is_favorite' => false]);
         $before = $entry->fresh()->getRawOriginal();
         $ids = $games->pluck('id')->all();
-        $this->actingAs($user)->put(route('players.showcase'), ['top_games' => $ids, 'share_recent_completed' => false])->assertRedirect(route('players.edit').'#profile-shelves');
+        $this->actingAs($user)->put(route('players.showcase'), ['top_games' => $ids])->assertRedirect(route('players.edit').'#profile-shelves');
         $this->assertSame($ids, $user->profile->topGames()->pluck('games.id')->all());
-        $this->put(route('players.showcase'), ['top_games' => array_reverse($ids), 'share_recent_completed' => false])->assertRedirect();
+        $this->put(route('players.showcase'), ['top_games' => array_reverse($ids)])->assertRedirect();
         $this->assertSame(array_reverse($ids), $user->profile->topGames()->pluck('games.id')->all());
         $this->assertSame($before, $entry->fresh()->getRawOriginal());
         $this->assertDatabaseCount('library_entries', 1);
@@ -50,12 +50,12 @@ class PlayerShowcaseTest extends TestCase
         $otherGame = Game::factory()->create();
         $other->topGames()->attach($otherGame, ['position' => 1]);
         $game = Game::factory()->create();
-        $this->actingAs($owner)->put(route('players.showcase'), ['top_games' => [$game->id], 'share_recent_completed' => true, 'user_id' => $other->user_id, 'user_profile_id' => $other->id])->assertRedirect();
+        $this->actingAs($owner)->put(route('players.showcase'), ['top_games' => [$game->id], 'user_id' => $other->user_id, 'user_profile_id' => $other->id])->assertRedirect();
         $this->assertSame([$otherGame->id], $other->topGames()->pluck('games.id')->all());
-        $this->assertFalse($other->fresh()->share_recent_completed);
-        $this->put(route('players.showcase'), ['top_games' => [], 'share_recent_completed' => false])->assertRedirect();
+        $this->assertFalse($other->fresh()->is_public);
+        $this->put(route('players.showcase'), ['top_games' => []])->assertRedirect();
         $this->assertSame(0, $owner->profile->topGames()->count());
-        $this->assertFalse($owner->profile->fresh()->share_recent_completed);
+        $this->assertTrue($owner->profile->fresh()->is_public);
         $this->assertDatabaseCount('profile_game_favorites', 1);
     }
 
@@ -66,36 +66,38 @@ class PlayerShowcaseTest extends TestCase
         $user->profile->topGames()->attach($games[0], ['position' => 1]);
         $this->actingAs($user);
         foreach ([$games->pluck('id')->all(), [$games[1]->id, $games[1]->id], [999999999], ['bad'], ['named' => $games[1]->id]] as $invalid) {
-            $this->put(route('players.showcase'), ['top_games' => $invalid, 'share_recent_completed' => true])->assertSessionHasErrors();
+            $this->put(route('players.showcase'), ['top_games' => $invalid])->assertSessionHasErrors();
             $this->assertSame([$games[0]->id], $user->profile->topGames()->pluck('games.id')->all());
-            $this->assertFalse($user->profile->fresh()->share_recent_completed);
+            $this->assertTrue($user->profile->fresh()->is_public);
         }
-        $this->put(route('players.showcase'), ['top_games' => [], 'share_recent_completed' => ['bad']])->assertSessionHasErrors('share_recent_completed');
-        $this->put(route('players.showcase'), ['share_recent_completed' => true])->assertSessionHasErrors('top_games');
+        $this->put(route('players.showcase'), [])->assertSessionHasErrors('top_games');
     }
 
-    public function test_guests_unverified_users_and_accounts_without_profiles_cannot_change_shelves(): void
+    public function test_guests_and_unverified_users_cannot_change_shelves_but_verified_new_players_can(): void
     {
-        $data = ['top_games' => [], 'share_recent_completed' => false];
+        $data = ['top_games' => []];
         $this->put(route('players.showcase'), $data)->assertRedirect(route('login'));
         $this->actingAs(User::factory()->unverified()->create())->put(route('players.showcase'), $data)->assertRedirect(route('verification.notice'));
-        $this->actingAs(User::factory()->create())->put(route('players.showcase'), $data)->assertNotFound();
+        $newPlayer = User::factory()->create();
+        $this->actingAs($newPlayer)->put(route('players.showcase'), $data)->assertRedirect();
+        $this->assertFalse($newPlayer->profile()->firstOrFail()->is_public);
         $this->assertDatabaseCount('profile_game_favorites', 0);
     }
 
-    public function test_recent_completions_are_private_by_default_even_for_public_profiles(): void
+    public function test_public_profiles_share_recent_completions_even_when_the_legacy_flag_is_false(): void
     {
         $user = $this->player();
-        $game = Game::factory()->create(['name' => 'Private completed title']);
+        DB::table('user_profiles')->where('user_id', $user->id)->update(['share_recent_completed' => false]);
+        $game = Game::factory()->create(['name' => 'Public completed title']);
         LibraryEntry::factory()->for($user)->for($game)->create(['status' => 'completed']);
-        $this->get('/players/shelf_player')->assertOk()->assertDontSee('Private completed title')->assertInertia(fn (Assert $page) => $page
-            ->where('recentCompletedShared', false)->has('recentCompleted', 0));
-        $this->assertFalse($user->profile->fresh()->share_recent_completed);
+        $this->get('/players/shelf_player')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->missing('recentCompletedShared')->has('recentCompleted', 1)->where('recentCompleted.0.game.id', $game->id));
+        $this->assertTrue($user->profile->fresh()->is_public);
     }
 
     public function test_shared_completions_only_contain_the_latest_four_owned_completed_games_and_allowed_fields(): void
     {
-        $user = $this->player(['share_recent_completed' => true]);
+        $user = $this->player();
         $entries = [];
         for ($day = 1; $day <= 5; $day++) {
             $entries[] = LibraryEntry::factory()->for($user)->create(['status' => 'completed', 'completed_at' => now()->subDays($day)]);
@@ -105,7 +107,7 @@ class PlayerShowcaseTest extends TestCase
         LibraryEntry::factory()->for($user)->create(['status' => 'playing']);
         LibraryEntry::factory()->create(['status' => 'completed']);
         $this->get('/players/shelf_player')->assertOk()->assertDontSee('PRIVATE REVIEW BODY')->assertInertia(fn (Assert $page) => $page
-            ->where('recentCompletedShared', true)->has('recentCompleted', 4)
+            ->missing('recentCompletedShared')->has('recentCompleted', 4)
             ->where('recentCompleted.0.game.id', $entries[0]->game_id)->where('recentCompleted.3.game.id', $entries[3]->game_id)
             ->where('recentCompleted.0.rating', 4.5)->where('recentCompleted.0.completed_at', $entries[0]->completed_at->toISOString())
             ->where('recentCompleted.1.rating', null)->missing('recentCompleted.0.game.data')
@@ -114,7 +116,7 @@ class PlayerShowcaseTest extends TestCase
 
     public function test_favorite_and_rating_edits_do_not_reorder_recorded_completions(): void
     {
-        $user = $this->player(['share_recent_completed' => true]);
+        $user = $this->player();
         $old = LibraryEntry::factory()->for($user)->create(['status' => 'completed', 'completed_at' => now()->subDays(4), 'updated_at' => now()->subDays(4)]);
         $recent = LibraryEntry::factory()->for($user)->create(['status' => 'completed', 'completed_at' => now()->subDay()]);
         $timestamp = $old->completed_at->toISOString();
@@ -141,7 +143,7 @@ class PlayerShowcaseTest extends TestCase
 
     public function test_legacy_completed_entries_keep_unknown_dates_and_sort_after_dated_completions(): void
     {
-        $user = $this->player(['share_recent_completed' => true]);
+        $user = $this->player();
         $dated = LibraryEntry::factory()->for($user)->create(['status' => 'completed', 'completed_at' => now()->subDays(20)]);
         $legacy = LibraryEntry::factory()->for($user)->create(['status' => 'completed']);
         DB::table('library_entries')->where('id', $legacy->id)->update(['completed_at' => null]);
@@ -151,17 +153,22 @@ class PlayerShowcaseTest extends TestCase
             ->where('recentCompleted.0.game.id', $dated->game_id)->where('recentCompleted.1.game.id', $legacy->game_id)->where('recentCompleted.1.completed_at', null));
     }
 
-    public function test_hiding_completion_sharing_or_the_profile_removes_public_shelves_immediately(): void
+    public function test_recent_completion_visibility_follows_profile_visibility_and_shelf_saves_cannot_change_it(): void
     {
-        $user = $this->player(['share_recent_completed' => true]);
-        LibraryEntry::factory()->for($user)->create(['status' => 'completed']);
+        $user = $this->player();
+        $entry = LibraryEntry::factory()->for($user)->create(['status' => 'completed']);
+        $before = $entry->fresh()->getRawOriginal();
         $game = Game::factory()->create();
         $user->profile->topGames()->attach($game, ['position' => 1]);
-        $this->actingAs($user)->put(route('players.showcase'), ['top_games' => [$game->id], 'share_recent_completed' => false])->assertRedirect();
-        $this->get('/players/shelf_player')->assertInertia(fn (Assert $page) => $page->has('recentCompleted', 0)->has('topGames', 1));
-        $user->profile->update(['is_public' => false]);
+        $this->actingAs($user)->put(route('players.showcase'), ['top_games' => [$game->id], 'is_public' => false, 'share_recent_completed' => false])->assertRedirect();
+        $this->get('/players/shelf_player')->assertInertia(fn (Assert $page) => $page->has('recentCompleted', 1)->has('topGames', 1));
+        $details = ['username' => 'shelf_player', 'display_name' => 'Shelf Player', 'bio' => '', 'is_public' => false];
+        $this->put(route('players.update'), $details)->assertSessionHasNoErrors();
         $this->get('/players/shelf_player')->assertNotFound();
-        $this->get(route('players.edit'))->assertInertia(fn (Assert $page) => $page->has('topGames', 1));
+        $this->get(route('players.edit'))->assertInertia(fn (Assert $page) => $page->has('topGames', 1)->missing('profile.share_recent_completed'));
+        $this->put(route('players.update'), [...$details, 'is_public' => true])->assertSessionHasNoErrors();
+        $this->get('/players/shelf_player')->assertInertia(fn (Assert $page) => $page->has('recentCompleted', 1));
+        $this->assertSame($before, $entry->fresh()->getRawOriginal());
     }
 
     public function test_editor_searches_bounded_local_catalog_without_api_calls_and_keeps_saved_picks(): void
@@ -181,12 +188,12 @@ class PlayerShowcaseTest extends TestCase
 
     public function test_regular_profile_edit_preserves_shelves_and_deleting_account_cascades_only_picks(): void
     {
-        $user = $this->player(['share_recent_completed' => true]);
+        $user = $this->player();
         $game = Game::factory()->create();
         $user->profile->topGames()->attach($game, ['position' => 1]);
-        $this->actingAs($user)->put(route('players.update'), ['username' => 'shelf_player', 'display_name' => 'A new name', 'bio' => '', 'is_public' => true, 'top_games' => [], 'share_recent_completed' => false])->assertRedirect();
+        $this->actingAs($user)->put(route('players.update'), ['username' => 'shelf_player', 'display_name' => 'A new name', 'bio' => '', 'is_public' => true, 'top_games' => []])->assertRedirect();
         $this->assertSame([$game->id], $user->profile->topGames()->pluck('games.id')->all());
-        $this->assertTrue($user->profile->fresh()->share_recent_completed);
+        $this->assertTrue($user->profile->fresh()->is_public);
         $user->delete();
         $this->assertDatabaseCount('profile_game_favorites', 0);
         $this->assertModelExists($game);

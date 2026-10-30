@@ -84,7 +84,10 @@ class GameCatalogController extends Controller
 
         return Inertia::render('games/show', [
             'game' => (new GameResource($game))->resolve($request),
-            'libraryEntry' => $entry ? ['status' => $entry->status->value, 'is_favorite' => $entry->is_favorite] : null,
+            'libraryEntry' => $entry ? ['status' => $entry->status?->value, 'is_favorite' => $entry->is_favorite] : null,
+            'availableLists' => $request->user()?->gameLists()->select(['id', 'name', 'visibility'])
+                ->withExists(['items as contains_game' => fn (Builder $query) => $query->where('game_id', $game->id)])->orderBy('name')->orderBy('id')->get()
+                ->map(fn ($list) => ['id' => $list->id, 'name' => $list->name, 'visibility' => $list->visibility->value, 'contains_game' => (bool) $list->getAttribute('contains_game')]) ?? [],
             'personalRating' => $entry?->rating?->stars,
             'personalReview' => $entry?->review ? [
                 'id' => $entry->review->id,

@@ -5,11 +5,13 @@ export const libraryStatuses = [
     { value: 'completed', label: 'Completed' },
     { value: 'paused', label: 'Paused' },
     { value: 'dropped', label: 'Dropped' },
-    { value: 'backlog', label: 'Backlog' },
 ] as const;
 
 export type LibraryStatus = (typeof libraryStatuses)[number]['value'];
-export type LibraryState = { status: LibraryStatus; is_favorite: boolean };
+export type LibraryState = {
+    status: LibraryStatus | null;
+    is_favorite: boolean;
+};
 export type LibraryEntry = LibraryState & {
     id: number;
     updated_at: string;

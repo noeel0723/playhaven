@@ -20,14 +20,12 @@ export default function Player({
     lists,
     topGames,
     recentCompleted,
-    recentCompletedShared,
 }: {
     player: PublicPlayer;
     reviews: CommunityReviewPagination;
     lists: ListPagination;
     topGames: CatalogGame[];
     recentCompleted: CompletedGame[];
-    recentCompletedShared: boolean;
 }) {
     return (
         <>
@@ -51,7 +49,6 @@ export default function Player({
                     <ProfileGameShelves
                         topGames={topGames}
                         recentCompleted={recentCompleted}
-                        recentCompletedShared={recentCompletedShared}
                         isOwner={player.is_self}
                         showEditLinks={false}
                         emptyTopGamesMessage={

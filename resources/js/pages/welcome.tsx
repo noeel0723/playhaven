@@ -37,7 +37,7 @@ export default function Welcome({
             icon: Library,
             title: 'Give every game a place.',
             description:
-                'Playing, completed, paused, dropped, or waiting in your backlog. Keep your whole collection together.',
+                'Keep your whole collection together, then mark games as playing, completed, paused, or dropped.',
             href: library(),
             action: 'Build your library',
         },

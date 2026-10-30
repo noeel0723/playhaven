@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * @property LibraryStatus $status
+ * @property LibraryStatus|null $status
  * @property CarbonImmutable|null $completed_at
  */
 #[Fillable(['user_id', 'game_id', 'status', 'is_favorite'])]

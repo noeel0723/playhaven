@@ -20,20 +20,17 @@ const slotsFrom = (games: CatalogGame[]): (CatalogGame | null)[] =>
 
 export default function ProfileShowcaseEditor({
     topGames,
-    shareRecentCompleted,
     availableGames,
     query,
     embedded = false,
 }: {
     topGames: CatalogGame[];
-    shareRecentCompleted: boolean;
     availableGames: CatalogGame[];
     query: string;
     embedded?: boolean;
 }) {
     const form = useForm({
         top_games: slotsFrom(topGames),
-        share_recent_completed: shareRecentCompleted,
     });
     const [activeSlot, setActiveSlot] = useState<number | null>(null);
     const [searchText, setSearchText] = useState('');
@@ -357,7 +354,6 @@ export default function ProfileShowcaseEditor({
                                 (game): game is CatalogGame => game !== null,
                             )
                             .map((game) => game.id),
-                        share_recent_completed: data.share_recent_completed,
                     }));
                     form.put(showcase().url, {
                         preserveScroll: true,
@@ -369,36 +365,6 @@ export default function ProfileShowcaseEditor({
                     });
                 }}
             >
-                <div className="rounded-xl border border-shadow bg-rein/30 p-5">
-                    <Label
-                        htmlFor="share-recent-completed"
-                        className="flex items-start gap-3 leading-6"
-                    >
-                        <input
-                            id="share-recent-completed"
-                            type="checkbox"
-                            checked={form.data.share_recent_completed}
-                            onChange={(event) =>
-                                form.setData(
-                                    'share_recent_completed',
-                                    event.target.checked,
-                                )
-                            }
-                            className="mt-1 size-4 shrink-0 accent-[#807d7d]"
-                        />
-                        <span>Show my recent completed games</span>
-                    </Label>
-                    <p className="mt-3 text-sm leading-7 text-[#bdb6b1]">
-                        Share your latest four completed library games, their
-                        ratings, and completion dates on your public profile.
-                        Other library statuses, favorites, diary entries, and
-                        private reviews stay private.
-                    </p>
-                    <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
-                        Completion dates are recorded when you mark a game
-                        Completed. Older entries may have no recorded date.
-                    </p>
-                </div>
                 {Object.values(form.errors).length > 0 && (
                     <p role="alert" className="mt-4 text-sm text-red-300">
                         {Object.values(form.errors).join(' ')}

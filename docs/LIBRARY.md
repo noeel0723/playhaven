@@ -1,12 +1,12 @@
 # Personal library
 
-The first part of stage 4 provides an authenticated personal library, favorite games, and a dashboard backed by the player's actual collection. No new schema or external API requests are needed.
+The first part of stage 4 provides an authenticated personal library, favorite games, and a dashboard backed by the player's actual collection. Library membership can be saved without a playing status; no external API requests are needed.
 
 ## Using the feature
 
 1. Log in and open a game from `/games`.
-2. In **Your experience**, choose Playing, Completed, Paused, Dropped, or Backlog. Optionally mark the game as a favorite and select **Add to library**.
-3. Return to the same page to save changes. Updating an entry preserves its local ID and related ratings, reviews, playthroughs, and diary.
+2. Use the action card on the right to **Add to library**, or choose Playing, Completed, Paused, or Dropped. Favorite is independent of status. See [game actions](GAME_ACTIONS.md).
+3. Each card action saves independently on the same page. Updating an entry preserves its local ID and related ratings, reviews, playthroughs, and diary.
 4. Open `/library` to search titles, filter by status or favorite, sort by title or recent updates, and paginate the collection. Status counts always describe the full personal library, even while filters are active.
 5. `/dashboard` shows counts by status, favorite count, and the six most recently updated entries. Follow a count to the matching library filter.
 

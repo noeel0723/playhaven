@@ -1,93 +1,134 @@
-import { useForm } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import StarRating from '@/components/star-rating';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { update } from '@/routes/ratings';
+import { Star } from 'lucide-react';
+import { useId, useRef, useState } from 'react';
 
 export default function RatingEditor({
-    gameSlug,
     rating,
+    onChange,
+    disabled = false,
 }: {
-    gameSlug: string;
     rating: number | null;
+    onChange: (stars: number | null) => void;
+    disabled?: boolean;
 }) {
-    const form = useForm<{ stars: number | null }>({ stars: rating });
+    const [preview, setPreview] = useState<number | null>(null);
+    const choices = useRef<(HTMLButtonElement | null)[]>([]);
+    const helpId = useId();
+    const shown = preview ?? rating ?? 0;
     return (
-        <section
-            aria-labelledby="your-rating"
-            className="mb-8 rounded-xl border border-shadow bg-rein/40 p-5 sm:p-6"
-        >
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                <h2 id="your-rating" className="font-serif text-2xl">
-                    Your rating
-                </h2>
-                {rating !== null && <StarRating value={rating} />}
-            </div>
-            <p
-                id="rating-help"
-                className="mb-5 text-sm leading-6 text-[#bdb6b1]"
-            >
-                How did this world stay with you? Ratings are public and count
-                toward the community average.
-            </p>
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    form.put(update(gameSlug).url, { preserveScroll: true });
+        <div className="border-t border-white/10 px-4 py-4 text-center">
+            <p className="mb-3 text-xs text-[#bdb6b1]">Your rating</p>
+            <div
+                role="group"
+                aria-label="Rate this game"
+                aria-describedby={helpId}
+                aria-busy={disabled}
+                className="mx-auto flex w-fit touch-manipulation gap-1"
+                onPointerLeave={() => setPreview(null)}
+                onPointerCancel={() => setPreview(null)}
+                onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget))
+                        setPreview(null);
                 }}
             >
-                <div className="flex flex-wrap items-end gap-3">
-                    <div className="min-w-40 flex-1 space-y-2">
-                        <Label htmlFor="personal-rating">Score out of 5</Label>
-                        <select
-                            id="personal-rating"
-                            name="stars"
-                            aria-describedby="rating-help"
-                            value={form.data.stars ?? ''}
-                            onChange={(event) =>
-                                form.setData(
-                                    'stars',
-                                    event.target.value === ''
-                                        ? null
-                                        : Number(event.target.value),
-                                )
-                            }
-                            disabled={form.processing}
-                            className="h-11 w-full rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                {Array.from({ length: 5 }, (_, index) => (
+                    <span key={index} className="relative block h-11 w-8">
+                        <span
+                            aria-hidden="true"
+                            className={`pointer-events-none absolute inset-x-0 top-1.5 h-8 ${preview !== null ? 'text-white' : 'text-[#d5cec7]'}`}
                         >
-                            <option value="">Not rated</option>
-                            {Array.from(
-                                { length: 10 },
-                                (_, index) => (index + 1) / 2,
-                            ).map((stars) => (
-                                <option key={stars} value={stars}>
-                                    {stars.toFixed(1)}{' '}
-                                    {stars === 1 ? 'star' : 'stars'}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <Button
-                        type="submit"
-                        disabled={form.processing}
-                        className="h-11"
-                    >
-                        {form.processing ? 'Saving…' : 'Save rating'}
-                    </Button>
-                </div>
-                <InputError
-                    message={form.errors.stars}
-                    role="alert"
-                    className="mt-3"
-                />
-                {rating !== null && (
-                    <p className="mt-3 text-xs text-[#bdb6b1]">
-                        Choose Not rated and save to remove your rating. Your
-                        review will stay.
-                    </p>
-                )}
-            </form>
-        </section>
+                            <Star className="absolute inset-0 size-8 text-[#807d7d]" />
+                            <span
+                                className="absolute inset-y-0 left-0 overflow-hidden"
+                                style={{
+                                    width: `${Math.min(1, Math.max(0, shown - index)) * 100}%`,
+                                }}
+                            >
+                                <Star className="size-8 fill-current" />
+                            </span>
+                        </span>
+                        {[0.5, 1].map((half, side) => {
+                            const score = index + half;
+                            const choiceIndex = index * 2 + side;
+                            return (
+                                <button
+                                    key={half}
+                                    ref={(node) => {
+                                        choices.current[choiceIndex] = node;
+                                    }}
+                                    type="button"
+                                    aria-label={`Rate ${score} out of 5 stars`}
+                                    aria-pressed={rating === score}
+                                    tabIndex={
+                                        score === (rating ?? 0.5) ? 0 : -1
+                                    }
+                                    disabled={disabled}
+                                    className={`absolute inset-y-0 w-1/2 cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-wait ${side === 0 ? 'left-0' : 'right-0'}`}
+                                    onPointerEnter={(event) => {
+                                        if (
+                                            !disabled &&
+                                            event.pointerType !== 'touch'
+                                        )
+                                            setPreview(score);
+                                    }}
+                                    onFocus={() => setPreview(score)}
+                                    onClick={() => {
+                                        setPreview(null);
+                                        onChange(score);
+                                    }}
+                                    onKeyDown={(event) => {
+                                        const next =
+                                            event.key === 'ArrowRight' ||
+                                            event.key === 'ArrowUp'
+                                                ? Math.min(9, choiceIndex + 1)
+                                                : event.key === 'ArrowLeft' ||
+                                                    event.key === 'ArrowDown'
+                                                  ? Math.max(0, choiceIndex - 1)
+                                                  : event.key === 'Home'
+                                                    ? 0
+                                                    : event.key === 'End'
+                                                      ? 9
+                                                      : null;
+                                        if (next !== null) {
+                                            event.preventDefault();
+                                            choices.current[next]?.focus();
+                                        }
+                                    }}
+                                />
+                            );
+                        })}
+                    </span>
+                ))}
+            </div>
+            <p
+                className="mt-2 min-h-5 text-xs text-[#bdb6b1]"
+                aria-hidden="true"
+            >
+                {disabled
+                    ? 'Saving…'
+                    : shown
+                      ? `${shown.toFixed(1)} / 5`
+                      : 'Not rated'}
+            </p>
+            <p id={helpId} className="sr-only">
+                Choose half or full stars. Use arrow keys to preview a score,
+                then Enter or Space to save.
+                {rating === null
+                    ? ' No rating saved.'
+                    : ` Saved rating: ${rating} out of 5 stars.`}
+            </p>
+            {rating !== null && (
+                <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => {
+                        setPreview(null);
+                        onChange(null);
+                    }}
+                    className="mt-1 min-h-8 rounded-sm px-2 text-[11px] text-[#bdb6b1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                >
+                    Clear rating
+                </button>
+            )}
+        </div>
     );
 }

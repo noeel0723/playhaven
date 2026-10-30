@@ -85,8 +85,7 @@ class PlayerController extends Controller
         return Inertia::render('players/show', [
             'player' => (new PublicPlayerResource($user))->resolve($request),
             'topGames' => GameResource::collection($showcase->topGames($user->profile))->resolve($request),
-            'recentCompleted' => $user->profile->share_recent_completed ? CompletedGameResource::collection($showcase->completed($user))->resolve($request) : [],
-            'recentCompletedShared' => (bool) $user->profile->share_recent_completed,
+            'recentCompleted' => CompletedGameResource::collection($showcase->completed($user))->resolve($request),
             'reviews' => CommunityReviewResource::collection($community->reviews()->whereHas('libraryEntry', fn (Builder $query) => $query->where('user_id', $user->id))->paginate(12, ['*'], 'reviews_page')->withQueryString()),
             'lists' => GameListResource::collection($user->gameLists()->where('visibility', ListVisibility::Public)->with('user.profile')->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(6, ['*'], 'lists_page')->withQueryString()),
         ]);
@@ -98,7 +97,7 @@ class PlayerController extends Controller
         $search = trim($request->string('q')->value());
 
         return Inertia::render('players/edit', [
-            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'location', 'is_public', 'share_recent_completed']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
+            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'location', 'is_public']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
             'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
             'availableGames' => $search !== '' ? GameResource::collection($showcase->search($search))->resolve($request) : [],
             'query' => $search,
@@ -108,8 +107,8 @@ class PlayerController extends Controller
     public function showcase(SavePlayerShowcaseRequest $request): RedirectResponse
     {
         DB::transaction(function () use ($request): void {
+            $request->user()->ensurePlayerProfile();
             $profile = $request->user()->profile()->lockForUpdate()->firstOrFail();
-            $profile->update(['share_recent_completed' => $request->boolean('share_recent_completed')]);
             $profile->topGames()->detach();
             foreach ($request->validated('top_games') as $position => $gameId) {
                 $profile->topGames()->attach($gameId, ['position' => $position + 1]);

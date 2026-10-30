@@ -80,7 +80,7 @@ class GameExperienceTest extends TestCase
 
     public function test_review_edits_preserve_identity_and_can_be_saved_without_rating_or_completion(): void
     {
-        $entry = LibraryEntry::factory()->create(['status' => 'backlog']);
+        $entry = LibraryEntry::factory()->create(['status' => null]);
         $this->actingAs($entry->user)->put(route('reviews.update', $entry->game->slug), [
             'body' => '  First impressions.  ', 'is_public' => false, 'contains_spoilers' => false,
         ])->assertRedirect();
@@ -92,7 +92,7 @@ class GameExperienceTest extends TestCase
         $this->assertDatabaseCount('reviews', 1);
         $this->assertDatabaseHas('reviews', ['id' => $review->id, 'body' => 'The ending stayed with me.', 'is_public' => true, 'contains_spoilers' => true]);
         $this->assertDatabaseCount('ratings', 0);
-        $this->assertDatabaseHas('library_entries', ['id' => $entry->id, 'status' => 'backlog']);
+        $this->assertDatabaseHas('library_entries', ['id' => $entry->id, 'status' => null]);
     }
 
     public function test_review_validation_rejects_blank_oversized_and_invalid_fields(): void

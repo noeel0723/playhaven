@@ -47,7 +47,7 @@ class StatisticsTest extends TestCase
     public function test_library_and_rating_aggregates_are_current_owned_and_not_multiplied_by_replays(): void
     {
         $owner = User::factory()->create();
-        foreach (['playing', 'completed', 'paused', 'dropped', 'backlog'] as $status) {
+        foreach (['playing', 'completed', 'paused', 'dropped', null] as $status) {
             LibraryEntry::factory()->for($owner)->create(['status' => $status, 'is_favorite' => $status === 'completed']);
         }
         $entries = $owner->libraryEntries()->orderBy('id')->get();
@@ -59,7 +59,7 @@ class StatisticsTest extends TestCase
         Rating::factory()->for($other)->create(['score' => 10]);
 
         $this->actingAs($owner)->get('/stats?user_id='.$other->user_id)->assertInertia(fn (Assert $page) => $page
-            ->where('stats.library.total', 5)->where('stats.library.statuses.completed', 1)->where('stats.library.statuses.backlog', 1)
+            ->where('stats.library.total', 5)->where('stats.library.statuses.completed', 1)->missing('stats.library.statuses.backlog')
             ->where('stats.library.favorites', 1)->where('stats.library.completed_percent', 20)
             ->where('stats.ratings.total', 3)->where('stats.ratings.average', 3.2)
             ->where('stats.ratings.distribution.0.count', 1)->where('stats.ratings.distribution.7.count', 1)->where('stats.ratings.distribution.9.count', 1)
@@ -127,7 +127,7 @@ class StatisticsTest extends TestCase
         Playthrough::factory()->for($entry)->count(3)->create();
         $second = LibraryEntry::factory()->for($owner)->create(['status' => 'paused']);
         $second->game->genres()->attach($adventure);
-        $backlog = LibraryEntry::factory()->for($owner)->create(['status' => 'backlog']);
+        $backlog = LibraryEntry::factory()->for($owner)->create(['status' => null]);
         $backlog->game->genres()->attach($rpg);
         $other = LibraryEntry::factory()->create(['status' => 'completed']);
         $other->game->genres()->attach($rpg);

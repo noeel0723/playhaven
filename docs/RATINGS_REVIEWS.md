@@ -4,11 +4,11 @@ This part of stage 4 adds an overall rating and an editable review for each game
 
 ## Player workflow
 
-Add a game to your library, then open its detail page. The **Your rating** form offers 0.5–5 stars in increments of 0.5. **Not rated** clears an existing rating when saved. Your review, status, favorite state, and playthroughs are preserved.
+Open a game detail page and use the action card on the right. Rating and review actions add the game to your library automatically when needed. The **Your rating** form offers 0.5–5 stars in increments of 0.5. **Not rated** clears an existing rating when saved. Your review, status, favorite state, and playthroughs are preserved.
 
 The **Your story** form supports up to 10,000 characters, multiline text, a spoiler flag, and a public/private choice. New reviews default to private in the form. **Share publicly** and **Publish review** publish the text with the player's account name. The owner can edit the same review, make it private again, or delete it after confirmation. Deleting a review preserves the rating and other playing history.
 
-A game can be rated or reviewed in any library status, including Backlog. Adding a rating or review does not mark a game Completed or create a playthrough. Rating and review saves update the library entry's timestamp so the recent collection shows the latest personal activity.
+A game can be rated or reviewed with any of the four playing statuses or without a status. Adding a rating or review does not mark a game Completed or create a playthrough. Rating and review saves update the library entry's timestamp so the recent collection shows the latest personal activity.
 
 ## Scores and aggregation
 

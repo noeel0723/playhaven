@@ -38,9 +38,6 @@ class ProfilePhotos
 
     public function replace(User $user, UploadedFile $photo): void
     {
-        if (! $user->profile()->exists()) {
-            throw ValidationException::withMessages(['avatar' => 'Save your player profile before adding a photo.']);
-        }
         $bytes = $this->normalize($photo);
         $path = 'avatars/'.bin2hex(random_bytes(16)).'.webp';
         if (! Storage::disk('local')->put($path, $bytes)) {
@@ -48,6 +45,7 @@ class ProfilePhotos
         }
         try {
             $previous = DB::transaction(function () use ($user, $path): ?string {
+                $user->ensurePlayerProfile();
                 $profile = $user->profile()->lockForUpdate()->firstOrFail();
                 $previous = $profile->avatar_path;
                 $profile->forceFill(['avatar_path' => $path])->save();

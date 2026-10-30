@@ -12,7 +12,7 @@ A polished consumer application where players discover games, remember their pla
 ## Core experiences to implement
 
 - Global game catalog, search, filtering, and detailed game pages.
-- Library status: Playing, Completed, Paused, Dropped, Backlog.
+- Library status: Playing, Completed, Paused, Dropped. Games can also be saved in the library without a playing status.
 - Ratings from 0.5 to 5 stars in increments of 0.5.
 - Reviews with editing, a gaming diary, and multiple playthroughs per game.
 - Custom lists, following, community activity, and personal statistics.

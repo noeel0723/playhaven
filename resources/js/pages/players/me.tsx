@@ -57,7 +57,6 @@ export default function YourProfile({
                     <ProfileGameShelves
                         topGames={topGames}
                         recentCompleted={[]}
-                        recentCompletedShared={false}
                         isOwner={false}
                         showEditLinks={false}
                         showRecentCompleted={false}
