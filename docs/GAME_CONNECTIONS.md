@@ -2,6 +2,8 @@
 
 Game detail pages show related entries in **Connected worlds**. Selecting a RAWG cover, title, or **Open game** saves the selected game's full metadata to the local catalog before opening its local detail page. Existing local entries open directly, and repeated selection reuses the same RAWG ID and local URL.
 
+Connection cards use covers at most 160px wide, with smaller titles, buttons, and spacing. Desktop rows fit as many fixed-width cards as space permits; phones retain two columns with narrower cards. A single related game keeps the same compact size. The expanded selection uses the same layout, and relationship notes and source links remain available.
+
 Searching remains a read operation. Related entries are stored as lightweight snapshots until opened. Selecting a connection imports that specific game and preserves the personal library; there is no recursive franchise crawl.
 
 ## Provider relationships and story order

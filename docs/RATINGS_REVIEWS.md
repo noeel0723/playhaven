@@ -4,7 +4,7 @@ This part of stage 4 adds an overall rating and an editable review for each game
 
 ## Player workflow
 
-Open a game detail page and use the action card on the right. Rating and review actions add the game to your library automatically when needed. The **Your rating** form offers 0.5–5 stars in increments of 0.5. **Not rated** clears an existing rating when saved. Your review, status, favorite state, and playthroughs are preserved.
+Open a game detail page and use the action card on the right. Rating and review actions add the game to your library automatically when needed. **Your rating** lets you hover the left or right half of each star to preview 0.5–5 stars, then click to save immediately. Hovering alone never changes data; leaving the row restores the saved score. Touch users tap a half/full star. Keyboard users can preview with arrow keys, Home, or End and save with Enter or Space. **Clear rating** removes an existing rating. Your review, status, favorite state, and playthroughs are preserved.
 
 The **Your story** form supports up to 10,000 characters, multiline text, a spoiler flag, and a public/private choice. New reviews default to private in the form. **Share publicly** and **Publish review** publish the text with the player's account name. The owner can edit the same review, make it private again, or delete it after confirmation. Deleting a review preserves the rating and other playing history.
 

@@ -14,14 +14,24 @@ export type RawgGamePreview = {
     local_slug: string | null;
 };
 
-export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
+export default function RawgGameCard({
+    game,
+    compact = false,
+}: {
+    game: RawgGamePreview;
+    compact?: boolean;
+}) {
     const { auth } = usePage().props;
     const form = useForm<{ rawg_id: number; import?: string }>({
         rawg_id: game.id,
     });
     const open = () => form.post(importMethod(game.id).url);
-    const titleClass =
-        'mt-4 block text-left text-sm leading-6 font-semibold break-words';
+    const titleClass = compact
+        ? 'mt-2 min-h-10 line-clamp-2 text-left text-xs leading-5 font-medium break-words'
+        : 'mt-4 block text-left text-sm leading-6 font-semibold break-words';
+    const buttonClass = compact
+        ? 'mt-2 h-8 w-full border border-shadow bg-rein/40 text-xs text-[#f4f1ed] hover:bg-shadow hover:text-white'
+        : 'mt-4 w-full';
     return (
         <article className="min-w-0">
             {game.local_slug ? (
@@ -29,7 +39,7 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                     href={show(game.local_slug)}
                     className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4"
                 >
-                    <GameCover game={game} />
+                    <GameCover game={game} compact={compact} />
                     <h3 className={`${titleClass} group-hover:underline`}>
                         {game.name}
                     </h3>
@@ -43,7 +53,7 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                         aria-label={`Open ${game.name}`}
                         className="group block w-full rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-60"
                     >
-                        <GameCover game={game} />
+                        <GameCover game={game} compact={compact} />
                     </button>
                     <h3>
                         <button
@@ -61,11 +71,13 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                     href={login()}
                     className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4"
                 >
-                    <GameCover game={game} />
+                    <GameCover game={game} compact={compact} />
                     <h3 className={titleClass}>{game.name}</h3>
                 </Link>
             )}
-            <p className="mt-2 text-xs text-[#bdb6b1]">
+            <p
+                className={`${compact ? 'mt-1' : 'mt-2'} text-xs text-[#bdb6b1]`}
+            >
                 {game.released_on?.slice(0, 4) ?? 'Release TBA'}
             </p>
             {game.local_slug ? (
@@ -73,7 +85,7 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                     asChild
                     variant="outline"
                     size="sm"
-                    className="mt-4 w-full"
+                    className={buttonClass}
                 >
                     <Link href={show(game.local_slug)}>Open game</Link>
                 </Button>
@@ -82,7 +94,7 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                     type="button"
                     size="sm"
                     disabled={form.processing}
-                    className="mt-4 w-full"
+                    className={buttonClass}
                     onClick={open}
                 >
                     {form.processing ? 'Opening…' : 'Open game'}
@@ -92,7 +104,7 @@ export default function RawgGameCard({ game }: { game: RawgGamePreview }) {
                     asChild
                     variant="outline"
                     size="sm"
-                    className="mt-4 w-full"
+                    className={buttonClass}
                 >
                     <Link href={login()}>Log in to open</Link>
                 </Button>

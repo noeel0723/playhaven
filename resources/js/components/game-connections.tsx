@@ -10,6 +10,7 @@ function ConnectionCard({ connection }: { connection: GameConnection }) {
     return (
         <div className="min-w-0">
             <RawgGameCard
+                compact
                 game={{
                     id: connection.rawg_id,
                     name: connection.name,
@@ -18,13 +19,13 @@ function ConnectionCard({ connection }: { connection: GameConnection }) {
                     local_slug: connection.local_slug,
                 }}
             />
-            <p className="mt-3 text-xs text-[#bdb6b1]">
+            <p className="mt-2 text-[11px] leading-5 text-[#bdb6b1]">
                 {connection.source === 'curated'
                     ? 'PlayHaven curation'
                     : 'From RAWG'}
             </p>
             {connection.note && (
-                <p className="mt-2 text-xs leading-6 break-words text-[#c5bfba]">
+                <p className="mt-1 text-xs leading-5 break-words text-[#c5bfba]">
                     {connection.note}
                 </p>
             )}
@@ -33,7 +34,7 @@ function ConnectionCard({ connection }: { connection: GameConnection }) {
                     href={connection.source_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-block rounded-sm text-xs text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2"
+                    className="mt-1 inline-block rounded-sm text-[11px] text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2"
                 >
                     Relationship source
                 </a>
@@ -115,11 +116,11 @@ export default function GameConnections({
                     <section
                         key={type.value}
                         aria-labelledby={`connections-${type.value}`}
-                        className="mt-9"
+                        className="mt-7"
                     >
                         <h3
                             id={`connections-${type.value}`}
-                            className="mb-5 font-serif text-2xl"
+                            className="mb-3 font-serif text-xl"
                         >
                             {type.label}
                         </h3>
@@ -129,7 +130,7 @@ export default function GameConnections({
                                 story order may differ.
                             </p>
                         )}
-                        <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3">
+                        <div className="grid max-w-[332px] grid-cols-2 gap-x-3 gap-y-5 sm:max-w-none sm:grid-cols-[repeat(auto-fill,160px)] sm:gap-4">
                             {group.slice(0, 6).map((connection) => (
                                 <ConnectionCard
                                     key={connection.id}
@@ -142,7 +143,7 @@ export default function GameConnections({
                                 <summary className="cursor-pointer rounded-sm text-sm text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2">
                                     Show {group.length - 6} more connected games
                                 </summary>
-                                <div className="mt-6 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3">
+                                <div className="mt-4 grid max-w-[332px] grid-cols-2 gap-x-3 gap-y-5 sm:max-w-none sm:grid-cols-[repeat(auto-fill,160px)] sm:gap-4">
                                     {group.slice(6).map((connection) => (
                                         <ConnectionCard
                                             key={connection.id}
