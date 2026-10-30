@@ -204,10 +204,10 @@ export default function EditPlayer({
                                     </p>
                                 )}
                             </div>
-                            <div className="space-y-2">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                                 <Label
                                     htmlFor="public-profile"
-                                    className="text-sm"
+                                    className="text-xs text-[#bdb6b1]"
                                 >
                                     Profile visibility
                                 </Label>
@@ -229,14 +229,15 @@ export default function EditPlayer({
                                     aria-invalid={Boolean(
                                         form.errors.is_public,
                                     )}
-                                    className="h-9 w-36 rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                                    title="Public profiles share recent completions and game updates."
+                                    className="h-7 w-24 rounded border border-shadow bg-rein px-2 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
                                 >
                                     <option value="private">Private</option>
                                     <option value="public">Public</option>
                                 </select>
                                 <p
                                     id="profile-visibility-help"
-                                    className="text-xs leading-5 text-[#bdb6b1]"
+                                    className="sr-only"
                                 >
                                     Public profiles show your four latest
                                     completed games and share Playing, Paused,
@@ -245,7 +246,7 @@ export default function EditPlayer({
                                 {form.errors.is_public && (
                                     <p
                                         role="alert"
-                                        className="mt-3 text-sm text-red-300"
+                                        className="w-full text-xs text-red-300"
                                     >
                                         {form.errors.is_public}
                                     </p>

@@ -10,6 +10,7 @@ use App\Models\Playthrough;
 use App\Models\Rating;
 use App\Models\Review;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -133,12 +134,13 @@ class LibraryTest extends TestCase
         $user = User::factory()->create();
         LibraryEntry::factory()->create();
         $this->actingAs($user)->get(route('dashboard'))->assertInertia(fn (Assert $page) => $page
-            ->where('counts.total', 0)->where('counts.playing', 0)->where('counts.favorites', 0)->has('recentEntries', 0));
+            ->where('playerName', $user->name)->where('counts.total', 0)->where('counts.playing', 0)->where('counts.favorites', 0)->has('recentEntries', 0));
 
+        UserProfile::factory()->for($user)->create(['display_name' => 'Nicole', 'is_public' => false]);
         $older = LibraryEntry::factory()->for($user)->create(['updated_at' => now()->subDays(2), 'status' => 'completed']);
         LibraryEntry::factory()->for($user)->count(6)->create(['status' => 'playing']);
         $this->get(route('dashboard'))->assertInertia(fn (Assert $page) => $page
-            ->where('counts.total', 7)->where('counts.playing', 6)->where('counts.completed', 1)->has('recentEntries', 6)
+            ->where('playerName', 'Nicole')->where('counts.total', 7)->where('counts.playing', 6)->where('counts.completed', 1)->has('recentEntries', 6)
             ->where('recentEntries', fn ($entries) => ! collect($entries)->pluck('id')->contains($older->id)));
     }
 

@@ -58,6 +58,7 @@ class LibraryController extends Controller
             ->orderByDesc('updated_at')->orderByDesc('id')->limit(6)->get();
 
         return Inertia::render('dashboard', [
+            'playerName' => $user->profile?->display_name ?: ($user->profile?->username ?: $user->name),
             'counts' => $this->counts($user),
             'recentEntries' => LibraryEntryResource::collection($entries)->resolve($request),
         ]);

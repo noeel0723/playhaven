@@ -1,33 +1,40 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import LibraryGameCard from '@/components/library-game-card';
 import { Button } from '@/components/ui/button';
 import { index as games } from '@/routes/games';
 import { index as library } from '@/routes/library';
 import { index as statistics } from '@/routes/stats';
+import { me as profile } from '@/routes/players';
 import { libraryStatuses } from '@/types/library';
 import type { LibraryCounts, LibraryEntry } from '@/types/library';
 
 export default function Dashboard({
     counts,
     recentEntries,
+    playerName,
 }: {
     counts: LibraryCounts;
     recentEntries: LibraryEntry[];
+    playerName: string;
 }) {
-    const { auth } = usePage().props;
     return (
         <>
             <Head title="Your haven" />
-            <section className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
-                <div>
-                    <h1 className="text-2xl font-medium tracking-tight">
-                        Your haven
-                    </h1>
-                    <p className="mt-1 text-xs text-[#bdb6b1]">
-                        Welcome back, {auth.user.name}
-                    </p>
-                </div>
+            <h1 className="mx-auto mb-7 max-w-4xl text-center text-lg leading-relaxed font-light wrap-break-word text-[#bdb6b1] sm:text-xl lg:text-2xl">
+                Welcome back,{' '}
+                <Link
+                    href={profile()}
+                    className="rounded-sm text-[#f4f1ed] underline decoration-white/30 underline-offset-4 hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                >
+                    {playerName}
+                </Link>
+                . Here’s your latest gaming activity.
+            </h1>
+            <section
+                aria-label="Dashboard shortcuts"
+                className="mb-7 flex flex-wrap items-center justify-end gap-4 border-b border-white/10 pb-4"
+            >
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
                         <Link href={library()}>
