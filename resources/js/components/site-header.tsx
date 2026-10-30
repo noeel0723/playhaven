@@ -39,7 +39,7 @@ function AccountMenu({ user }: { user: User }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
-                className="dark w-60 border-shadow bg-caviar text-[#f4f1ed]"
+                className="dark w-56 max-w-[calc(100vw-2rem)] border-shadow bg-caviar font-sans text-xs text-[#f4f1ed]"
             >
                 <UserMenuContent user={user} />
             </DropdownMenuContent>

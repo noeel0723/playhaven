@@ -22,6 +22,9 @@ type Props = {
     user: User;
 };
 
+const menuItemClass =
+    'min-h-7 gap-2 px-2 py-1 font-sans text-xs leading-4 [&_svg]:size-3.5';
+
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
     const { isCurrentOrParentUrl } = useCurrentUrl();
@@ -33,34 +36,34 @@ export function UserMenuContent({ user }: Props) {
 
     return (
         <>
-            <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserInfo user={user} showEmail={true} />
+            <DropdownMenuLabel className="p-0 font-sans font-normal">
+                <div className="flex items-center gap-2 px-1 py-1 text-left text-xs">
+                    <UserInfo user={user} showEmail compact />
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link href={library()} onClick={cleanup}>
                         Library
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link href={diary()} onClick={cleanup}>
                         Diary
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link href={lists()} onClick={cleanup}>
                         Lists
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link href={statistics()} onClick={cleanup}>
                         Your statistics
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link
                         href={playerProfile()}
                         onClick={cleanup}
@@ -74,20 +77,20 @@ export function UserMenuContent({ user }: Props) {
                         Profile
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className={menuItemClass}>
                     <Link
                         className="block w-full cursor-pointer"
                         href={edit()}
                         prefetch
                         onClick={cleanup}
                     >
-                        <Settings className="mr-2" />
+                        <Settings className="size-3.5" aria-hidden="true" />
                         Settings
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className={menuItemClass}>
                 <Link
                     className="block w-full cursor-pointer"
                     href={logout()}
@@ -95,7 +98,7 @@ export function UserMenuContent({ user }: Props) {
                     onClick={handleLogout}
                     data-test="logout-button"
                 >
-                    <LogOut className="mr-2" />
+                    <LogOut className="size-3.5" aria-hidden="true" />
                     Log out
                 </Link>
             </DropdownMenuItem>

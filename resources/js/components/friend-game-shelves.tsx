@@ -7,7 +7,7 @@ import { index as players, show as playerProfile } from '@/routes/players';
 import type { FriendShelves, FriendStatusActivity } from '@/types/community';
 
 const gridClass =
-    'grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-6';
+    'grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 lg:grid-cols-6';
 const statusDetails = {
     playing: { label: 'Playing', Icon: CirclePlay },
     paused: { label: 'Paused', Icon: Pause },
@@ -45,7 +45,7 @@ function ActivityCard({ activity }: { activity: FriendStatusActivity }) {
             </div>
             <Link
                 href={gameDetails(activity.game.slug)}
-                className="line-clamp-2 min-h-8 rounded-sm text-[11px] leading-4 font-medium text-[#e0d9d3] hover:underline focus-visible:outline-2"
+                className="line-clamp-2 min-h-8 rounded-sm text-xs leading-4 font-medium text-[#e0d9d3] hover:underline focus-visible:outline-2"
                 title={activity.game.name}
             >
                 {activity.game.name}
@@ -57,11 +57,11 @@ function ActivityCard({ activity }: { activity: FriendStatusActivity }) {
             >
                 {activity.player.name}
             </Link>
-            <p className="mt-1 flex items-center gap-1 text-[10px] text-[#d5cec7]">
+            <p className="mt-1 flex items-center gap-1 text-[11px] text-[#d5cec7]">
                 <Icon className="size-3 shrink-0" aria-hidden="true" />
                 {label}
             </p>
-            <p className="mt-1 text-[10px] leading-4 text-[#a9a19b]">
+            <p className="mt-1 text-[11px] leading-4 text-[#a9a19b]">
                 {activity.changed_at ? (
                     <time
                         dateTime={activity.changed_at}
@@ -89,9 +89,9 @@ export default function FriendGameShelves({
     shelves: FriendShelves;
 }) {
     return (
-        <div className="mb-9 max-w-[1008px] space-y-8">
+        <div className="mb-7 space-y-6">
             <section aria-labelledby="new-from-friends">
-                <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
+                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
                     <h2
                         id="new-from-friends"
                         className="text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase"
@@ -114,7 +114,7 @@ export default function FriendGameShelves({
                         </div>
                         {shelves.recent.length > 6 && (
                             <details className="mt-4">
-                                <summary className="w-fit cursor-pointer rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2">
+                                <summary className="inline-flex h-7 w-fit cursor-pointer items-center rounded border border-white/10 bg-rein/20 px-2 text-[11px] text-[#bdb6b1] hover:bg-rein/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2">
                                     Show more activity
                                 </summary>
                                 <div className={`mt-4 ${gridClass}`}>
@@ -129,7 +129,7 @@ export default function FriendGameShelves({
                         )}
                     </>
                 ) : (
-                    <div className="rounded-md border border-dashed border-shadow p-4 text-xs leading-6 text-[#bdb6b1]">
+                    <div className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
                         No shared game updates yet.{' '}
                         <Link
                             href={players()}
@@ -142,7 +142,7 @@ export default function FriendGameShelves({
                 )}
             </section>
             <section aria-labelledby="popular-with-friends">
-                <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
+                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
                     <h2
                         id="popular-with-friends"
                         className="text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase"
@@ -162,7 +162,7 @@ export default function FriendGameShelves({
                         </div>
                         {shelves.popular.length > 6 && (
                             <details className="mt-4">
-                                <summary className="w-fit cursor-pointer rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2">
+                                <summary className="inline-flex h-7 w-fit cursor-pointer items-center rounded border border-white/10 bg-rein/20 px-2 text-[11px] text-[#bdb6b1] hover:bg-rein/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2">
                                     Show more games
                                 </summary>
                                 <div className={`mt-4 ${gridClass}`}>
@@ -177,7 +177,7 @@ export default function FriendGameShelves({
                         )}
                     </>
                 ) : (
-                    <p className="rounded-md border border-dashed border-shadow p-4 text-xs leading-6 text-[#bdb6b1]">
+                    <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
                         No shared games from friends yet.
                     </p>
                 )}
@@ -200,13 +200,13 @@ function PopularCard({ item }: { item: FriendShelves['popular'][number] }) {
                     className="aspect-[2/3] rounded-md group-hover:border-[#bdb6b1]"
                 />
                 <h3
-                    className="mt-2 line-clamp-2 min-h-8 text-[11px] leading-4 font-medium text-[#e0d9d3] group-hover:underline"
+                    className="mt-2 line-clamp-2 min-h-8 text-xs leading-4 font-medium text-[#e0d9d3] group-hover:underline"
                     title={item.game.name}
                 >
                     {item.game.name}
                 </h3>
             </Link>
-            <p className="mt-1 text-[10px] text-[#bdb6b1]">
+            <p className="mt-1 text-[11px] text-[#bdb6b1]">
                 {item.friends_count}{' '}
                 {item.friends_count === 1 ? 'friend' : 'friends'}
             </p>
