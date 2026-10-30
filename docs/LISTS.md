@@ -4,7 +4,9 @@ The first community feature lets players curate ordered collections independentl
 
 ## Workflow
 
-Open **Lists** to browse public collections. **Create a list** opens the compact form in **Your lists**; **New list** opens it again on that page. Create a named collection with an optional description. New forms start with **Private** visibility and open the dedicated editor after creation. Search the local catalog and choose **Add to list**. Games appear once in each list. Repeated adds preserve the existing item and its notes.
+Open **Lists** in the account menu for personal collections, or **Lists** in the main navigation for community discovery. The personal page shows compact rows: a five-cover strip on the left, title and visibility icon, game count, description, and an edit shortcut beside it. **New list** opens the compact creation form in the right panel (above the rows on phones). New forms start with **Private** visibility and open the dedicated editor after creation. Search the local catalog and choose **Add to list**. Games appear once in each list. Repeated adds preserve the existing item and its notes.
+
+The personal toolbar searches collection names and filters Public, Private, or Unlisted lists. Sort by recent updates, title, or game count. Dropdown changes apply immediately and title searches wait 350ms after typing. Filters stay in pagination URLs, always remain scoped to the signed-in owner, and return to page one when changed. Community discovery retains its existing card grid.
 
 ## List gallery and editor
 

@@ -36,7 +36,7 @@ export default function DiscoverLists({
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <Button asChild size="sm" variant="ghost">
-                            <Link href={index()}>Your lists</Link>
+                            <Link href={index()}>Lists</Link>
                         </Button>
                         <Button asChild size="sm">
                             <Link href={`${index().url}#create-list`}>

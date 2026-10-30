@@ -10,6 +10,8 @@ The first part of stage 4 provides an authenticated personal library, favorite g
 4. Open `/library` to search titles, filter by status or favorite, sort by title or recent updates, and paginate the collection. Status counts always describe the full personal library, even while filters are active.
 5. `/dashboard` shows counts by status, favorite count, and the six most recently updated entries. Follow a count to the matching library filter.
 
+**Library** uses a compact poster grid: 12 columns on large desktop screens, eight on smaller desktops, six on tablets, and three or four on phones. Covers use a 2:3 ratio with the player's rating, status icon, and favorite indicator below; accessible game names and full-title tooltips remain available. The dashboard retains its larger cards. The small toolbar filters status/favorites and sorting immediately, with a 350ms delay for title searches. Pagination remains 24 games per page. Changing a filter returns to page one and does not change collection data.
+
 Status and favorite changes are saved together. Setting Completed does not automatically create a playthrough or rating; these remain separate domain records. Community ratings displayed on cards still come from PlayHaven's rating records.
 
 ## Ownership and removal

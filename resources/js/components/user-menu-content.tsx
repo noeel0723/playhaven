@@ -42,7 +42,7 @@ export function UserMenuContent({ user }: Props) {
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                     <Link href={library()} onClick={cleanup}>
-                        Your library
+                        Library
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -52,7 +52,7 @@ export function UserMenuContent({ user }: Props) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href={lists()} onClick={cleanup}>
-                        Your lists
+                        Lists
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

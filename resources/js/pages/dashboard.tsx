@@ -31,7 +31,7 @@ export default function Dashboard({
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
                         <Link href={library()}>
-                            Your library <ArrowRight aria-hidden="true" />
+                            Library <ArrowRight aria-hidden="true" />
                         </Link>
                     </Button>
                     <Button

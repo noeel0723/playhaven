@@ -27,9 +27,9 @@ import { index as lists } from '@/routes/lists';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
-    { title: 'Your lists', href: lists(), icon: BookOpen },
+    { title: 'Lists', href: lists(), icon: BookOpen },
     { title: 'Your diary', href: diary(), icon: BookOpen },
-    { title: 'Your library', href: library(), icon: Library },
+    { title: 'Library', href: library(), icon: Library },
     { title: 'Discover games', href: games(), icon: Gamepad2 },
     {
         title: 'Dashboard',

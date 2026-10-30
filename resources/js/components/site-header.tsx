@@ -207,7 +207,7 @@ export default function SiteHeader() {
                                     href={library()}
                                     className="rounded-sm text-sm underline underline-offset-4"
                                 >
-                                    Your library
+                                    Library
                                 </Link>
                                 <Link
                                     href={diary()}
@@ -219,7 +219,7 @@ export default function SiteHeader() {
                                     href={myLists()}
                                     className="rounded-sm text-sm underline underline-offset-4"
                                 >
-                                    Your lists
+                                    Lists
                                 </Link>
                                 <Link
                                     href={dashboard()}

@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { Gamepad2 } from 'lucide-react';
-import GameCover from '@/components/game-cover';
+import GameListCoverStrip from '@/components/game-list-cover-strip';
+
 import PlayerAvatar from '@/components/player-avatar';
 import { show } from '@/routes/lists';
 import { show as playerProfile } from '@/routes/players';
@@ -13,52 +13,13 @@ export default function GameListCard({
     list: GameList;
     showVisibility?: boolean;
 }) {
-    const games = list.preview_games ?? [];
     return (
         <article className="w-full max-w-[320px] min-w-0">
             <Link
                 href={show({ listOwner: list.owner.id, listSlug: list.slug })}
                 className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-                <div
-                    className="relative aspect-[5/2] overflow-hidden rounded-md border border-white/15 bg-rein/30"
-                    aria-hidden="true"
-                >
-                    {games.length ? (
-                        Array.from({ length: 5 }, (_, index) => {
-                            const game = games[index];
-                            const style = {
-                                left: `${index * 18}%`,
-                                zIndex: 5 - index,
-                            };
-                            return game ? (
-                                <div
-                                    key={game.id}
-                                    className="absolute inset-y-0 w-[28%]"
-                                    style={style}
-                                >
-                                    <GameCover
-                                        game={game}
-                                        compact
-                                        hideFallbackTitle
-                                        className="h-full w-full rounded-sm border-white/15 shadow-md group-hover:border-[#807d7d]"
-                                    />
-                                </div>
-                            ) : (
-                                <span
-                                    key={`empty-${index}`}
-                                    className="absolute inset-y-0 w-[28%] border-l border-white/10 bg-gradient-to-br from-rein to-caviar"
-                                    style={style}
-                                />
-                            );
-                        })
-                    ) : (
-                        <span className="flex h-full items-center justify-center gap-2 text-xs text-[#a9a19b]">
-                            <Gamepad2 className="size-5" />
-                            No games yet
-                        </span>
-                    )}
-                </div>
+                <GameListCoverStrip list={list} />
                 <h2
                     className="mt-2 line-clamp-2 text-sm leading-5 font-medium wrap-break-word text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4"
                     title={list.name}

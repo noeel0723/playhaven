@@ -24,7 +24,27 @@ class GameListController extends Controller
 {
     public function index(GameListBrowseRequest $request): Response
     {
-        return Inertia::render('lists/index', ['lists' => GameListResource::collection($request->user()->gameLists()->with(['user.profile', 'previewItems'])->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString())]);
+        $search = trim($request->string('q')->value());
+        $visibility = $request->string('visibility')->value();
+        $sort = $request->input('sort') ?: 'recent';
+        $query = $request->user()->gameLists()->with(['user.profile', 'previewItems'])->withCount('items');
+        if ($search !== '') {
+            $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
+            $query->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%']);
+        }
+        if ($visibility !== '') {
+            $query->where('visibility', $visibility);
+        }
+        match ($sort) {
+            'largest' => $query->orderByDesc('items_count')->orderByDesc('updated_at'),
+            'name' => $query->orderBy('name'),
+            default => $query->orderByDesc('updated_at'),
+        };
+
+        return Inertia::render('lists/index', [
+            'lists' => GameListResource::collection($query->orderByDesc('id')->paginate(12)->withQueryString()),
+            'filters' => ['q' => $search, 'visibility' => $visibility, 'sort' => $sort],
+        ]);
     }
 
     public function discover(GameListBrowseRequest $request): Response

@@ -45,15 +45,18 @@ class GameCatalogTest extends TestCase
 
     public function test_unrated_games_sort_after_rated_games_on_both_databases(): void
     {
-        Game::factory()->create(['name' => 'Unrated']);
+        $unrated = Game::factory()->create(['name' => 'Unrated', 'released_on' => '2050-01-01']);
         $low = Game::factory()->create(['name' => 'Low']);
         $high = Game::factory()->create(['name' => 'High']);
         Rating::factory()->create(['library_entry_id' => LibraryEntry::factory()->for($low)->create()->id, 'score' => 5]);
         Rating::factory()->create(['library_entry_id' => LibraryEntry::factory()->for($high)->create()->id, 'score' => 9]);
 
-        $this->get('/games?sort=rating')->assertInertia(fn (Assert $page) => $page
-            ->where('games.data.0.id', $high->id)->where('games.data.0.rating', 4.5)
-            ->where('games.data.1.id', $low->id)->where('games.data.2.rating', null));
+        foreach (['/games', '/games?sort=rating'] as $url) {
+            $this->get($url)->assertInertia(fn (Assert $page) => $page
+                ->where('filters.sort', 'rating')->where('games.data.0.id', $high->id)->where('games.data.0.rating', 4.5)
+                ->where('games.data.1.id', $low->id)->where('games.data.2.rating', null));
+        }
+        $this->get('/games?sort=recent')->assertInertia(fn (Assert $page) => $page->where('filters.sort', 'recent')->where('games.data.0.id', $unrated->id));
     }
 
     public function test_catalog_pagination_preserves_filters(): void

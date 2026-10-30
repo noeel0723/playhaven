@@ -42,7 +42,7 @@ export default function ListDetails({
                 href={isOwner ? index() : discover()}
                 className="mb-5 inline-block rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2"
             >
-                {isOwner ? 'Your lists' : 'Community lists'}
+                {isOwner ? 'Lists' : 'Community lists'}
             </Link>
             <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_240px]">
                 <div className="min-w-0">

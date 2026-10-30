@@ -4,7 +4,7 @@ The active catalog provider is **RAWG**. Public pages remain at `/games` and `/g
 
 ## Catalog layout
 
-The Games page uses a compact **Browse by** toolbar above a poster shelf. Choose a release year, sort order, genre, and platform, enter a title in **Find a game**, then select **Apply**. **Studio & publisher** expands the existing developer and publisher filters. **Clear filters** returns to the default catalog.
+The Games page uses a compact **Browse by** toolbar above a poster shelf. **Highest rated** is the default, using PlayHaven community ratings with unrated games last. Choosing a sort order, genre, platform, developer, or publisher filters immediately. Title search waits 350ms after typing; valid release years wait 400ms. Enter also submits. Incomplete or out-of-range years do not trigger an automatic request. **Studio & publisher** expands the developer and publisher filters. **Clear filters** restores the highest-rated catalog. Filter changes reset pagination, cancel earlier searches, and retain input focus; the URL records the current filters.
 
 Desktop screens show **six cards per row**, with 2:3 covers. Tablet screens show three columns, and phones show two. Pagination still returns up to 24 games per page; filtering, pagination links, community ratings, and local catalog data are unchanged. Shelf headings describe the actual sort order rather than claiming weekly popularity.
 

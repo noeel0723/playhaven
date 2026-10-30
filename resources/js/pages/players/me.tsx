@@ -129,7 +129,7 @@ export default function YourProfile({
                             href={library()}
                             className="rounded-sm hover:underline focus-visible:outline-2"
                         >
-                            Your library
+                            Library
                         </Link>
                         <Link
                             href={diary()}

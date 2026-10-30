@@ -89,4 +89,22 @@ class ListDiscoveryPresentationTest extends TestCase
         GameListItem::factory()->for($list)->for($game)->create(['position' => 1]);
         $this->get('/lists/discover')->assertInertia(fn (Assert $page) => $page->has('lists.data.0.preview_games', 1)->where('lists.data.0.preview_games.0.cover_url', null));
     }
+
+    public function test_personal_list_filters_preserve_ownership_and_pagination(): void
+    {
+        $owner = User::factory()->create();
+        $largest = GameList::factory()->for($owner)->create(['name' => 'Matching largest', 'visibility' => 'private']);
+        $this->fillList($largest, 2);
+        GameList::factory()->for($owner)->count(12)->create(['name' => 'Matching small', 'visibility' => 'private']);
+        GameList::factory()->for($owner)->create(['name' => 'Matching public', 'visibility' => 'public']);
+        GameList::factory()->create(['name' => 'Matching other owner', 'visibility' => 'private']);
+        $this->actingAs($owner)->get('/lists?q=Matching&visibility=private&sort=largest')->assertInertia(fn (Assert $page) => $page
+            ->where('filters.q', 'Matching')->where('filters.visibility', 'private')->where('filters.sort', 'largest')
+            ->where('lists.meta.total', 13)->has('lists.data', 12)->where('lists.data.0.id', $largest->id)
+            ->where('lists.links.next', fn ($url) => str_contains($url, 'q=Matching') && str_contains($url, 'visibility=private') && str_contains($url, 'sort=largest') && str_contains($url, 'page=2')));
+        $this->get('/lists?q=Matching&visibility=private&sort=largest&page=2')->assertInertia(fn (Assert $page) => $page->has('lists.data', 1));
+        $literal = GameList::factory()->for($owner)->create(['name' => '100%_Complete!', 'visibility' => 'unlisted']);
+        $this->get('/lists?q='.urlencode('%_').'&visibility=unlisted&sort=name')->assertInertia(fn (Assert $page) => $page->has('lists.data', 1)->where('lists.data.0.id', $literal->id));
+        $this->getJson('/lists?visibility=unsafe&sort[]=recent')->assertUnprocessable()->assertJsonValidationErrors(['visibility', 'sort']);
+    }
 }
