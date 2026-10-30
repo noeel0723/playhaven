@@ -23,19 +23,32 @@ class GameListController extends Controller
 {
     public function index(GameListBrowseRequest $request): Response
     {
-        return Inertia::render('lists/index', ['lists' => GameListResource::collection($request->user()->gameLists()->with('user.profile')->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString())]);
+        return Inertia::render('lists/index', ['lists' => GameListResource::collection($request->user()->gameLists()->with(['user.profile', 'previewItems'])->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString())]);
     }
 
     public function discover(GameListBrowseRequest $request): Response
     {
         $search = trim($request->string('q')->value());
-        $query = GameList::where('visibility', ListVisibility::Public)->with('user.profile')->withCount('items');
+        $sort = $request->input('sort') ?: 'recent';
+        $query = GameList::where('visibility', ListVisibility::Public)->with(['user.profile', 'previewItems'])->withCount('items');
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
             $query->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%']);
         }
 
-        return Inertia::render('lists/discover', ['lists' => GameListResource::collection($query->orderByDesc('updated_at')->orderByDesc('id')->paginate(12)->withQueryString()), 'query' => $search]);
+        match ($sort) {
+            'largest' => $query->orderByDesc('items_count')->orderByDesc('updated_at'),
+            'name' => $query->orderBy('name'),
+            default => $query->orderByDesc('updated_at'),
+        };
+        $lists = $query->orderByDesc('id')->paginate(12)->withQueryString();
+        $featured = $search === '' && $sort === 'recent' && $lists->currentPage() === 1 && $lists->total() > 3
+            ? GameList::where('visibility', ListVisibility::Public)->whereHas('items')->with(['user.profile', 'previewItems'])->withCount('items')
+                ->orderByDesc('items_count')->orderByDesc('updated_at')->orderByDesc('id')->limit(3)->get()
+            : collect();
+
+        return Inertia::render('lists/discover', ['lists' => GameListResource::collection($lists), 'query' => $search, 'sort' => $sort,
+            'featuredLists' => GameListResource::collection($featured)->resolve($request)]);
     }
 
     public function store(SaveGameListRequest $request): RedirectResponse

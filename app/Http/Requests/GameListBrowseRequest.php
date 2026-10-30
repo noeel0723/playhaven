@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class GameListBrowseRequest extends FormRequest
 {
@@ -14,6 +15,6 @@ class GameListBrowseRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        return ['q' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'between:1,100000']];
+        return ['q' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'between:1,100000'], 'sort' => ['nullable', 'string', Rule::in(['recent', 'largest', 'name'])]];
     }
 }

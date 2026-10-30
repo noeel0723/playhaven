@@ -7,7 +7,13 @@ import { store, update } from '@/routes/lists';
 import { listVisibilities } from '@/types/lists';
 import type { GameList } from '@/types/lists';
 
-export default function GameListForm({ list }: { list?: GameList }) {
+export default function GameListForm({
+    list,
+    compact = false,
+}: {
+    list?: GameList;
+    compact?: boolean;
+}) {
     const form = useForm({
         name: list?.name ?? '',
         description: list?.description ?? '',
@@ -21,7 +27,7 @@ export default function GameListForm({ list }: { list?: GameList }) {
                     form.put(update(list.id).url, { preserveScroll: true });
                 else form.post(store().url);
             }}
-            className="space-y-5"
+            className={compact ? 'space-y-4' : 'space-y-5'}
         >
             <div className="space-y-2">
                 <Label htmlFor="list-name">List name</Label>
@@ -35,8 +41,8 @@ export default function GameListForm({ list }: { list?: GameList }) {
                         form.setData('name', event.target.value)
                     }
                     disabled={form.processing}
-                    placeholder="Worlds worth getting lost in"
-                    className="h-11 border-shadow bg-rein"
+                    placeholder="e.g. Favorite co-op games"
+                    className={`${compact ? 'h-9 text-xs' : 'h-11'} border-shadow bg-rein`}
                 />
                 <InputError message={form.errors.name} role="alert" />
             </div>
@@ -47,14 +53,14 @@ export default function GameListForm({ list }: { list?: GameList }) {
                 </Label>
                 <textarea
                     id="list-description"
-                    rows={4}
+                    rows={compact ? 3 : 4}
                     maxLength={5000}
                     value={form.data.description}
                     onChange={(event) =>
                         form.setData('description', event.target.value)
                     }
                     disabled={form.processing}
-                    className="w-full rounded-md border border-shadow bg-rein px-3 py-2 text-sm leading-7 focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className={`w-full rounded-md border border-shadow bg-rein px-3 py-2 ${compact ? 'text-xs leading-6' : 'text-sm leading-7'} focus-visible:outline-2 focus-visible:outline-offset-2`}
                     placeholder="What brings these games together?"
                 />
                 <InputError message={form.errors.description} role="alert" />
@@ -71,7 +77,7 @@ export default function GameListForm({ list }: { list?: GameList }) {
                         )
                     }
                     disabled={form.processing}
-                    className="h-11 w-full rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className={`${compact ? 'h-9 text-xs' : 'h-11 text-sm'} w-full rounded-md border border-shadow bg-rein px-3 focus-visible:outline-2 focus-visible:outline-offset-2`}
                 >
                     {listVisibilities.map((visibility) => (
                         <option key={visibility.value} value={visibility.value}>
@@ -88,7 +94,11 @@ export default function GameListForm({ list }: { list?: GameList }) {
                       ? 'Anyone you share the link with can open it. It stays out of community discovery.'
                       : 'This list, its notes, and your account name will be visible in community discovery.'}
             </p>
-            <Button type="submit" disabled={form.processing}>
+            <Button
+                type="submit"
+                size={compact ? 'sm' : 'default'}
+                disabled={form.processing}
+            >
                 {form.processing
                     ? 'Saving…'
                     : list

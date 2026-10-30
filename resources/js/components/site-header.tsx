@@ -91,7 +91,7 @@ export default function SiteHeader() {
         {
             label: 'Lists',
             href: lists(),
-            active: isCurrentOrParentUrl(lists()),
+            active: isCurrentOrParentUrl(myLists()),
         },
         {
             label: 'Community',

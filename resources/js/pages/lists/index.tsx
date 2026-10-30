@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { useEffect, useRef } from 'react';
 import { ArrowRight, ListPlus } from 'lucide-react';
 import GameListCard from '@/components/game-list-card';
 import GameListForm from '@/components/game-list-form';
@@ -8,64 +9,84 @@ import { discover } from '@/routes/lists';
 import type { ListPagination } from '@/types/lists';
 
 export default function Lists({ lists }: { lists: ListPagination }) {
+    const { url } = usePage();
+    const createPanel = useRef<HTMLDetailsElement>(null);
+    function openCreate() {
+        if (createPanel.current) {
+            createPanel.current.open = true;
+            createPanel.current
+                .querySelector<HTMLInputElement>('#list-name')
+                ?.focus();
+        }
+    }
+    useEffect(() => {
+        if (window.location.hash === '#create-list') openCreate();
+    }, [url]);
     return (
         <>
             <Head title="Your lists" />
-            <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
-                <div>
-                    <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
-                        A collection with a point of view
+            <div className="max-w-[1008px]">
+                <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-medium tracking-tight">
+                            Your lists
+                        </h1>
+                        <p className="mt-1 text-xs text-[#bdb6b1]">
+                            {lists.meta.total}{' '}
+                            {lists.meta.total === 1
+                                ? 'collection'
+                                : 'collections'}
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={discover()}>
+                                Community lists
+                                <ArrowRight aria-hidden="true" />
+                            </Link>
+                        </Button>
+                        <Button type="button" size="sm" onClick={openCreate}>
+                            <ListPlus aria-hidden="true" />
+                            New list
+                        </Button>
+                    </div>
+                </header>
+                <details
+                    ref={createPanel}
+                    id="create-list"
+                    className="mb-7 scroll-mt-6 rounded-md border border-white/10 bg-rein/15 p-4"
+                    open={lists.meta.total === 0}
+                >
+                    <summary className="flex cursor-pointer items-center gap-2 rounded-sm text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-4">
+                        <ListPlus className="size-4" aria-hidden="true" />
+                        Create a list
+                    </summary>
+                    <div className="mt-4 max-w-lg">
+                        <GameListForm compact />
+                    </div>
+                </details>
+                {lists.data.length ? (
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {lists.data.map((list) => (
+                            <GameListCard
+                                key={list.id}
+                                list={list}
+                                showVisibility
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="py-5 text-xs leading-6 text-[#bdb6b1]">
+                        No lists yet. Create one, then add games from its detail
+                        page.
                     </p>
-                    <h1 className="text-4xl font-medium tracking-tight sm:text-6xl">
-                        Your games.
-                        <br />
-                        <span className="font-serif font-normal text-[#c5bfba] italic">
-                            Curated your way.
-                        </span>
-                    </h1>
-                    <p className="mt-5 max-w-xl text-sm leading-7 text-[#bdb6b1]">
-                        Tiny indie worlds. Rainy-day favorites. Games you want
-                        everyone to try. Give them a place together.
-                    </p>
-                </div>
-                <Button asChild variant="outline">
-                    <Link href={discover()}>
-                        Community lists <ArrowRight aria-hidden="true" />
-                    </Link>
-                </Button>
+                )}
+                <HistoryPagination
+                    pagination={lists}
+                    label="Your lists pagination"
+                    compact
+                />
             </div>
-            <details
-                className="mb-10 rounded-xl border border-shadow bg-rein/40 p-5 sm:p-7"
-                open={lists.meta.total === 0}
-            >
-                <summary className="flex cursor-pointer items-center gap-2 rounded-sm font-serif text-2xl focus-visible:outline-2 focus-visible:outline-offset-4">
-                    <ListPlus className="size-5" aria-hidden="true" />
-                    Create a list
-                </summary>
-                <div className="mt-6 max-w-2xl">
-                    <GameListForm />
-                </div>
-            </details>
-            <p className="mb-5 text-xs text-[#bdb6b1]">
-                {lists.meta.total} {lists.meta.total === 1 ? 'list' : 'lists'}{' '}
-                of your own
-            </p>
-            {lists.data.length > 0 ? (
-                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                    {lists.data.map((list) => (
-                        <GameListCard key={list.id} list={list} />
-                    ))}
-                </div>
-            ) : (
-                <p className="py-8 text-sm text-[#bdb6b1]">
-                    Your first collection starts above. Add games after creating
-                    the list.
-                </p>
-            )}
-            <HistoryPagination
-                pagination={lists}
-                label="Your lists pagination"
-            />
         </>
     );
 }

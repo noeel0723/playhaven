@@ -4,7 +4,15 @@ The first community feature lets players curate ordered collections independentl
 
 ## Workflow
 
-Open **Lists** to create a named collection with an optional description. New forms start with **Private** visibility. Open the resulting list, search the local catalog, and choose **Add to list**. Games appear once in each list. Repeated adds preserve the existing item and its notes.
+Open **Lists** to browse public collections. **Create a list** opens the compact form in **Your lists**; **New list** opens it again on that page. Create a named collection with an optional description. New forms start with **Private** visibility. Open the resulting list, search the local catalog, and choose **Add to list**. Games appear once in each list. Repeated adds preserve the existing item and its notes.
+
+## Compact discovery and previews
+
+Community and personal list cards display a strip of up to five covers, a small title and description, the creator, and the total game count. Desktop rows contain three cards, tablets two, and phones one. Cards are at most 320px wide with a 5:2 cover strip; missing cover artwork and empty lists have explicit fallbacks. Personal cards also show Public, Private, or Unlisted. Creator names link to a player profile only when that profile is public.
+
+Discovery supports list-name search and **Recently updated**, **Most games**, or **Name A–Z** ordering. Filters stay in pagination URLs. On the first unfiltered recent page, when more than three public lists exist, **Featured lists** selects up to three nonempty public collections with the most games, breaking ties by update time and ID. This uses actual collection sizes; it does not represent weekly activity or reactions. Small catalogs show the ordinary results directly.
+
+Previews eager-load at most five items per collection in saved position order, preserving the full item count. They expose game ID, name, slug, and validated artwork URL, without item notes or library state. Private/unlisted collections are excluded from public discovery and featured results. A shared artwork helper keeps the catalog and preview URL validation identical. Existing public player list cards use the same bounded previews.
 
 Expand **Edit notes and position** on an item to enter up to 2,000 characters and choose its new position within the complete list. Saves reorder items atomically and normalize positions. Removing an item also normalizes the remaining positions. Removing items or deleting a collection requires confirmation.
 
@@ -28,6 +36,6 @@ Authenticated, verified routes under `/my-lists` create, edit, and remove collec
 
 Item mutations lock the list in a transaction to serialize adds, reordering, and removal. Existing unique constraints enforce one user/slug and one list/game pair. A list can contain games that are absent from the owner's library. Missing games can first be added through [RAWG discovery](CATALOG.md#search-and-import-from-the-website).
 
-`tests/Feature/GameListsTest.php` covers visibility, privacy changes, ownership, stable share URLs, duplicate adds, ordering and notes, confirmation, library preservation, filtering, and pagination. SQLite and the isolated PostgreSQL test database are supported.
+`tests/Feature/GameListsTest.php` covers visibility, privacy changes, ownership, stable share URLs, duplicate adds, ordering and notes, confirmation, library preservation, filtering, and pagination. `ListDiscoveryPresentationTest` covers bounded previews per parent list, public-only highlights, search/sort pagination, unsafe artwork, empty collections, and profile visibility. SQLite and the isolated PostgreSQL test database are supported.
 
-The next community features are player profiles, following, and an activity feed.
+Player profiles, following, and the community review feed are also available.

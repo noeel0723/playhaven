@@ -36,4 +36,10 @@ class GameList extends Model
     {
         return $this->hasMany(GameListItem::class)->orderBy('position')->orderBy('id');
     }
+
+    /** @return HasMany<GameListItem, $this> */
+    public function previewItems(): HasMany
+    {
+        return $this->items()->with('game')->limit(5);
+    }
 }

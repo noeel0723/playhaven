@@ -87,7 +87,7 @@ class PlayerController extends Controller
             'topGames' => GameResource::collection($showcase->topGames($user->profile))->resolve($request),
             'recentCompleted' => CompletedGameResource::collection($showcase->completed($user))->resolve($request),
             'reviews' => CommunityReviewResource::collection($community->reviews()->whereHas('libraryEntry', fn (Builder $query) => $query->where('user_id', $user->id))->paginate(12, ['*'], 'reviews_page')->withQueryString()),
-            'lists' => GameListResource::collection($user->gameLists()->where('visibility', ListVisibility::Public)->with('user.profile')->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(6, ['*'], 'lists_page')->withQueryString()),
+            'lists' => GameListResource::collection($user->gameLists()->where('visibility', ListVisibility::Public)->with(['user.profile', 'previewItems'])->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(6, ['*'], 'lists_page')->withQueryString()),
         ]);
     }
 
