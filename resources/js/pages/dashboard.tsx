@@ -31,40 +31,43 @@ export default function Dashboard({
                 </Link>
                 . Here’s your latest gaming activity.
             </h1>
-            <section
-                aria-label="Dashboard shortcuts"
-                className="mb-7 flex flex-wrap items-center justify-end gap-4 border-b border-white/10 pb-4"
-            >
-                <div className="flex flex-wrap gap-2">
-                    <Button asChild size="sm">
-                        <Link href={library()}>
-                            Library <ArrowRight aria-hidden="true" />
-                        </Link>
-                    </Button>
-                    <Button
-                        asChild
-                        variant="outline"
-                        size="sm"
-                        className="border-shadow bg-rein/30 text-[#f4f1ed] hover:bg-rein hover:text-white"
-                    >
-                        <Link href={games()}>Discover games</Link>
-                    </Button>
-                    <Button asChild variant="ghost" size="sm">
-                        <Link href={statistics()}>
-                            Your statistics <ArrowRight aria-hidden="true" />
-                        </Link>
-                    </Button>
-                </div>
-            </section>
             <section aria-labelledby="library-overview" className="mb-8">
-                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                    <h2 id="library-overview" className="text-sm font-medium">
-                        Library overview
-                    </h2>
-                    <p className="text-xs text-[#bdb6b1]">
-                        {counts.total} {counts.total === 1 ? 'game' : 'games'}{' '}
-                        in your library
-                    </p>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 pb-3">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <h2
+                            id="library-overview"
+                            className="text-sm font-medium"
+                        >
+                            Library overview
+                        </h2>
+                        <p className="text-[11px] text-[#bdb6b1]">
+                            {counts.total}{' '}
+                            {counts.total === 1 ? 'game' : 'games'}
+                        </p>
+                    </div>
+                    <nav
+                        aria-label="Dashboard shortcuts"
+                        className="ml-auto flex w-full flex-wrap items-center justify-end gap-1 text-[11px] sm:w-auto"
+                    >
+                        <Link
+                            href={library()}
+                            className="inline-flex h-7 items-center rounded border border-white/10 bg-rein/20 px-2 text-[#f4f1ed] hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                            Library
+                        </Link>
+                        <Link
+                            href={games()}
+                            className="inline-flex h-7 items-center rounded px-2 text-[#bdb6b1] hover:bg-rein/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                            Discover games
+                        </Link>
+                        <Link
+                            href={statistics()}
+                            className="inline-flex h-7 items-center rounded px-2 text-[#bdb6b1] hover:bg-rein/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                            Your statistics
+                        </Link>
+                    </nav>
                 </div>
                 <nav
                     aria-label="Library status filters"
