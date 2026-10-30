@@ -10,14 +10,17 @@ import type { GameList } from '@/types/lists';
 export default function GameListForm({
     list,
     compact = false,
+    returnToEdit = false,
 }: {
     list?: GameList;
     compact?: boolean;
+    returnToEdit?: boolean;
 }) {
     const form = useForm({
         name: list?.name ?? '',
         description: list?.description ?? '',
         visibility: list?.visibility ?? 'private',
+        return_to_edit: returnToEdit,
     });
     return (
         <form

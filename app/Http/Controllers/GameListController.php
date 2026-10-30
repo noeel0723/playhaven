@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LibraryStatus;
 use App\Enums\ListVisibility;
 use App\Http\Requests\GameListBrowseRequest;
 use App\Http\Requests\SaveGameListRequest;
@@ -53,7 +54,11 @@ class GameListController extends Controller
 
     public function store(SaveGameListRequest $request): RedirectResponse
     {
-        $list = $request->user()->gameLists()->create([...$request->validated(), 'slug' => substr(Str::slug($request->string('name')->value()) ?: 'list', 0, 100).'-'.strtolower((string) Str::ulid())]);
+        $list = $request->user()->gameLists()->create([...$request->safe()->except(['return_to_edit']), 'slug' => substr(Str::slug($request->string('name')->value()) ?: 'list', 0, 100).'-'.strtolower((string) Str::ulid())]);
+
+        if ($request->boolean('return_to_edit')) {
+            return to_route('lists.edit', $list->id);
+        }
 
         return to_route('lists.show', ['listOwner' => $list->user_id, 'listSlug' => $list->slug]);
     }
@@ -63,32 +68,49 @@ class GameListController extends Controller
         $list = $listOwner->gameLists()->where('slug', $listSlug)->with('user.profile')->withCount('items')->firstOrFail();
         $isOwner = $request->user()?->id === $list->user_id;
         abort_if($list->visibility === ListVisibility::Private && ! $isOwner, 404);
+        $completed = $request->user()?->libraryEntries()->where('status', LibraryStatus::Completed)
+            ->whereIn('game_id', $list->items()->select('game_id'))->count();
+        $total = (int) $list->getAttribute('items_count');
+        $response = Inertia::render('lists/show', [
+            'list' => (new GameListResource($list))->resolve($request), 'isOwner' => $isOwner,
+            'shareUrl' => route('lists.show', ['listOwner' => $list->user_id, 'listSlug' => $list->slug]),
+            'progress' => $completed === null ? null : ['completed' => $completed, 'total' => $total, 'percentage' => $total > 0 ? (int) round($completed / $total * 100) : 0],
+            'items' => GameListItemResource::collection($list->items()->with(['game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')])->paginate(24)->withQueryString()),
+        ])->toResponse($request);
+
+        return $this->listResponse($response, $list);
+    }
+
+    public function edit(GameListBrowseRequest $request, GameList $gameList): HttpResponse
+    {
+        $list = $request->user()->gameLists()->whereKey($gameList->id)->with('user.profile')->withCount('items')->firstOrFail();
         $search = trim($request->string('q')->value());
         $games = [];
-        if ($isOwner && $search !== '') {
+        if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
             $games = GameResource::collection(Game::with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')
                 ->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%'])->whereNotIn('id', $list->items()->select('game_id'))->orderBy('name')->orderBy('id')->limit(12)->get())->resolve($request);
         }
 
-        $response = Inertia::render('lists/show', [
-            'list' => (new GameListResource($list))->resolve($request), 'isOwner' => $isOwner, 'query' => $search, 'availableGames' => $games,
+        $response = Inertia::render('lists/edit', [
+            'list' => (new GameListResource($list))->resolve($request), 'query' => $search, 'availableGames' => $games,
             'shareUrl' => route('lists.show', ['listOwner' => $list->user_id, 'listSlug' => $list->slug]),
             'items' => GameListItemResource::collection($list->items()->with(['game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')])->paginate(24)->withQueryString()),
         ])->toResponse($request);
-        $response->headers->set('Cache-Control', 'private, no-store');
-        if ($list->visibility !== ListVisibility::Public) {
-            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
-        }
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
 
-        return $response;
+        return $this->listResponse($response, $list);
     }
 
     public function update(SaveGameListRequest $request, GameList $gameList): RedirectResponse
     {
         $list = $request->user()->gameLists()->whereKey($gameList->id)->firstOrFail();
-        $list->update($request->validated());
+        $list->update($request->safe()->except(['return_to_edit']));
         Inertia::flash('toast', ['type' => 'success', 'message' => 'List updated.']);
+
+        if ($request->boolean('return_to_edit')) {
+            return to_route('lists.edit', $list->id);
+        }
 
         return to_route('lists.show', ['listOwner' => $list->user_id, 'listSlug' => $list->slug]);
     }
@@ -100,5 +122,15 @@ class GameListController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'List removed. Your games and library are preserved.']);
 
         return to_route('lists.index');
+    }
+
+    private function listResponse(HttpResponse $response, GameList $list): HttpResponse
+    {
+        $response->headers->set('Cache-Control', 'private, no-store');
+        if ($list->visibility !== ListVisibility::Public) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
+
+        return $response;
     }
 }

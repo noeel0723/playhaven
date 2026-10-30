@@ -7,10 +7,12 @@ export default function HistoryPagination({
     pagination,
     label,
     compact = false,
+    preserveState = false,
 }: {
     pagination: Pick<CatalogPagination, 'links' | 'meta'>;
     label: string;
     compact?: boolean;
+    preserveState?: boolean;
 }) {
     if (!pagination.links.prev && !pagination.links.next) return null;
     return (
@@ -37,6 +39,7 @@ export default function HistoryPagination({
                         <Link
                             href={pagination.links.prev}
                             preserveScroll={!compact}
+                            preserveState={preserveState}
                         >
                             <ArrowLeft aria-hidden="true" />
                             Previous
@@ -57,6 +60,7 @@ export default function HistoryPagination({
                         <Link
                             href={pagination.links.next}
                             preserveScroll={!compact}
+                            preserveState={preserveState}
                         >
                             Next
                             <ArrowRight aria-hidden="true" />

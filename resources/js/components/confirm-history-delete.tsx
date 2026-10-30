@@ -19,14 +19,20 @@ export default function ConfirmHistoryDelete({
     title,
     description,
     label,
+    data,
+    iconOnly = false,
+    disabled = false,
 }: {
     url: string;
     title: string;
     description: string;
     label: string;
+    data?: Record<string, string | number | boolean>;
+    iconOnly?: boolean;
+    disabled?: boolean;
 }) {
     const [open, setOpen] = useState(false);
-    const form = useForm({ confirm: true });
+    const form = useForm({ ...data, confirm: true });
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -34,10 +40,13 @@ export default function ConfirmHistoryDelete({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="text-xs text-[#bdb6b1]"
+                    disabled={disabled}
+                    className={`${iconOnly ? 'size-8 p-0' : ''} text-xs text-[#bdb6b1]`}
                 >
                     <Trash2 aria-hidden="true" />
-                    {label}
+                    <span className={iconOnly ? 'sr-only' : undefined}>
+                        {label}
+                    </span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="dark border-shadow bg-rein text-[#f4f1ed]">

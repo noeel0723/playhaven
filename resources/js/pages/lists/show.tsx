@@ -1,32 +1,36 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import ConfirmDelete from '@/components/confirm-history-delete';
-import GameListForm from '@/components/game-list-form';
-import GameListItem from '@/components/game-list-item';
+import { Head, Link } from '@inertiajs/react';
+import { Globe, Link2, LockKeyhole, Pencil } from 'lucide-react';
+import GameCover from '@/components/game-cover';
 import HistoryPagination from '@/components/history-pagination';
-import ListAddGame from '@/components/list-add-game';
+import PlayerAvatar from '@/components/player-avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { search as rawg } from '@/routes/catalog';
-import { destroy, discover, index, show } from '@/routes/lists';
-import type { CatalogGame } from '@/types/catalog';
-import type { GameList, ItemPagination } from '@/types/lists';
+import { login } from '@/routes';
+import { show as gameDetails } from '@/routes/games';
+import { show as playerProfile } from '@/routes/players';
+import { discover, index, edit } from '@/routes/lists';
+import type { GameList, ItemPagination, ListProgress } from '@/types/lists';
 
 export default function ListDetails({
     list,
     items,
     isOwner,
-    query,
-    availableGames,
     shareUrl,
+    progress,
 }: {
     list: GameList;
     items: ItemPagination;
     isOwner: boolean;
-    query: string;
-    availableGames: CatalogGame[];
     shareUrl: string;
+    progress: ListProgress | null;
 }) {
+    const VisibilityIcon =
+        list.visibility === 'private'
+            ? LockKeyhole
+            : list.visibility === 'unlisted'
+              ? Link2
+              : Globe;
     return (
         <>
             <Head title={list.name}>
@@ -36,172 +40,210 @@ export default function ListDetails({
             </Head>
             <Link
                 href={isOwner ? index() : discover()}
-                className="mb-8 inline-block rounded-sm text-sm text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2"
+                className="mb-5 inline-block rounded-sm text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2"
             >
                 {isOwner ? 'Your lists' : 'Community lists'}
             </Link>
-            <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
-                {list.visibility} collection · {list.items_count} games
-            </p>
-            <h1 className="max-w-4xl font-serif text-4xl leading-tight break-words sm:text-6xl">
-                {list.name}
-            </h1>
-            <p className="mt-4 text-sm text-[#bdb6b1]">
-                Curated by {list.owner.name}
-            </p>
-            {list.description && (
-                <p className="mt-6 max-w-3xl text-sm leading-7 break-words whitespace-pre-wrap text-[#c5bfba]">
-                    {list.description}
-                </p>
-            )}
-            {isOwner && (
-                <>
-                    <details className="mt-9 rounded-xl border border-shadow bg-rein/30 p-5 sm:p-7">
-                        <summary className="cursor-pointer rounded-sm font-serif text-2xl focus-visible:outline-2">
-                            List details & sharing
-                        </summary>
-                        <div className="mt-6 max-w-2xl">
-                            <GameListForm
-                                key={`${list.name}:${list.description}:${list.visibility}`}
-                                list={list}
-                            />
-                            <div className="mt-7 border-t border-white/10 pt-6">
-                                <Label htmlFor="share-list-link">
-                                    List link
-                                </Label>
-                                <Input
-                                    id="share-list-link"
-                                    readOnly
-                                    value={shareUrl}
-                                    onFocus={(event) => event.target.select()}
-                                    className="mt-3 h-11 border-shadow bg-rein"
-                                />
-                                <p className="mt-2 text-xs leading-6 text-[#bdb6b1]">
-                                    {list.visibility === 'private'
-                                        ? 'Only you can open this link while the list is private.'
-                                        : 'Select the link to copy it and share this collection.'}
-                                </p>
-                                <div className="mt-4">
-                                    <ConfirmDelete
-                                        url={destroy(list.id).url}
-                                        title="Delete this list?"
-                                        description="The list and all of its item notes will be permanently deleted. Catalog games, your library, ratings, and playing history will stay."
-                                        label="Delete list"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-                    <section
-                        aria-labelledby="add-list-games"
-                        className="my-9 rounded-xl border border-shadow bg-rein/30 p-5 sm:p-7"
-                    >
-                        <h2 id="add-list-games" className="font-serif text-2xl">
-                            Find a place for another game
-                        </h2>
-                        <Form
-                            action={show({
-                                listOwner: list.owner.id,
-                                listSlug: list.slug,
-                            })}
-                            method="get"
-                            key={query}
-                            options={{ preserveScroll: true }}
-                        >
-                            {({ processing, errors }) => (
-                                <div className="mt-5">
-                                    <Label htmlFor="add-game-search">
-                                        Search games in the catalog
-                                    </Label>
-                                    <div className="mt-3 flex flex-wrap gap-3">
-                                        <Input
-                                            id="add-game-search"
-                                            name="q"
-                                            maxLength={100}
-                                            defaultValue={query}
-                                            placeholder="Search a game title…"
-                                            className="h-11 min-w-40 flex-1 border-shadow bg-rein"
-                                        />
-                                        <Button
-                                            className="h-11"
-                                            disabled={processing}
-                                        >
-                                            {processing
-                                                ? 'Searching…'
-                                                : 'Search'}
-                                        </Button>
-                                    </div>
-                                    {errors.q && (
-                                        <p
-                                            role="alert"
-                                            className="mt-3 text-sm text-red-300"
-                                        >
-                                            {errors.q}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                        </Form>
-                        {availableGames.length ? (
-                            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                {availableGames.map((game) => (
-                                    <ListAddGame
-                                        key={game.id}
-                                        game={game}
-                                        listId={list.id}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            query && (
-                                <p className="mt-4 text-sm text-[#bdb6b1]">
-                                    No additional games found for this title.
-                                </p>
-                            )
-                        )}
-                        <p className="mt-5 text-xs text-[#bdb6b1]">
-                            Missing a game?{' '}
+            <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_240px]">
+                <div className="min-w-0">
+                    <div className="mb-3 flex items-center gap-2 text-xs text-[#bdb6b1]">
+                        <PlayerAvatar
+                            name={list.owner.name}
+                            src={list.owner.avatar_url}
+                            className="size-5"
+                        />
+                        {list.owner.username ? (
                             <Link
-                                href={rawg()}
-                                className="rounded-sm underline underline-offset-4 focus-visible:outline-2"
+                                href={playerProfile(list.owner.username)}
+                                className="rounded-sm hover:underline focus-visible:outline-2"
                             >
-                                Find it with RAWG
+                                {list.owner.name}
                             </Link>
-                            , then return to this list.
-                        </p>
+                        ) : (
+                            <span>{list.owner.name}</span>
+                        )}
+                        <span>
+                            · {list.items_count}{' '}
+                            {list.items_count === 1 ? 'game' : 'games'}
+                        </span>
+                    </div>
+                    <header className="mb-5 border-t border-white/10 pt-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h1 className="max-w-full min-w-0 text-2xl leading-8 font-medium wrap-break-word">
+                                {list.name}
+                            </h1>
+                            <span className="inline-flex items-center gap-1 rounded border border-white/10 px-2 py-1 text-[10px] text-[#bdb6b1] capitalize">
+                                <VisibilityIcon
+                                    className="size-3"
+                                    aria-hidden="true"
+                                />
+                                {list.visibility}
+                            </span>
+                        </div>
+                        {list.description && (
+                            <p className="mt-3 max-w-2xl text-[13px] leading-6 wrap-break-word whitespace-pre-wrap text-[#c5bfba]">
+                                {list.description}
+                            </p>
+                        )}
+                        {isOwner && (
+                            <Button
+                                asChild
+                                size="sm"
+                                className="mt-3 lg:hidden"
+                            >
+                                <Link href={edit(list.id)}>
+                                    <Pencil aria-hidden="true" />
+                                    Edit list
+                                </Link>
+                            </Button>
+                        )}
+                    </header>
+                    <section aria-label="Games in this list">
+                        {items.data.length ? (
+                            <ol className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-5">
+                                {items.data.map((item) => (
+                                    <li
+                                        key={item.id}
+                                        className="max-w-36 min-w-0"
+                                    >
+                                        <Link
+                                            href={gameDetails(item.game.slug)}
+                                            aria-label={`${item.position}. ${item.game.name}`}
+                                            title={item.game.name}
+                                            className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
+                                        >
+                                            <GameCover
+                                                game={item.game}
+                                                compact
+                                                className="aspect-[2/3] rounded-md group-hover:border-[#bdb6b1]"
+                                            />
+                                            <span className="mt-1 block text-center text-xs text-[#d5cec7] tabular-nums">
+                                                {item.position}
+                                            </span>
+                                            <span className="mt-1 block truncate text-center text-[10px] text-[#bdb6b1]">
+                                                {item.game.name}
+                                            </span>
+                                        </Link>
+                                        {item.notes && (
+                                            <details className="mt-1 text-[11px] text-[#bdb6b1]">
+                                                <summary className="mx-auto w-fit cursor-pointer rounded-sm underline underline-offset-4 focus-visible:outline-2">
+                                                    Note
+                                                </summary>
+                                                <p className="mt-2 leading-5 wrap-break-word whitespace-pre-wrap">
+                                                    {item.notes}
+                                                </p>
+                                            </details>
+                                        )}
+                                    </li>
+                                ))}
+                            </ol>
+                        ) : (
+                            <div className="rounded-md border border-dashed border-shadow p-5 text-xs leading-6 text-[#bdb6b1]">
+                                No games on this page yet.{' '}
+                                {isOwner && (
+                                    <Link
+                                        href={edit(list.id)}
+                                        className="underline underline-offset-4"
+                                    >
+                                        Edit this list to add games
+                                    </Link>
+                                )}
+                            </div>
+                        )}
+                        <HistoryPagination
+                            pagination={items}
+                            label="List games pagination"
+                            compact
+                        />
                     </section>
-                </>
-            )}
-            <section aria-label="Games in this list" className="mt-10">
-                {items.data.length ? (
-                    <div className="space-y-5">
-                        {items.data.map((item) => (
-                            <GameListItem
-                                key={`${item.id}:${item.position}:${item.notes}`}
-                                item={item}
-                                listId={list.id}
-                                total={list.items_count}
-                                isOwner={isOwner}
+                </div>
+                <aside
+                    className="min-w-0 space-y-4 lg:sticky lg:top-6"
+                    aria-label="List actions and progress"
+                >
+                    <div className="overflow-hidden rounded-md border border-white/10 bg-rein/20">
+                        {isOwner && (
+                            <Link
+                                href={edit(list.id)}
+                                className="flex min-h-10 items-center justify-center gap-2 border-b border-white/10 px-3 py-3 text-xs text-[#e0d9d3] hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-[-3px]"
+                            >
+                                <Pencil
+                                    className="size-3.5"
+                                    aria-hidden="true"
+                                />
+                                Edit list
+                            </Link>
+                        )}
+                        <div className="p-3">
+                            <Label
+                                htmlFor="share-list-link"
+                                className="text-xs"
+                            >
+                                List link
+                            </Label>
+                            <Input
+                                id="share-list-link"
+                                readOnly
+                                value={shareUrl}
+                                onFocus={(event) => event.target.select()}
+                                className="mt-2 h-8 border-shadow bg-caviar/30 text-xs"
                             />
-                        ))}
+                            <p className="mt-2 text-[11px] leading-5 text-[#bdb6b1]">
+                                {list.visibility === 'private'
+                                    ? 'Only you can open this private list.'
+                                    : list.visibility === 'unlisted'
+                                      ? 'Anyone with this link can open the list.'
+                                      : 'Share this public list with other players.'}
+                            </p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="rounded-xl border border-dashed border-shadow px-6 py-12 text-center">
-                        <h2 className="font-serif text-2xl">
-                            A collection waiting to take shape.
-                        </h2>
-                        <p className="mt-4 text-sm text-[#bdb6b1]">
-                            {isOwner
-                                ? 'Search for a game above and add it to your list.'
-                                : 'There are no games on this page yet.'}
-                        </p>
-                    </div>
-                )}
-                <HistoryPagination
-                    pagination={items}
-                    label="List games pagination"
-                />
-            </section>
+                    {progress ? (
+                        <section
+                            className="rounded-md border border-white/10 p-3"
+                            aria-labelledby="list-progress-title"
+                        >
+                            <div className="flex items-start justify-between gap-3">
+                                <div>
+                                    <h2
+                                        id="list-progress-title"
+                                        className="text-xs font-medium"
+                                    >
+                                        You’ve completed
+                                    </h2>
+                                    <p className="mt-1 text-[11px] text-[#bdb6b1]">
+                                        {progress.completed} of {progress.total}{' '}
+                                        games
+                                    </p>
+                                </div>
+                                <span className="text-2xl font-light tabular-nums">
+                                    {progress.percentage}
+                                    <span className="text-xs">%</span>
+                                </span>
+                            </div>
+                            <progress
+                                aria-label="Your completion progress"
+                                value={progress.completed}
+                                max={Math.max(progress.total, 1)}
+                                className="mt-3 block h-1.5 w-full accent-[#bdb6b1]"
+                            />
+                        </section>
+                    ) : (
+                        <div className="rounded-md border border-white/10 p-3">
+                            <p className="text-xs leading-6 text-[#bdb6b1]">
+                                Log in to see your completion progress.
+                            </p>
+                            <Button
+                                asChild
+                                variant="ghost"
+                                size="sm"
+                                className="mt-1"
+                            >
+                                <Link href={login()}>Log in</Link>
+                            </Button>
+                        </div>
+                    )}
+                </aside>
+            </div>
         </>
     );
 }

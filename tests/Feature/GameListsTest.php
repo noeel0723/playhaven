@@ -159,7 +159,7 @@ class GameListsTest extends TestCase
         $game = Game::factory()->create(['name' => '100%_Adventure']);
         Game::factory()->create(['name' => '100 Games']);
         GameList::factory()->create(['name' => '100 Collections']);
-        $this->actingAs($list->user)->get($this->link($list).'?q='.urlencode('%_'))->assertInertia(fn (Assert $page) => $page
+        $this->actingAs($list->user)->get(route('lists.edit', $list->id).'?q='.urlencode('%_'))->assertInertia(fn (Assert $page) => $page
             ->has('availableGames', 1)->where('availableGames.0.id', $game->id));
         $this->get(route('lists.discover', ['q' => '%_']))->assertInertia(fn (Assert $page) => $page->has('lists.data', 1)->where('lists.data.0.id', $list->id));
     }

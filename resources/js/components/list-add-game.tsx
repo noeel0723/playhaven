@@ -9,11 +9,13 @@ import type { CatalogGame } from '@/types/catalog';
 export default function ListAddGame({
     game,
     listId,
+    returnToEdit = false,
 }: {
     game: CatalogGame;
     listId: number;
+    returnToEdit?: boolean;
 }) {
-    const form = useForm({ game_id: game.id });
+    const form = useForm({ game_id: game.id, return_to_edit: returnToEdit });
     return (
         <div className="flex min-w-0 items-center gap-4 rounded-lg border border-shadow p-3">
             <GameCover game={game} className="w-12 shrink-0" />

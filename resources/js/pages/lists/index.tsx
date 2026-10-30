@@ -62,7 +62,7 @@ export default function Lists({ lists }: { lists: ListPagination }) {
                         Create a list
                     </summary>
                     <div className="mt-4 max-w-lg">
-                        <GameListForm compact />
+                        <GameListForm compact returnToEdit />
                     </div>
                 </details>
                 {lists.data.length ? (
@@ -77,7 +77,7 @@ export default function Lists({ lists }: { lists: ListPagination }) {
                     </div>
                 ) : (
                     <p className="py-5 text-xs leading-6 text-[#bdb6b1]">
-                        No lists yet. Create one, then add games from its detail
+                        No lists yet. Create one, then add games in its editor
                         page.
                     </p>
                 )}

@@ -15,7 +15,7 @@ class GameListItemController extends Controller
 {
     public function store(Request $request, GameList $gameList): RedirectResponse
     {
-        $data = $request->validate(['game_id' => ['required', 'integer', 'exists:games,id'], 'notes' => ['nullable', 'string', 'max:2000'], 'return_to_game' => ['sometimes', 'boolean']]);
+        $data = $request->validate(['game_id' => ['required', 'integer', 'exists:games,id'], 'notes' => ['nullable', 'string', 'max:2000'], 'return_to_game' => ['sometimes', 'boolean'], 'return_to_edit' => ['sometimes', 'boolean']]);
         $list = DB::transaction(function () use ($request, $gameList, $data): GameList {
             $list = $request->user()->gameLists()->whereKey($gameList->id)->lockForUpdate()->firstOrFail();
             $list->items()->firstOrCreate(['game_id' => $data['game_id']], ['position' => (int) $list->items()->max('position') + 1, 'notes' => $data['notes'] ?? null]);
@@ -30,12 +30,12 @@ class GameListItemController extends Controller
             return to_route('games.show', Game::whereKey($data['game_id'])->firstOrFail()->slug);
         }
 
-        return $this->redirect($list, 'Game added to your list.');
+        return $this->redirect($list, 'Game added to your list.', $request->boolean('return_to_edit'), $request->boolean('return_to_edit') ? (int) $list->items()->where('game_id', $data['game_id'])->value('position') : null);
     }
 
     public function update(Request $request, GameList $gameList, GameListItem $listItem): RedirectResponse
     {
-        $data = $request->validate(['notes' => ['present', 'nullable', 'string', 'max:2000'], 'position' => ['required', 'integer', 'min:1']]);
+        $data = $request->validate(['notes' => ['present', 'nullable', 'string', 'max:2000'], 'position' => ['required', 'integer', 'min:1'], 'return_to_edit' => ['sometimes', 'boolean']]);
         $list = DB::transaction(function () use ($request, $gameList, $listItem, $data): GameList {
             $list = $request->user()->gameLists()->whereKey($gameList->id)->lockForUpdate()->firstOrFail();
             $item = $list->items()->whereKey($listItem->id)->firstOrFail();
@@ -54,12 +54,12 @@ class GameListItemController extends Controller
             return $list;
         });
 
-        return $this->redirect($list, 'List order and notes saved.');
+        return $this->redirect($list, 'List order and notes saved.', $request->boolean('return_to_edit'), (int) $data['position']);
     }
 
     public function destroy(Request $request, GameList $gameList, GameListItem $listItem): RedirectResponse
     {
-        $request->validate(['confirm' => ['required', 'accepted']]);
+        $request->validate(['confirm' => ['required', 'accepted'], 'return_to_edit' => ['sometimes', 'boolean']]);
         $list = DB::transaction(function () use ($request, $gameList, $listItem): GameList {
             $list = $request->user()->gameLists()->whereKey($gameList->id)->lockForUpdate()->firstOrFail();
             $list->items()->whereKey($listItem->id)->firstOrFail()->delete();
@@ -71,12 +71,16 @@ class GameListItemController extends Controller
             return $list;
         });
 
-        return $this->redirect($list, 'Game removed from this list.');
+        return $this->redirect($list, 'Game removed from this list.', $request->boolean('return_to_edit'));
     }
 
-    private function redirect(GameList $list, string $message): RedirectResponse
+    private function redirect(GameList $list, string $message, bool $toEdit = false, ?int $position = null): RedirectResponse
     {
         Inertia::flash('toast', ['type' => 'success', 'message' => $message]);
+
+        if ($toEdit) {
+            return to_route('lists.edit', ['gameList' => $list->id, ...($position > 24 ? ['page' => (int) ceil($position / 24)] : [])]);
+        }
 
         return to_route('lists.show', ['listOwner' => $list->user_id, 'listSlug' => $list->slug]);
     }

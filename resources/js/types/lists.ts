@@ -29,3 +29,9 @@ export type ListItem = {
 };
 export type ListPagination = HistoryPagination<GameList>;
 export type ItemPagination = HistoryPagination<ListItem>;
+
+export type ListProgress = {
+    completed: number;
+    total: number;
+    percentage: number;
+};
