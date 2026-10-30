@@ -19,72 +19,76 @@ export default function Dashboard({
     return (
         <>
             <Head title="Your haven" />
-            <section className="mb-12 border-b border-white/10 pb-10">
-                <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
-                    Welcome back, {auth.user.name}
-                </p>
-                <h1 className="max-w-3xl text-4xl leading-tight font-medium tracking-tight sm:text-6xl">
-                    Your games.
-                    <br />
-                    <span className="font-serif font-normal text-[#c5bfba] italic">
-                        Your next chapter.
-                    </span>
-                </h1>
-                <p className="mt-6 max-w-xl text-sm leading-7 text-[#bdb6b1]">
-                    A place for the worlds you’re exploring, the stories you’ve
-                    finished, and everything you want to play next.
-                </p>
-                <div className="mt-7 flex flex-wrap gap-3">
-                    <Button asChild>
+            <section className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div>
+                    <h1 className="text-2xl font-medium tracking-tight">
+                        Your haven
+                    </h1>
+                    <p className="mt-1 text-xs text-[#bdb6b1]">
+                        Welcome back, {auth.user.name}
+                    </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Button asChild size="sm">
                         <Link href={library()}>
                             Your library <ArrowRight aria-hidden="true" />
                         </Link>
                     </Button>
-                    <Button asChild variant="outline">
+                    <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="border-shadow bg-rein/30 text-[#f4f1ed] hover:bg-rein hover:text-white"
+                    >
                         <Link href={games()}>Discover games</Link>
                     </Button>
-                    <Button asChild variant="ghost">
+                    <Button asChild variant="ghost" size="sm">
                         <Link href={statistics()}>
                             Your statistics <ArrowRight aria-hidden="true" />
                         </Link>
                     </Button>
                 </div>
             </section>
-            <section aria-labelledby="library-overview" className="mb-12">
-                <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
-                    <h2 id="library-overview" className="font-serif text-3xl">
-                        At a glance
+            <section aria-labelledby="library-overview" className="mb-8">
+                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                    <h2 id="library-overview" className="text-sm font-medium">
+                        Library overview
                     </h2>
                     <p className="text-xs text-[#bdb6b1]">
                         {counts.total} {counts.total === 1 ? 'game' : 'games'}{' '}
                         in your library
                     </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                <nav
+                    aria-label="Library status filters"
+                    className="grid max-w-2xl grid-cols-2 gap-2 sm:grid-cols-5"
+                >
                     {libraryStatuses.map((status) => (
                         <Link
                             key={status.value}
                             href={library({ query: { status: status.value } })}
-                            className="rounded-xl border border-shadow bg-rein/30 px-5 py-5 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-white/10 bg-rein/15 px-3 py-2 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
-                            <p className="text-3xl tabular-nums">
-                                {counts[status.value]}
-                            </p>
-                            <p className="mt-2 text-xs text-[#bdb6b1]">
+                            <span className="text-xs text-[#bdb6b1]">
                                 {status.label}
-                            </p>
+                            </span>
+                            <span className="text-sm font-medium tabular-nums">
+                                {counts[status.value]}
+                            </span>
                         </Link>
                     ))}
                     <Link
                         href={library({ query: { favorite: 1 } })}
-                        className="rounded-xl border border-shadow bg-rein/30 px-5 py-5 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
+                        className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-white/10 bg-rein/15 px-3 py-2 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                        <p className="text-3xl tabular-nums">
+                        <span className="text-xs text-[#bdb6b1]">
+                            Favorites
+                        </span>
+                        <span className="text-sm font-medium tabular-nums">
                             {counts.favorites}
-                        </p>
-                        <p className="mt-2 text-xs text-[#bdb6b1]">Favorites</p>
+                        </span>
                     </Link>
-                </div>
+                </nav>
             </section>
             <section aria-labelledby="recent-games">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
