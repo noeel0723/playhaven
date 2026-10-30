@@ -81,12 +81,28 @@ function GameSearch({ id }: { id: string }) {
 export default function SiteHeader() {
     const page = usePage();
     const { auth } = page.props;
-    const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
     const links = [
-        { label: 'Games', href: games() },
-        { label: 'Lists', href: lists() },
-        { label: 'Community', href: community() },
-        { label: 'Players', href: players() },
+        {
+            label: 'Games',
+            href: games(),
+            active: isCurrentOrParentUrl(games()),
+        },
+        {
+            label: 'Lists',
+            href: lists(),
+            active: isCurrentOrParentUrl(lists()),
+        },
+        {
+            label: 'Community',
+            href: community(),
+            active: isCurrentUrl(community()),
+        },
+        {
+            label: 'Players',
+            href: players(),
+            active: isCurrentOrParentUrl(players()),
+        },
     ];
     return (
         <header className="relative z-20 mx-auto flex h-24 max-w-7xl items-center justify-between gap-6 px-6 sm:px-10 lg:h-28">
@@ -106,9 +122,7 @@ export default function SiteHeader() {
                     <Link
                         key={link.label}
                         href={link.href}
-                        aria-current={
-                            isCurrentOrParentUrl(link.href) ? 'page' : undefined
-                        }
+                        aria-current={link.active ? 'page' : undefined}
                         className="rounded-sm text-[11px] font-semibold tracking-[0.08em] text-[#e0d9d3] uppercase transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 aria-[current=page]:text-white aria-[current=page]:underline aria-[current=page]:decoration-white/40 aria-[current=page]:underline-offset-8"
                     >
                         {link.label}
@@ -177,11 +191,7 @@ export default function SiteHeader() {
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                aria-current={
-                                    isCurrentOrParentUrl(link.href)
-                                        ? 'page'
-                                        : undefined
-                                }
+                                aria-current={link.active ? 'page' : undefined}
                                 className="rounded-md p-3 text-sm hover:bg-rein focus-visible:outline-2 aria-[current=page]:bg-rein"
                             >
                                 {link.label}

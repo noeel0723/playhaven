@@ -30,7 +30,7 @@ class GameCatalogController extends Controller
         $platform = $request->string('platform')->value();
         $year = $request->filled('year') ? $request->integer('year') : null;
         $sort = $request->filled('sort') ? $request->string('sort')->value() : 'recent';
-        $query = Game::query()->with(['genres', 'platforms'])
+        $query = Game::query()->with(['genres', 'platforms', 'developers'])
             ->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score');
 
         if ($search !== '') {

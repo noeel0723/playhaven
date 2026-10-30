@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import { index as library } from '@/routes/library';
@@ -23,6 +24,7 @@ type Props = {
 
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
+    const { isCurrentOrParentUrl } = useCurrentUrl();
 
     const handleLogout = () => {
         cleanup();
@@ -59,7 +61,16 @@ export function UserMenuContent({ user }: Props) {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <Link href={playerProfile()} onClick={cleanup}>
+                    <Link
+                        href={playerProfile()}
+                        onClick={cleanup}
+                        aria-current={
+                            isCurrentOrParentUrl(playerProfile())
+                                ? 'page'
+                                : undefined
+                        }
+                        className="aria-[current=page]:bg-rein aria-[current=page]:font-medium"
+                    >
                         Profile
                     </Link>
                 </DropdownMenuItem>

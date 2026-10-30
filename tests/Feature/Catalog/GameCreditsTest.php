@@ -44,7 +44,7 @@ class GameCreditsTest extends TestCase
         ], $changes);
     }
 
-    public function test_credits_are_shared_idempotent_and_public_only_on_game_details(): void
+    public function test_credits_are_idempotent_and_developers_are_available_on_catalog_cards_and_game_details(): void
     {
         $sync = app(CatalogSynchronizer::class);
         $sync->import([$this->details(), $this->details(['id' => 102, 'slug' => 'another-world'])], true);
@@ -60,7 +60,9 @@ class GameCreditsTest extends TestCase
                 ->where('game.official_website', 'https://studio.example.org/world')
                 ->missing('game.developers.0.rawg_id')->missing('game.credits_synced_at'));
         $this->get('/games')->assertInertia(fn (Assert $page) => $page
-            ->missing('games.data.0.developers')->missing('games.data.0.publishers')->missing('games.data.0.official_website'));
+            ->has('games.data.0.developers', 2)->where('games.data.0.developers.0.name', 'First Studio')
+            ->where('games.data.0.developers.1.name', 'Second Studio')->missing('games.data.0.developers.0.rawg_id')
+            ->missing('games.data.0.publishers')->missing('games.data.0.official_website'));
     }
 
     public function test_enrichment_fetches_missing_credits_despite_recent_details_and_preserves_player_data(): void
@@ -171,6 +173,7 @@ class GameCreditsTest extends TestCase
         $game = Game::factory()->create(['website_url' => 'javascript:alert(1)']);
         $this->get('/games/'.$game->slug)->assertOk()->assertInertia(fn (Assert $page) => $page
             ->has('game.developers', 0)->has('game.publishers', 0)->where('game.official_website', null));
+        $this->get('/games')->assertInertia(fn (Assert $page) => $page->has('games.data.0.developers', 0));
     }
 
     public function test_enrich_command_updates_only_missing_metadata_and_respects_the_limit(): void

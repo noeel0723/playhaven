@@ -11,6 +11,9 @@ export default function GameCard({
     game: CatalogGame;
     poster?: boolean;
 }) {
+    const developerNames = game.developers
+        ?.map((developer) => developer.name)
+        .join(', ');
     return (
         <article className="min-w-0">
             <Link
@@ -36,6 +39,15 @@ export default function GameCard({
                     {game.name}
                 </h2>
             </Link>
+            {game.developers !== undefined && (
+                <p
+                    className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#bdb6b1]"
+                    title={developerNames || undefined}
+                >
+                    <span className="sr-only">Developer: </span>
+                    {developerNames || 'Developer not listed'}
+                </p>
+            )}
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[#bdb6b1]">
                 <span>{game.released_on?.slice(0, 4) ?? 'Release TBA'}</span>
                 {game.rating !== null ? (

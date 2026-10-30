@@ -30,7 +30,7 @@ class GameResource extends JsonResource
             'players_count' => (int) $this->getAttribute('players_count'),
             'summary' => $this->when($request->routeIs('games.show'), $this->summary),
             'storyline' => $this->when($request->routeIs('games.show'), $this->storyline),
-            'developers' => $this->when($request->routeIs('games.show'), fn () => $this->developers->map->only(['id', 'name', 'slug'])->values()),
+            'developers' => $this->when($request->routeIs('games.index', 'games.show'), fn () => $this->developers->map->only(['id', 'name', 'slug'])->values()),
             'publishers' => $this->when($request->routeIs('games.show'), fn () => $this->publishers->map->only(['id', 'name', 'slug'])->values()),
             'official_website' => $this->when($request->routeIs('games.show'), fn () => OfficialWebsite::url($this->getAttribute('website_url'))),
         ];

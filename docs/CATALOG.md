@@ -10,6 +10,8 @@ Desktop screens show **six cards per row**, with 2:3 covers. Tablet screens show
 
 The shared PlayHaven header has the same container, logo position, and height on Home, Games, public pages, signed-in pages, authentication, and settings. Desktop navigation highlights the current section. Signed-in account menus include library, diary, lists, statistics, player profile, settings, and logout; mobile navigation closes after a route change and supports Escape.
 
+Community is highlighted only on the community feed, including filtered views. The personal profile and editor do not highlight Community; their Profile account-menu item is marked current on desktop and mobile. Public player pages continue to highlight Players.
+
 The header retains PlayHaven's dark styling. Account settings retain their existing Light, Dark, and System appearance controls for the content area.
 
 ## API key
@@ -66,6 +68,8 @@ Inline mode performs both stages immediately and waits briefly for request pacin
 ## Data mapping and history
 
 Game details show all credited developers, publishers, and an official website when RAWG provides them. Developer and publisher names link to filtered **local** catalog results; these results do not search RAWG. The **Studio & publisher** catalog filters can be combined with title, genre, platform, and release year.
+
+Games catalog cards also show saved developer names beneath the title, with a two-line limit and a full-name tooltip. Missing credits show **Developer not listed**. The catalog eagerly loads developer relationships for the page; listing games makes no RAWG requests. Other card placements retain their existing layout.
 
 Credits are stored as local many-to-many relationships keyed by RAWG company identity. Detail imports update them automatically. List-only imports and absent detail keys preserve existing credits; explicit empty credit arrays remove those associations. Website links accept public HTTP(S) URLs without embedded credentials and open in a separate tab. Unknown developers and publishers have visible fallbacks.
 
