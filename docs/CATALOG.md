@@ -45,6 +45,8 @@ Game details display a game-specific backdrop behind the shared header, with dar
 
 Search is submitted explicitly, returns twelve results per page, and caches responses for one hour. Provider pagination URLs are reduced to a boolean; the browser receives locally generated page links. Results are limited to ID, title, release date, validated artwork, and an existing local slug. The API key stays in the backend.
 
+RAWG discovery uses a centered 896px container and the global sans-serif font, with a plain **Find more games** heading instead of the introductory hero. Search, result actions, and pagination use 28px controls. Compact 2:3 result covers display six columns on desktop, four on tablets, and two on phones, with 12px titles and 11px release dates. Empty/error states remain concise; search, automatic catalog import, existing-game links, and twelve-result pagination retain their behavior. Other uses of the shared RAWG result card keep their previous sizes.
+
 Routes require authentication and the existing verification middleware. Search has limits of 12 requests/minute per user and 30 across the application; imports have limits of 6 per user and 20 across the application. Existing shared RAWG pacing/cooldown applies. Busy or failed requests show sanitized retry messages. A successful import is idempotent and reuses recently synchronized details.
 
 To import another selection of popular games from the terminal, continue the existing page-based workflow:
