@@ -37,7 +37,7 @@ Players can upload, replace, preview, and remove a profile photo. Photos follow 
 
 ## Player discovery layout
 
-The Players page uses a centered introduction, a compact search toolbar, and a row of profile portraits: five columns on desktop, three on tablet, and two on phones. Each real public player card displays a large circular avatar, username, follower count, public review count, and the manually selected Top 4 games in their saved order. Missing favorites use a short text fallback. Counts never include private reviews or private library totals; cover links use the existing validated game artwork resource.
+The Players page uses a centered 896px container, a short centered introduction, and a compact search toolbar. Portraits use five columns on desktop, three on tablet, and two on phones, with 88–120px circular avatars. Each real public player card shows a 14px display name, 11px username and follower/public-review counts, and the manually selected Top 4 games in saved order. Page controls and circular follow actions are 28px; typography uses PlayHaven's global sans-serif font. Empty states stay compact and distinguish an empty directory, no search matches, and an out-of-range page. Missing favorites use a short text fallback. Counts never include private reviews or private library totals; cover links use the existing validated game artwork resource.
 
 The circular follow action uses the existing follow endpoints and opens the target profile after saving. Guest actions lead to login. Search, pagination, and profile visibility rules still apply. Card data is eager loaded for the directory page, and no external catalog API is called.
 

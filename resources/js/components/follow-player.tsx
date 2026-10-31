@@ -15,7 +15,7 @@ export default function FollowPlayer({
 }) {
     const { auth } = usePage().props;
     const compactClass = compact
-        ? 'size-10 rounded-full border-2 border-caviar bg-[#d5cec7] p-0 text-[#211d1a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
+        ? 'size-7 rounded-full border border-caviar bg-[#d5cec7] p-0 font-sans text-xs text-[#211d1a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
         : undefined;
     if (player.is_self)
         return (
@@ -32,7 +32,9 @@ export default function FollowPlayer({
                         compact ? `Log in to follow ${player.name}` : undefined
                     }
                 >
-                    {compact && <Plus aria-hidden="true" />}
+                    {compact && (
+                        <Plus className="size-3.5" aria-hidden="true" />
+                    )}
                     <span className={compact ? 'sr-only' : undefined}>
                         Log in to follow
                     </span>
@@ -60,9 +62,12 @@ export default function FollowPlayer({
                     >
                         {compact ? (
                             player.is_following ? (
-                                <Check aria-hidden="true" />
+                                <Check
+                                    className="size-3.5"
+                                    aria-hidden="true"
+                                />
                             ) : (
-                                <Plus aria-hidden="true" />
+                                <Plus className="size-3.5" aria-hidden="true" />
                             )
                         ) : player.is_following ? (
                             <UserMinus aria-hidden="true" />
@@ -78,7 +83,14 @@ export default function FollowPlayer({
                         </span>
                     </Button>
                     {errors.follow && (
-                        <p role="alert" className="mt-2 text-sm text-red-300">
+                        <p
+                            role="alert"
+                            className={
+                                compact
+                                    ? 'absolute top-full right-0 z-10 mt-1 w-28 rounded border border-red-300/30 bg-caviar p-2 text-left text-[11px] leading-4 wrap-break-word text-red-300'
+                                    : 'mt-2 text-sm text-red-300'
+                            }
+                        >
                             {errors.follow}
                         </p>
                     )}
