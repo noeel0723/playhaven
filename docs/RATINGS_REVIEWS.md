@@ -30,6 +30,8 @@ The game detail page includes:
 
 Private reviews are excluded from community records, counts, and pagination. Public spoilers are initially collapsed with an accessible disclosure control; their text is part of the public page payload. Making a review private removes it from subsequent public responses. Review pagination uses the validated `reviews_page` parameter.
 
+The game-detail review section uses compact, avatar-led rows with thin separators in the same centered 896px area as Connected worlds. Reviewer, personal stars, and updated date sit above 12px body text; the header shows the game's actual community average/rating count and public-review total. Long text uses the shared three-line **Read more / Show less** control, while spoiler reviews remain closed until opened. Pagination uses 28px controls and preserves scroll. No likes or unsupported review actions are displayed.
+
 ## Verification and next stage
 
 `tests/Feature/GameExperienceTest.php` covers all ten half-star values, invalid inputs, clearing ratings, edits without duplicate rows, history preservation, ownership spoofing, privacy changes, public pagination, spoiler flags, confirmed deletion, and aggregate updates. Both SQLite and the isolated PostgreSQL test database are supported.

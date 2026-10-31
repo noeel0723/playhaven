@@ -273,7 +273,7 @@ export default function GameDetails({
                     </dl>
                 </div>
             </article>
-            <div className="mt-12">
+            <div className="mx-auto mt-8 max-w-4xl space-y-7 font-sans">
                 <GameConnections
                     key={game.id}
                     gameSlug={game.slug}
@@ -281,7 +281,11 @@ export default function GameDetails({
                     state={connectionState}
                     reviewsPage={reviews.meta.current_page}
                 />
-                <CommunityReviews reviews={reviews} />
+                <CommunityReviews
+                    reviews={reviews}
+                    rating={game.rating}
+                    ratingsCount={game.ratings_count}
+                />
             </div>
         </>
     );

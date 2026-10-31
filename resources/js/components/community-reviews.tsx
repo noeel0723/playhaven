@@ -1,146 +1,150 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, MessageSquare } from 'lucide-react';
-import StarRating from '@/components/star-rating';
+import { MessageSquare } from 'lucide-react';
+import HistoryPagination from '@/components/history-pagination';
 import PlayerAvatar from '@/components/player-avatar';
-import { Button } from '@/components/ui/button';
-import type { ReviewPagination } from '@/types/reviews';
+import ReviewBody from '@/components/review-body';
+import StarRating from '@/components/star-rating';
 import { show as playerProfile } from '@/routes/players';
+import type { ReviewPagination } from '@/types/reviews';
 
 export default function CommunityReviews({
     reviews,
+    rating,
+    ratingsCount,
 }: {
     reviews: ReviewPagination;
+    rating: number | null;
+    ratingsCount: number;
 }) {
     return (
         <section
             id="community-reviews"
             aria-labelledby="community-reviews-title"
-            className="mt-12 border-t border-white/10 pt-9"
+            className="border-t border-white/10 pt-4 font-sans"
         >
-            <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-                <h2
-                    id="community-reviews-title"
-                    className="font-serif text-3xl"
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
+                <div className="flex flex-wrap items-baseline gap-2">
+                    <h2
+                        id="community-reviews-title"
+                        className="text-xs font-medium tracking-[0.1em] uppercase"
+                    >
+                        Reviews
+                    </h2>
+                    <span className="text-[11px] text-[#bdb6b1]">
+                        {reviews.meta.total} public{' '}
+                        {reviews.meta.total === 1 ? 'review' : 'reviews'}
+                    </span>
+                </div>
+                <div
+                    aria-label="Community rating"
+                    className="flex flex-wrap items-center gap-2 text-[11px] text-[#bdb6b1]"
                 >
-                    From the community
-                </h2>
-                <span className="text-xs text-[#bdb6b1]">
-                    {reviews.meta.total} public{' '}
-                    {reviews.meta.total === 1 ? 'review' : 'reviews'}
-                </span>
+                    {rating !== null && ratingsCount > 0 ? (
+                        <>
+                            <StarRating value={rating} compact />
+                            <span className="font-medium text-[#e0d9d3]">
+                                {rating.toFixed(1)}
+                            </span>
+                            <span>
+                                {ratingsCount}{' '}
+                                {ratingsCount === 1 ? 'rating' : 'ratings'}
+                            </span>
+                        </>
+                    ) : (
+                        <span>No ratings yet</span>
+                    )}
+                </div>
             </div>
             {reviews.data.length > 0 ? (
-                <div className="space-y-5">
+                <div>
                     {reviews.data.map((review) => (
                         <article
                             key={`${review.id}:${review.updated_at}`}
-                            className="rounded-xl border border-shadow bg-rein/20 p-5 sm:p-6"
+                            aria-label={`Review by ${review.author.name}`}
+                            className="grid min-w-0 grid-cols-[28px_minmax(0,1fr)] gap-2.5 border-b border-white/10 py-3 sm:grid-cols-[32px_minmax(0,1fr)] sm:gap-3 sm:py-4"
                         >
-                            <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-                                <div className="flex min-w-0 items-start gap-3">
-                                    <PlayerAvatar
-                                        name={review.author.name}
-                                        src={review.author.avatar_url}
-                                        className="size-9"
-                                    />
-                                    <div className="min-w-0">
-                                        <h3 className="text-sm font-medium break-words">
-                                            {review.author.username ? (
-                                                <Link
-                                                    href={playerProfile(
-                                                        review.author.username,
-                                                    )}
-                                                    className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2"
-                                                >
-                                                    {review.author.name}
-                                                </Link>
-                                            ) : (
-                                                review.author.name
-                                            )}
-                                        </h3>
-                                        <time
-                                            dateTime={review.updated_at}
-                                            className="mt-1 block text-xs text-[#bdb6b1]"
-                                        >
-                                            Updated{' '}
-                                            {new Intl.DateTimeFormat('en', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric',
-                                                timeZone: 'UTC',
-                                            }).format(
-                                                new Date(review.updated_at),
-                                            )}
-                                        </time>
-                                    </div>
+                            <PlayerAvatar
+                                name={review.author.name}
+                                src={review.author.avatar_url}
+                                className="size-7 shrink-0 sm:size-8"
+                            />
+                            <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                    <h3 className="min-w-0 text-xs leading-5 font-medium wrap-break-word">
+                                        <span className="font-normal text-[#bdb6b1]">
+                                            Review by{' '}
+                                        </span>
+                                        {review.author.username ? (
+                                            <Link
+                                                href={playerProfile(
+                                                    review.author.username,
+                                                )}
+                                                className="rounded-sm text-[#e0d9d3] underline-offset-4 hover:underline focus-visible:outline-2"
+                                            >
+                                                {review.author.name}
+                                            </Link>
+                                        ) : (
+                                            review.author.name
+                                        )}
+                                    </h3>
+                                    {review.rating !== null && (
+                                        <StarRating
+                                            value={review.rating}
+                                            compact
+                                        />
+                                    )}
+                                    <time
+                                        dateTime={review.updated_at}
+                                        className="text-[11px] leading-4 text-[#bdb6b1]"
+                                    >
+                                        Updated{' '}
+                                        {new Intl.DateTimeFormat('en', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric',
+                                            timeZone: 'UTC',
+                                        }).format(new Date(review.updated_at))}
+                                    </time>
                                 </div>
-                                {review.rating !== null && (
-                                    <StarRating value={review.rating} />
+                                {review.contains_spoilers ? (
+                                    <details className="mt-1.5">
+                                        <summary className="min-h-7 w-fit cursor-pointer rounded-sm py-1.5 text-[11px] leading-4 text-[#d5cec7] focus-visible:outline-2 focus-visible:outline-offset-2">
+                                            Contains spoilers · Show review
+                                        </summary>
+                                        <ReviewBody body={review.body} />
+                                    </details>
+                                ) : (
+                                    <ReviewBody body={review.body} />
                                 )}
                             </div>
-                            {review.contains_spoilers ? (
-                                <details>
-                                    <summary className="cursor-pointer rounded-sm text-sm text-[#d5cec7] focus-visible:outline-2 focus-visible:outline-offset-4">
-                                        Contains spoilers · Show review
-                                    </summary>
-                                    <p className="mt-4 text-sm leading-7 break-words whitespace-pre-wrap text-[#c5bfba]">
-                                        {review.body}
-                                    </p>
-                                </details>
-                            ) : (
-                                <p className="text-sm leading-7 break-words whitespace-pre-wrap text-[#c5bfba]">
-                                    {review.body}
-                                </p>
-                            )}
                         </article>
                     ))}
                 </div>
             ) : (
-                <div className="rounded-xl border border-dashed border-shadow px-6 py-10 text-center">
+                <div className="py-6 text-center">
                     <MessageSquare
-                        className="mx-auto mb-4 size-7 text-mustang"
-                        strokeWidth={1}
+                        className="mx-auto mb-2 size-5 text-mustang"
+                        strokeWidth={1.5}
                         aria-hidden="true"
                     />
-                    <p className="font-serif text-2xl">
-                        A story waiting to be told.
-                    </p>
-                    <p className="mt-3 text-sm leading-6 text-[#bdb6b1]">
+                    <h3 className="text-sm font-medium">
                         {reviews.meta.total > 0
-                            ? 'There are no reviews on this page. Return to the previous page to read more.'
-                            : 'No public reviews yet. Share the moments that made this game yours.'}
+                            ? 'No reviews on this page.'
+                            : 'No public reviews yet.'}
+                    </h3>
+                    <p className="mt-2 text-xs leading-5 text-[#bdb6b1]">
+                        {reviews.meta.total > 0
+                            ? 'Use pagination to read other reviews.'
+                            : 'Publish a review to share your experience.'}
                     </p>
                 </div>
             )}
-            {(reviews.links.prev || reviews.links.next) && (
-                <nav
-                    aria-label="Review pagination"
-                    className="mt-6 flex flex-wrap items-center justify-between gap-4"
-                >
-                    <p className="text-xs text-[#bdb6b1]">
-                        Page {reviews.meta.current_page} of{' '}
-                        {reviews.meta.last_page}
-                    </p>
-                    <div className="flex gap-3">
-                        {reviews.links.prev && (
-                            <Button asChild variant="outline">
-                                <Link href={reviews.links.prev} preserveScroll>
-                                    <ArrowLeft aria-hidden="true" />
-                                    Previous
-                                </Link>
-                            </Button>
-                        )}
-                        {reviews.links.next && (
-                            <Button asChild variant="outline">
-                                <Link href={reviews.links.next} preserveScroll>
-                                    Next
-                                    <ArrowRight aria-hidden="true" />
-                                </Link>
-                            </Button>
-                        )}
-                    </div>
-                </nav>
-            )}
+            <HistoryPagination
+                pagination={reviews}
+                label="Review pagination"
+                dense
+                preserveState
+            />
         </section>
     );
 }

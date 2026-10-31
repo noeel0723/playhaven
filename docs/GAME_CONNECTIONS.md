@@ -1,5 +1,7 @@
 # Connected worlds and automatic catalog persistence
 
+Connected worlds and public reviews share a centered 896px area below game details, using the global sans-serif font and small section headings. Related covers are capped at 128px (two columns on phones), with 12px titles and 28px actions. Relationship notes and source links remain accessible under **Relationship details**; the six-card preview and **Show more** disclosures retain their behavior.
+
 Game detail pages show related entries in **Connected worlds**. Selecting a RAWG cover, title, or **Open game** saves the selected game's full metadata to the local catalog before opening its local detail page. Existing local entries open directly, and repeated selection reuses the same RAWG ID and local URL.
 
 Connection cards use covers at most 160px wide, with smaller titles, buttons, and spacing. Desktop rows fit as many fixed-width cards as space permits; phones retain two columns with narrower cards. A single related game keeps the same compact size. The expanded selection uses the same layout, and relationship notes and source links remain available.
