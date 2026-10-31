@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable|null $connections_checked_at
  * @property CarbonImmutable|null $credits_synced_at
  */
-#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'website_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'credits_synced_at', 'synced_at'])]
+#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'banner_url', 'website_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'credits_synced_at', 'synced_at'])]
 class Game extends Model
 {
     /** @use HasFactory<GameFactory> */

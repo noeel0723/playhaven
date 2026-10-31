@@ -2,6 +2,8 @@
 
 Open **Your statistics** from the dashboard or account menu, or visit `/stats`. The route requires authentication and the existing verification middleware, including the local development bypass. It always selects the authenticated user; there is no public or user-ID-based statistics endpoint. Responses use `Cache-Control: private, no-store` and `X-Robots-Tag: noindex, nofollow`.
 
+The page uses the global sans-serif font in a centered 896px container. A compact Statistics header and privacy note replace the introductory hero. Summary cards, status rows, charts, rankings, year controls, and the expandable monthly table share smaller type and spacing. The overview uses two columns on phones and four on wider screens; breakdowns stack on small screens. All statistics, year filtering, links, and data definitions remain unchanged.
+
 ## What the numbers mean
 
 | Area               | Source and definition                                                                                                                                                                                                    |

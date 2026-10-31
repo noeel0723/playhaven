@@ -37,11 +37,16 @@ function SectionTitle({
     detail?: string;
 }) {
     return (
-        <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-shadow pb-4">
-            <h2 id={id} className="font-serif text-2xl sm:text-3xl">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-white/10 pb-2">
+            <h2
+                id={id}
+                className="text-xs font-medium tracking-[0.1em] uppercase"
+            >
                 {children}
             </h2>
-            {detail && <p className="text-xs text-[#bdb6b1]">{detail}</p>}
+            {detail && (
+                <p className="text-[11px] leading-4 text-[#bdb6b1]">{detail}</p>
+            )}
         </div>
     );
 }
@@ -61,47 +66,38 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
         ...stats.platforms.map((platform) => platform.playthroughs),
     );
     return (
-        <>
+        <div className="mx-auto max-w-4xl font-sans">
             <Head title="Your statistics">
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
             <Link
                 href={dashboard()}
-                className="mb-8 inline-flex items-center gap-2 rounded-sm text-sm text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                className="mb-4 inline-flex min-h-7 items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
             >
-                <ArrowLeft className="size-4" aria-hidden="true" />
+                <ArrowLeft className="size-3" aria-hidden="true" />
                 Your haven
             </Link>
-            <header className="mb-10">
-                <p className="mb-4 text-xs tracking-[0.2em] text-[#bdb6b1] uppercase">
-                    Every world leaves a mark
-                </p>
-                <h1 className="max-w-4xl text-4xl leading-tight font-medium tracking-tight sm:text-6xl">
-                    Your gaming,
-                    <br />
-                    <span className="font-serif font-normal text-[#c5bfba] italic">
-                        in perspective.
-                    </span>
+            <header className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <h1 className="text-xl font-medium tracking-tight">
+                    Statistics
                 </h1>
-                <p className="mt-6 max-w-2xl text-sm leading-7 text-[#bdb6b1]">
-                    The games you collect, the ratings you give, and the time
-                    you choose to remember. Built from your library and diary.
-                </p>
-                <p className="mt-4 inline-flex items-center gap-2 text-xs text-[#bdb6b1]">
-                    <LockKeyhole className="size-3.5" aria-hidden="true" />
-                    Only you can see these statistics.
+                <p className="inline-flex items-center gap-1.5 text-[11px] text-[#bdb6b1]">
+                    <LockKeyhole className="size-3" aria-hidden="true" />
+                    Only visible to you
                 </p>
             </header>
             {stats.library.total === 0 && (
-                <div className="mb-9 flex flex-wrap items-center justify-between gap-5 rounded-xl border border-dashed border-shadow p-6">
-                    <p className="max-w-xl text-sm leading-7 text-[#bdb6b1]">
-                        Your story starts with a game. Add one to your library,
-                        then log a session or leave a rating to build your
-                        picture.
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-dashed border-shadow p-3">
+                    <p className="text-xs leading-5 text-[#bdb6b1]">
+                        Add games to your library to see your statistics.
                     </p>
-                    <Button asChild>
+                    <Button
+                        asChild
+                        variant="outline"
+                        className="h-7 gap-1.5 px-2.5 text-[11px] [&_svg]:size-3"
+                    >
                         <Link href={games()}>
-                            Find your first game
+                            Discover games
                             <ArrowUpRight aria-hidden="true" />
                         </Link>
                     </Button>
@@ -109,26 +105,26 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
             )}
             <section
                 aria-label="All-time overview"
-                className="mb-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3"
             >
                 {[
                     {
-                        label: 'Games on your shelf',
+                        label: 'Games',
                         value: stats.library.total.toLocaleString(),
-                        detail: `${stats.library.favorites} marked as favorites`,
+                        detail: `${stats.library.favorites} favorites`,
                     },
                     {
-                        label: 'Currently completed',
+                        label: 'Completed',
                         value: stats.library.statuses.completed.toLocaleString(),
-                        detail: `${stats.library.completed_percent}% of your current library`,
+                        detail: `${stats.library.completed_percent}% of your library`,
                     },
                     {
-                        label: 'Time in your diary',
+                        label: 'Logged time',
                         value: formatMinutes(stats.diary.minutes),
-                        detail: `${stats.diary.timed_sessions} of ${stats.diary.sessions} sessions with recorded time`,
+                        detail: `${stats.diary.timed_sessions} of ${stats.diary.sessions} sessions timed`,
                     },
                     {
-                        label: 'Your average rating',
+                        label: 'Average rating',
                         value:
                             stats.ratings.average !== null
                                 ? `${stats.ratings.average.toFixed(1)} / 5`
@@ -140,25 +136,27 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                 ].map((item) => (
                     <div
                         key={item.label}
-                        className="min-w-0 rounded-xl border border-shadow bg-rein/20 p-5 sm:p-6"
+                        className="min-w-0 rounded-md border border-white/10 bg-rein/20 p-3"
                     >
-                        <h2 className="text-xs text-[#bdb6b1]">{item.label}</h2>
-                        <p className="mt-4 font-serif text-3xl wrap-break-word tabular-nums sm:text-4xl">
+                        <h2 className="text-[11px] text-[#bdb6b1]">
+                            {item.label}
+                        </h2>
+                        <p className="mt-1.5 text-2xl leading-8 font-medium wrap-break-word tabular-nums">
                             {item.value}
                         </p>
-                        <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
+                        <p className="mt-1 text-[11px] leading-4 text-[#bdb6b1]">
                             {item.detail}
                         </p>
                     </div>
                 ))}
             </section>
-            <div className="grid items-start gap-12 lg:grid-cols-2">
+            <div className="grid items-start gap-6 md:grid-cols-2 md:gap-8">
                 <section aria-labelledby="collection-shape">
                     <SectionTitle
                         id="collection-shape"
                         detail="Current library · all time"
                     >
-                        The shape of your shelf
+                        Library status
                     </SectionTitle>
                     <div className="space-y-1">
                         {libraryStatuses.map((status) => (
@@ -167,7 +165,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                 href={library({
                                     query: { status: status.value },
                                 })}
-                                className="group grid grid-cols-[100px_minmax(0,1fr)_36px] items-center gap-3 rounded-sm py-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+                                className="group grid min-h-7 grid-cols-[80px_minmax(0,1fr)_32px] items-center gap-2 rounded-sm py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
                             >
                                 <span className="text-[#c5bfba] group-hover:text-white">
                                     {status.label}
@@ -189,7 +187,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             </Link>
                         ))}
                     </div>
-                    <p className="mt-4 text-xs leading-6 text-[#bdb6b1]">
+                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                         One game, one current status. Replays are tracked
                         separately in your {stats.playthroughs} playthroughs.
                     </p>
@@ -199,10 +197,10 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         id="rating-signature"
                         detail={`${stats.ratings.total} current ratings`}
                     >
-                        Your rating signature
+                        Rating distribution
                     </SectionTitle>
                     <figure aria-labelledby="rating-signature">
-                        <ol className="grid grid-cols-10 gap-1.5 pt-4 sm:gap-3">
+                        <ol className="grid grid-cols-10 gap-1.5 pt-1 sm:gap-2">
                             {stats.ratings.distribution.map((rating) => (
                                 <li
                                     key={rating.stars}
@@ -210,13 +208,13 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                     className="min-w-0 text-center"
                                 >
                                     <span
-                                        className="mb-2 block text-[10px] text-[#bdb6b1] tabular-nums sm:text-xs"
+                                        className="mb-1 block text-[10px] text-[#bdb6b1] tabular-nums"
                                         aria-hidden="true"
                                     >
                                         {rating.count}
                                     </span>
                                     <div
-                                        className="flex h-32 items-end rounded-t-sm bg-rein/20"
+                                        className="flex h-24 items-end rounded-t-sm bg-rein/20"
                                         aria-hidden="true"
                                     >
                                         <div
@@ -227,7 +225,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                         />
                                     </div>
                                     <span
-                                        className="mt-3 block text-[10px] text-[#c5bfba] sm:text-xs"
+                                        className="mt-1.5 block text-[10px] text-[#c5bfba]"
                                         aria-hidden="true"
                                     >
                                         {rating.stars}
@@ -235,7 +233,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                 </li>
                             ))}
                         </ol>
-                        <figcaption className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                        <figcaption className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                             Half-star scores from 0.5 to 5. One current rating
                             per game; replays do not add extra votes.
                         </figcaption>
@@ -244,14 +242,17 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
             </div>
             <section
                 aria-labelledby="diary-activity"
-                className="mt-12 rounded-xl border border-shadow bg-rein/10 p-5 sm:p-7"
+                className="mt-6 rounded-md border border-white/10 bg-rein/10 p-3 sm:p-4"
             >
-                <div className="mb-6 flex flex-wrap items-end justify-between gap-6">
-                    <div>
-                        <h2 id="diary-activity" className="font-serif text-3xl">
-                            A year in play
+                <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+                    <div className="min-w-0">
+                        <h2
+                            id="diary-activity"
+                            className="text-xs font-medium tracking-[0.1em] uppercase"
+                        >
+                            Diary activity
                         </h2>
-                        <p className="mt-3 text-xs leading-6 text-[#bdb6b1]">
+                        <p className="mt-1 text-[11px] leading-4 text-[#bdb6b1]">
                             {stats.activity.year} diary activity · library and
                             rating summaries above remain all time.
                         </p>
@@ -266,16 +267,16 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             <>
                                 <Label
                                     htmlFor="activity-year"
-                                    className="mb-2 text-xs"
+                                    className="mb-1.5 text-[11px]"
                                 >
                                     Diary year
                                 </Label>
-                                <div className="flex gap-2">
+                                <div className="flex gap-1.5">
                                     <select
                                         id="activity-year"
                                         name="year"
                                         defaultValue={stats.activity.year}
-                                        className="h-9 rounded-md border border-shadow bg-rein px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                                        className="h-7 rounded-md border border-shadow bg-rein px-2 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2"
                                     >
                                         {stats.activity.available_years.map(
                                             (year) => (
@@ -285,14 +286,18 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                             ),
                                         )}
                                     </select>
-                                    <Button type="submit" disabled={processing}>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="h-7 px-2.5 text-[11px]"
+                                    >
                                         {processing ? 'Loading…' : 'Apply year'}
                                     </Button>
                                 </div>
                                 {errors.year && (
                                     <p
                                         role="alert"
-                                        className="mt-2 text-sm text-red-300"
+                                        className="mt-1.5 text-[11px] text-red-300"
                                     >
                                         {errors.year}
                                     </p>
@@ -301,7 +306,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         )}
                     </Form>
                 </div>
-                <dl className="mb-8 grid grid-cols-3 gap-3 border-y border-white/10 py-5">
+                <dl className="mb-4 grid grid-cols-3 gap-3 border-y border-white/10 py-3">
                     {[
                         {
                             label: 'Logged time',
@@ -317,17 +322,17 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         },
                     ].map((item) => (
                         <div key={item.label} className="min-w-0">
-                            <dt className="text-[11px] text-[#bdb6b1] sm:text-xs">
+                            <dt className="text-[11px] text-[#bdb6b1]">
                                 {item.label}
                             </dt>
-                            <dd className="mt-2 font-serif text-xl wrap-break-word tabular-nums sm:text-3xl">
+                            <dd className="mt-1 text-lg font-medium wrap-break-word tabular-nums sm:text-xl">
                                 {item.value}
                             </dd>
                         </div>
                     ))}
                 </dl>
                 <figure aria-labelledby="diary-activity">
-                    <ol className="grid grid-cols-12 gap-1 sm:gap-3">
+                    <ol className="grid grid-cols-12 gap-1 sm:gap-2">
                         {stats.activity.months.map((month) => (
                             <li
                                 key={month.month}
@@ -336,7 +341,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                 className="min-w-0 text-center"
                             >
                                 <div
-                                    className="flex h-40 items-end rounded-t-sm bg-rein/25"
+                                    className="flex h-28 items-end rounded-t-sm bg-rein/25"
                                     aria-hidden="true"
                                 >
                                     <div
@@ -347,7 +352,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                     />
                                 </div>
                                 <span
-                                    className="mt-3 block text-[9px] text-[#bdb6b1] sm:text-xs"
+                                    className="mt-1.5 block text-[9px] text-[#bdb6b1] sm:text-[11px]"
                                     aria-hidden="true"
                                 >
                                     {months[month.month - 1]}
@@ -355,7 +360,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             </li>
                         ))}
                     </ol>
-                    <figcaption className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                    <figcaption className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                         Bars show recorded diary minutes by month.{' '}
                         {stats.activity.sessions -
                             stats.activity.timed_sessions}{' '}
@@ -364,7 +369,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                     </figcaption>
                 </figure>
                 {stats.activity.sessions === 0 && (
-                    <p className="mt-4 text-sm leading-7 text-[#c5bfba]">
+                    <p className="mt-3 text-xs leading-5 text-[#c5bfba]">
                         No diary sessions for this year yet.{' '}
                         <Link
                             href={diary()}
@@ -375,12 +380,12 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         to start recording.
                     </p>
                 )}
-                <details className="mt-6 border-t border-shadow pt-4">
-                    <summary className="w-fit cursor-pointer rounded-sm text-xs text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-4">
+                <details className="mt-3 border-t border-white/10 pt-2">
+                    <summary className="min-h-7 w-fit cursor-pointer rounded-sm py-1.5 text-[11px] text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-2">
                         View monthly data table
                     </summary>
-                    <div className="mt-4 overflow-x-auto">
-                        <table className="w-full text-left text-xs">
+                    <div className="mt-2 overflow-x-auto">
+                        <table className="w-full text-left text-[11px]">
                             <caption className="sr-only">
                                 Monthly diary activity for {stats.activity.year}
                             </caption>
@@ -388,25 +393,25 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                 <tr>
                                     <th
                                         scope="col"
-                                        className="py-3 pr-4 font-normal"
+                                        className="py-2 pr-3 font-normal"
                                     >
                                         Month
                                     </th>
                                     <th
                                         scope="col"
-                                        className="py-3 pr-4 font-normal"
+                                        className="py-2 pr-3 font-normal"
                                     >
                                         Logged time
                                     </th>
                                     <th
                                         scope="col"
-                                        className="py-3 pr-4 font-normal"
+                                        className="py-2 pr-3 font-normal"
                                     >
                                         Sessions
                                     </th>
                                     <th
                                         scope="col"
-                                        className="py-3 font-normal"
+                                        className="py-2 font-normal"
                                     >
                                         Active days
                                     </th>
@@ -420,17 +425,17 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                     >
                                         <th
                                             scope="row"
-                                            className="py-3 pr-4 font-normal"
+                                            className="py-2 pr-3 font-normal"
                                         >
                                             {months[month.month - 1]}
                                         </th>
-                                        <td className="py-3 pr-4 tabular-nums">
+                                        <td className="py-2 pr-3 tabular-nums">
                                             {formatMinutes(month.minutes)}
                                         </td>
-                                        <td className="py-3 pr-4 tabular-nums">
+                                        <td className="py-2 pr-3 tabular-nums">
                                             {month.sessions}
                                         </td>
-                                        <td className="py-3 tabular-nums">
+                                        <td className="py-2 tabular-nums">
                                             {month.active_days}
                                         </td>
                                     </tr>
@@ -440,34 +445,34 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                     </div>
                 </details>
             </section>
-            <div className="mt-12 grid items-start gap-12 lg:grid-cols-2">
+            <div className="mt-6 grid items-start gap-6 md:grid-cols-2 md:gap-8">
                 <section aria-labelledby="most-played">
                     <SectionTitle
                         id="most-played"
                         detail="All-time recorded diary time"
                     >
-                        Worlds you stayed in
+                        Most played
                     </SectionTitle>
                     {stats.most_played.length ? (
                         <ol>
                             {stats.most_played.map((game, position) => (
                                 <li
                                     key={game.id}
-                                    className="border-b border-white/10 py-4 first:pt-0"
+                                    className="border-b border-white/10 py-2.5 first:pt-0"
                                 >
                                     <Link
                                         href={gameDetails(game.slug)}
-                                        className="group flex items-start justify-between gap-4 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+                                        className="group flex min-h-7 items-start justify-between gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                                     >
-                                        <div className="flex min-w-0 gap-4">
-                                            <span className="mt-1 text-xs text-[#807d7d] tabular-nums">
+                                        <div className="flex min-w-0 gap-2.5">
+                                            <span className="mt-0.5 text-[11px] text-[#807d7d] tabular-nums">
                                                 0{position + 1}
                                             </span>
                                             <div className="min-w-0">
-                                                <h3 className="text-sm leading-6 wrap-break-word text-[#e0d9d3] group-hover:underline">
+                                                <h3 className="text-xs leading-5 wrap-break-word text-[#e0d9d3] group-hover:underline">
                                                     {game.name}
                                                 </h3>
-                                                <p className="mt-1 text-xs text-[#bdb6b1]">
+                                                <p className="mt-0.5 text-[11px] text-[#bdb6b1]">
                                                     {game.sessions} diary{' '}
                                                     {game.sessions === 1
                                                         ? 'session'
@@ -475,7 +480,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="shrink-0 text-sm text-[#c5bfba] tabular-nums">
+                                        <span className="shrink-0 text-xs leading-5 text-[#c5bfba] tabular-nums">
                                             {formatMinutes(game.minutes)}
                                         </span>
                                     </Link>
@@ -483,12 +488,12 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             ))}
                         </ol>
                     ) : (
-                        <p className="rounded-lg border border-dashed border-shadow p-6 text-sm leading-7 text-[#bdb6b1]">
+                        <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
                             Add session durations in your diary to discover
                             where you spend the most time.
                         </p>
                     )}
-                    <p className="mt-4 text-xs leading-6 text-[#bdb6b1]">
+                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                         Sessions from every playthrough are combined per game.
                         This includes only the time you logged.
                     </p>
@@ -498,23 +503,23 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         id="played-genres"
                         detail="Current library · games with a playing status"
                     >
-                        Your played genres
+                        Played genres
                     </SectionTitle>
                     {stats.genres.length ? (
-                        <div className="space-y-5">
+                        <div className="space-y-3">
                             {stats.genres.map((genre) => (
                                 <Link
                                     key={genre.id}
                                     href={games({
                                         query: { genre: genre.slug },
                                     })}
-                                    className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+                                    className="group block min-h-7 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                                 >
-                                    <div className="mb-2 flex justify-between gap-4 text-sm">
-                                        <span className="text-[#c5bfba] group-hover:text-white">
+                                    <div className="mb-1.5 flex justify-between gap-3 text-xs">
+                                        <span className="min-w-0 wrap-break-word text-[#c5bfba] group-hover:text-white">
                                             {genre.name}
                                         </span>
-                                        <span className="text-xs text-[#bdb6b1]">
+                                        <span className="shrink-0 text-[11px] text-[#bdb6b1]">
                                             {genre.games}{' '}
                                             {genre.games === 1
                                                 ? 'game'
@@ -536,12 +541,12 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             ))}
                         </div>
                     ) : (
-                        <p className="rounded-lg border border-dashed border-shadow p-6 text-sm leading-7 text-[#bdb6b1]">
+                        <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
                             Genre insights appear when games with a playing
                             status have genre information.
                         </p>
                     )}
-                    <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                         Each game counts once per genre. A game can belong to
                         several genres; replays do not multiply the counts.
                     </p>
@@ -549,23 +554,23 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
             </div>
             <section
                 aria-labelledby="played-platforms"
-                className="mt-12 border-t border-shadow pt-9"
+                className="mt-6 border-t border-white/10 pt-4"
             >
                 <SectionTitle
                     id="played-platforms"
                     detail={`${stats.playthroughs} playthroughs · ${stats.unspecified_platform_runs} without a platform`}
                 >
-                    Where you play
+                    Platforms
                 </SectionTitle>
                 {stats.platforms.length ? (
-                    <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+                    <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
                         {stats.platforms.map((platform) => (
                             <div key={platform.id}>
-                                <div className="mb-3 flex flex-wrap justify-between gap-2">
-                                    <h3 className="text-sm text-[#c5bfba]">
+                                <div className="mb-1.5 flex flex-wrap justify-between gap-x-3 gap-y-1">
+                                    <h3 className="min-w-0 text-xs wrap-break-word text-[#c5bfba]">
                                         {platform.name}
                                     </h3>
-                                    <p className="text-xs text-[#bdb6b1]">
+                                    <p className="text-[11px] text-[#bdb6b1]">
                                         {platform.playthroughs}{' '}
                                         {platform.playthroughs === 1
                                             ? 'playthrough'
@@ -591,16 +596,16 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         ))}
                     </div>
                 ) : (
-                    <p className="text-sm leading-7 text-[#bdb6b1]">
+                    <p className="text-xs leading-5 text-[#bdb6b1]">
                         Choose a platform on a playthrough to start this
                         breakdown.
                     </p>
                 )}
-                <p className="mt-5 text-xs leading-6 text-[#bdb6b1]">
+                <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
                     Based on platforms you selected for your playthroughs,
                     rather than the platforms a game supports.
                 </p>
             </section>
-        </>
+        </div>
     );
 }

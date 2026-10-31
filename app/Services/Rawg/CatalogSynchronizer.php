@@ -47,6 +47,7 @@ class CatalogSynchronizer
             'games.*.updated' => ['required', 'date'],
             'games.*.released' => ['nullable', 'date_format:Y-m-d'],
             'games.*.background_image' => ['nullable', 'string'],
+            'games.*.background_image_additional' => ['nullable', 'string'],
             'games.*.description_raw' => ['nullable', 'string'],
             'games.*.description' => ['nullable', 'string'],
             'games.*.website' => ['nullable', 'string'],
@@ -90,6 +91,9 @@ class CatalogSynchronizer
                         'synced_at' => now(),
                     ]);
                     if ($withDetails) {
+                        if (array_key_exists('background_image_additional', $data)) {
+                            $game->banner_url = CatalogImage::url($data['background_image_additional']);
+                        }
                         $description = $data['description_raw'] ?? $data['description'] ?? null;
                         $game->summary = is_string($description) ? trim(html_entity_decode(strip_tags($description), ENT_QUOTES | ENT_HTML5, 'UTF-8')) : null;
                         $game->rawg_details_synced_at = now();

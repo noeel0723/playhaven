@@ -6,6 +6,7 @@ export type CatalogGame = {
     slug: string;
     released_on: string | null;
     cover_url: string | null;
+    banner_url?: string | null;
     genres: CatalogTerm[];
     platforms: CatalogTerm[];
     rating: number | null;

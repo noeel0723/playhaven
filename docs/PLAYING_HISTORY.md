@@ -4,13 +4,19 @@ Stage 4 now includes multiple playthroughs per collected game and a private diar
 
 ## Workflow
 
-1. Open a game already in your library and choose **Playthroughs & diary**.
-2. Create a playthrough with an optional name/platform, Playing/Completed/Paused/Dropped status, and optional start/finish dates. Replays create separate records under the same library entry.
-3. Open a playthrough and log sessions with a date, optional duration in minutes, and optional notes. Several sessions on the same date are allowed.
+1. Open a game and choose **Diary** in its action card to log a private session in a popup.
+2. Select a playthrough or create one with an optional name/platform and Playing/Completed/Paused/Dropped status. Replays create separate records under the same library entry.
+3. Enter a played date, optional minutes, and optional notes, then **Log session**. Use **View history** to open the full editor and manage optional start/finish dates. Several sessions on the same date are allowed.
 4. Edit sessions from their cards. Expand **Playthrough details** to update the run's metadata or remove it after confirmation.
 5. Open **Diary** in navigation to see all your sessions, search game titles, and filter an inclusive date range. The displayed count and recorded time follow these filters.
 
 Library status, favorites, rating, and review remain independent. Starting, completing, pausing, or deleting a run does not automatically change the library status or add another rating vote. History writes update the library entry's timestamp for the personal dashboard.
+
+## Quick diary popup
+
+On game details, **Diary** opens a compact modal without navigating or saving anything on open. It loads the current player's playthrough choices through `GET /library/{game:slug}/diary` (authenticated, private/no-store, no session notes). Choose an existing run, or **New playthrough**, then enter the played date, optional minutes, and private notes. New runs accept a name, platform, and one of the four run statuses; unknown start/finish dates stay blank. Use **View history** for the full history editor. The navigation Diary menu still opens the complete diary timeline.
+
+`POST /library/{game:slug}/diary` validates the session and, for new runs only, run metadata. It atomically adds a missing library entry, creates a run if needed, and logs the session, then redirects back to game details. Closing or cancelling the popup makes no database changes. Existing run dates are checked after locking; foreign and wrong-game run IDs return 404 and roll back. Library status, favorites, ratings, and reviews remain unchanged. Validation errors keep the modal open with the entered values. `GameDiaryTest` covers authentication, private options, atomic logging, ownership, validation, date bounds, and preservation of existing game history.
 
 ## Dates, platforms, and duration
 

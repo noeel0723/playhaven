@@ -1,4 +1,4 @@
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import {
     BookOpen,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import RatingEditor from '@/components/rating-editor';
 import ReviewEditor from '@/components/review-editor';
+import GameDiaryForm from '@/components/game-diary-form';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -22,13 +23,13 @@ import {
 import { Label } from '@/components/ui/label';
 import { login } from '@/routes';
 import { save, destroy } from '@/routes/library';
-import { index as playthroughs } from '@/routes/playthroughs';
 import { index as lists } from '@/routes/lists';
 import { store as addToList } from '@/routes/list-items';
 import { update as rate } from '@/routes/ratings';
 import { libraryStatuses } from '@/types/library';
 import type { LibraryState, LibraryStatus } from '@/types/library';
 import type { PersonalReview } from '@/types/reviews';
+import type { CatalogGame } from '@/types/catalog';
 
 export type GameActionList = {
     id: number;
@@ -37,9 +38,7 @@ export type GameActionList = {
     contains_game: boolean;
 };
 type Props = {
-    gameId: number;
-    gameSlug: string;
-    gameName: string;
+    game: CatalogGame;
     entry: LibraryState | null;
     rating: number | null;
     review: PersonalReview | null;
@@ -47,18 +46,18 @@ type Props = {
 };
 
 export default function GameActionCard({
-    gameId,
-    gameSlug,
-    gameName,
+    game,
     entry,
     rating,
     review,
     availableLists,
 }: Props) {
+    const { id: gameId, slug: gameSlug, name: gameName } = game;
     const { auth } = usePage().props;
-    const [panel, setPanel] = useState<'review' | 'list' | 'library' | null>(
-        null,
-    );
+    const [panel, setPanel] = useState<
+        'review' | 'list' | 'library' | 'diary' | null
+    >(null);
+    const [diaryBusy, setDiaryBusy] = useState(false);
     const [selectedList, setSelectedList] = useState('');
     const actionTrigger = useRef<HTMLButtonElement | null>(null);
     const libraryForm = useForm<LibraryState>({
@@ -162,15 +161,7 @@ export default function GameActionCard({
                         <button
                             type="button"
                             disabled={busy}
-                            onClick={() =>
-                                entry
-                                    ? router.visit(playthroughs(gameSlug).url)
-                                    : updateLibrary(null, false, () =>
-                                          router.visit(
-                                              playthroughs(gameSlug).url,
-                                          ),
-                                      )
-                            }
+                            onClick={() => setPanel('diary')}
                             className="flex min-h-16 flex-col items-center justify-center gap-2 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
                         >
                             <BookOpen className="size-6" aria-hidden="true" />
@@ -272,7 +263,7 @@ export default function GameActionCard({
             <Dialog
                 open={panel !== null}
                 onOpenChange={(open) => {
-                    if (!open) {
+                    if (!open && !diaryBusy) {
                         setPanel(null);
                         removal.reset();
                         removal.clearErrors();
@@ -280,24 +271,44 @@ export default function GameActionCard({
                 }}
             >
                 <DialogContent
-                    className="dark max-h-[85svh] overflow-y-auto border-shadow bg-caviar text-[#f4f1ed] sm:max-w-xl"
+                    className={`dark max-h-[85svh] overflow-y-auto border-shadow bg-caviar text-[#f4f1ed] sm:max-w-xl ${panel === 'diary' ? 'gap-4 p-4 font-sans sm:max-w-xl sm:p-5' : ''}`}
                     onCloseAutoFocus={(event) => {
                         event.preventDefault();
                         actionTrigger.current?.focus();
                     }}
                 >
-                    <DialogHeader>
-                        <DialogTitle className="pr-6">
-                            {panel === 'review'
-                                ? 'Your game review'
-                                : panel === 'list'
-                                  ? 'Add to a list'
-                                  : 'Manage library'}
+                    <DialogHeader
+                        className={
+                            panel === 'diary' ? 'gap-1 text-left' : undefined
+                        }
+                    >
+                        <DialogTitle
+                            className={`pr-6 ${panel === 'diary' ? 'text-sm font-medium' : ''}`}
+                        >
+                            {panel === 'diary'
+                                ? 'Log a playing session'
+                                : panel === 'review'
+                                  ? 'Your game review'
+                                  : panel === 'list'
+                                    ? 'Add to a list'
+                                    : 'Manage library'}
                         </DialogTitle>
-                        <DialogDescription className="text-[#bdb6b1]">
-                            {gameName}
+                        <DialogDescription
+                            className={`text-[#bdb6b1] ${panel === 'diary' ? 'text-[11px]' : ''}`}
+                        >
+                            {panel === 'diary'
+                                ? 'Add to your private game diary.'
+                                : gameName}
                         </DialogDescription>
                     </DialogHeader>
+                    {panel === 'diary' && (
+                        <GameDiaryForm
+                            game={game}
+                            onSaved={() => setPanel(null)}
+                            onCancel={() => setPanel(null)}
+                            onProcessing={setDiaryBusy}
+                        />
+                    )}
                     {panel === 'review' && entry && (
                         <ReviewEditor
                             key={`${review?.id}:${review?.updated_at}`}

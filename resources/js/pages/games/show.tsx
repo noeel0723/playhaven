@@ -53,9 +53,9 @@ export default function GameDetails({
             </Head>
             <Link
                 href={index()}
-                className="mb-10 inline-flex items-center gap-2 rounded-sm text-sm text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
+                className="mb-5 inline-flex min-h-7 items-center gap-1.5 rounded-sm text-xs text-[#d5cec7] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-                <ArrowLeft className="size-4" aria-hidden="true" />
+                <ArrowLeft className="size-3.5" aria-hidden="true" />
                 All games
             </Link>
             <article className="grid items-start gap-8 md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)_260px] xl:grid-cols-[240px_minmax(0,1fr)_280px] xl:gap-10">
@@ -154,9 +154,7 @@ export default function GameDetails({
                 </div>
                 <aside className="min-w-0 self-start md:col-start-2 lg:sticky lg:top-6 lg:col-start-3 lg:row-span-2 lg:row-start-1">
                     <GameActionCard
-                        gameId={game.id}
-                        gameSlug={game.slug}
-                        gameName={game.name}
+                        game={game}
                         entry={libraryEntry}
                         rating={personalRating}
                         review={personalReview}

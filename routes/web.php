@@ -5,6 +5,7 @@ use App\Http\Controllers\DiaryController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GameCatalogController;
 use App\Http\Controllers\GameConnectionController;
+use App\Http\Controllers\GameDiaryController;
 use App\Http\Controllers\GameExperienceController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameListItemController;
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [LibraryController::class, 'dashboard'])->name('dashboard');
     Route::get('stats', [StatisticsController::class, 'index'])->name('stats.index');
     Route::get('library', [LibraryController::class, 'index'])->name('library.index');
+    Route::get('library/{game:slug}/diary', [GameDiaryController::class, 'options'])->name('game-diary.options');
+    Route::post('library/{game:slug}/diary', [GameDiaryController::class, 'store'])->name('game-diary.store');
     Route::put('library/{game:slug}', [LibraryController::class, 'save'])->name('library.save');
     Route::delete('library/{game:slug}', [LibraryController::class, 'destroy'])->name('library.destroy');
     Route::put('library/{game:slug}/rating', [GameExperienceController::class, 'rate'])->name('ratings.update');

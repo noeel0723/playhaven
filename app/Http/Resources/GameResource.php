@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Game;
+use App\Services\Rawg\CatalogImage;
 use App\Services\Rawg\OfficialWebsite;
 use App\Support\GameCoverUrl;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class GameResource extends JsonResource
             'slug' => $this->slug,
             'released_on' => $this->released_on?->format('Y-m-d'),
             'cover_url' => GameCoverUrl::forGame($this->resource),
+            'banner_url' => $this->when($request->routeIs('games.show'), fn () => CatalogImage::url($this->getAttribute('banner_url')) ?? GameCoverUrl::forGame($this->resource)),
             'genres' => $this->genres->map->only(['id', 'name', 'slug'])->values(),
             'platforms' => $this->platforms->map->only(['id', 'name', 'slug'])->values(),
             'rating' => is_numeric($score) ? round((float) $score / 2, 1) : null,
