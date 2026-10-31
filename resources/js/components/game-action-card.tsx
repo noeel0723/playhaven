@@ -98,11 +98,11 @@ export default function GameActionCard({
         else updateLibrary(null, false, submit);
     }
     const rowClass =
-        'flex min-h-12 w-full items-center justify-center gap-2 border-t border-white/10 px-4 py-3 text-center text-sm text-[#d5cec7] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] disabled:opacity-50';
+        'flex min-h-9 w-full items-center justify-center gap-1.5 border-t border-white/10 px-3 py-2 text-center text-xs text-[#d5cec7] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] disabled:opacity-50';
     return (
         <section
             aria-labelledby="game-actions-title"
-            className="overflow-hidden rounded-lg border border-shadow bg-rein/55"
+            className="overflow-hidden rounded-md border border-shadow bg-rein/55 font-sans text-xs"
             onClickCapture={(event) => {
                 const button = (event.target as HTMLElement).closest('button');
                 if (button && event.currentTarget.contains(button)) {
@@ -115,7 +115,7 @@ export default function GameActionCard({
             </h2>
             {auth.user ? (
                 <>
-                    <div className="grid grid-cols-3 divide-x divide-white/10 px-2 py-4">
+                    <div className="grid grid-cols-3 divide-x divide-white/10 px-1.5 py-2">
                         <button
                             type="button"
                             disabled={busy}
@@ -124,13 +124,13 @@ export default function GameActionCard({
                                     ? setPanel('library')
                                     : updateLibrary(null, false)
                             }
-                            className="flex min-h-16 flex-col items-center justify-center gap-2 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
+                            className="flex min-h-12 flex-col items-center justify-center gap-1.5 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
                         >
                             {entry ? (
-                                <Check className="size-6" aria-hidden="true" />
+                                <Check className="size-5" aria-hidden="true" />
                             ) : (
                                 <Library
-                                    className="size-6"
+                                    className="size-5"
                                     aria-hidden="true"
                                 />
                             )}
@@ -151,10 +151,10 @@ export default function GameActionCard({
                                     !entry?.is_favorite,
                                 )
                             }
-                            className="flex min-h-16 flex-col items-center justify-center gap-2 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
+                            className="flex min-h-12 flex-col items-center justify-center gap-1.5 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
                         >
                             <Heart
-                                className={`size-6 ${entry?.is_favorite ? 'fill-current' : ''}`}
+                                className={`size-5 ${entry?.is_favorite ? 'fill-current' : ''}`}
                                 aria-hidden="true"
                             />
                             Favorite
@@ -163,16 +163,16 @@ export default function GameActionCard({
                             type="button"
                             disabled={busy}
                             onClick={() => setPanel('diary')}
-                            className="flex min-h-16 flex-col items-center justify-center gap-2 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
+                            className="flex min-h-12 flex-col items-center justify-center gap-1.5 rounded-sm px-1 text-[10px] text-[#d5cec7] hover:text-white focus-visible:outline-2"
                         >
-                            <BookOpen className="size-6" aria-hidden="true" />
+                            <BookOpen className="size-5" aria-hidden="true" />
                             Diary
                         </button>
                     </div>
-                    <div className="border-t border-white/10 p-4">
+                    <div className="border-t border-white/10 px-3 py-2.5">
                         <Label
                             htmlFor="action-playing-status"
-                            className="mb-2 text-xs text-[#bdb6b1]"
+                            className="mb-1.5 text-[11px] text-[#bdb6b1]"
                         >
                             Playing status
                         </Label>
@@ -186,7 +186,7 @@ export default function GameActionCard({
                                     entry?.is_favorite ?? false,
                                 )
                             }
-                            className="h-10 w-full rounded-md border border-shadow bg-caviar/40 px-3 text-sm text-[#f4f1ed] focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="h-8 w-full rounded border border-shadow bg-caviar/40 px-2 text-xs text-[#f4f1ed] focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                             <option value="" disabled>
                                 Set a playing status
@@ -200,6 +200,7 @@ export default function GameActionCard({
                     </div>
                     <RatingEditor
                         rating={rating}
+                        compact
                         onChange={saveRating}
                         disabled={busy}
                     />
@@ -218,7 +219,7 @@ export default function GameActionCard({
                         className={rowClass}
                     >
                         <MessageSquareText
-                            className="size-4"
+                            className="size-3.5"
                             aria-hidden="true"
                         />
                         {review ? 'Edit your review' : 'Write a review'}
@@ -228,7 +229,7 @@ export default function GameActionCard({
                         onClick={() => setPanel('list')}
                         className={rowClass}
                     >
-                        <ListPlus className="size-4" aria-hidden="true" />
+                        <ListPlus className="size-3.5" aria-hidden="true" />
                         Add to a list
                     </button>
                     {entry && (
@@ -236,7 +237,7 @@ export default function GameActionCard({
                             href={playingHistory(gameSlug)}
                             className={rowClass}
                         >
-                            <BookOpen className="size-4" aria-hidden="true" />
+                            <BookOpen className="size-3.5" aria-hidden="true" />
                             Playing history
                         </Link>
                     )}
@@ -256,16 +257,16 @@ export default function GameActionCard({
                     )}
                 </>
             ) : (
-                <div className="p-6 text-center">
+                <div className="p-4 text-center">
                     <Library
-                        className="mx-auto mb-4 size-8 text-[#bdb6b1]"
+                        className="mx-auto mb-3 size-6 text-[#bdb6b1]"
                         aria-hidden="true"
                     />
-                    <p className="text-sm leading-7 text-[#c5bfba]">
+                    <p className="text-xs leading-5 text-[#c5bfba]">
                         Keep this game in your library, rate it, and tell your
                         story.
                     </p>
-                    <Button asChild className="mt-5 w-full">
+                    <Button asChild className="mt-3 h-8 w-full px-2 text-xs">
                         <Link href={login()}>Log in to track this game</Link>
                     </Button>
                 </div>
@@ -466,7 +467,10 @@ export default function GameActionCard({
                                 }
                                 variant="destructive"
                             >
-                                <Trash2 className="size-4" aria-hidden="true" />
+                                <Trash2
+                                    className="size-3.5"
+                                    aria-hidden="true"
+                                />
                                 Remove from library
                             </Button>
                         </form>

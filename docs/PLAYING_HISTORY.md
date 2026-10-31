@@ -6,10 +6,10 @@
 
 1. Choose **Playing**, **Completed**, **Paused**, or **Dropped** and the log date.
 2. When Completed is selected, enter **Completed on**. The completion date cannot be later than the log date or today.
-3. Optionally write or update the game review. Review visibility is explicit: a new review starts Private, while an existing review retains its current visibility. Spoilers are collapsed when displayed.
-4. **Save game log** updates the current Library status and completion date, saves a nonblank review to the game's existing review record, and appends a private status/review snapshot to the diary in one transaction.
+3. Choose an optional half-star rating and write or update the game review. The stars are selected locally until **Save game log**; cancelling makes no changes. Review visibility is explicit: a new review starts Private, while an existing review retains its current visibility. Spoilers are collapsed when displayed.
+4. **Save game log** updates the current Library status, completion date, and rating, saves a nonblank review to the game's existing review record, and appends a private status/review snapshot to the diary in one transaction. The rating uses the same current record shown in the game action card, Library, and community average, so saving returns the updated stars immediately. **Clear rating** removes that rating when the log is saved; omitted rating fields preserve existing ratings.
 
-A missing Library entry is created automatically. Ratings, favorites, existing playthroughs, session notes, and recorded playing time are preserved. Leaving the review blank preserves an existing canonical game review and creates a log without review text. Use the separate review editor to delete a review.
+A missing Library entry is created automatically. Favorites, existing playthroughs, session notes, and recorded playing time are preserved. Leaving the review blank preserves an existing canonical game review and creates a log without review text. Use the separate review editor to delete a review.
 
 Diary logs are private regardless of review visibility. Selecting Public publishes the current review through the normal game/community review features; it does not publish the private log. Later edits to the canonical review or Library status do not rewrite earlier log snapshots. A displayed rating is the current personal rating, not a historical rating.
 

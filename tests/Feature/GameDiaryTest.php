@@ -59,18 +59,21 @@ class GameDiaryTest extends TestCase
         $game = Game::factory()->create();
         $foreign = LibraryEntry::factory()->for($game)->create(['status' => 'completed']);
         Review::factory()->for($foreign)->create(['body' => 'FOREIGN PRIVATE REVIEW']);
+        Rating::factory()->for($foreign)->create(['score' => 2]);
         $user = User::factory()->create();
         $this->actingAs($user)->getJson(route('game-diary.options', $game->slug))->assertOk()
-            ->assertExactJson(['today' => '2026-11-01', 'status' => null, 'completed_on' => null, 'review' => null]);
+            ->assertExactJson(['today' => '2026-11-01', 'status' => null, 'completed_on' => null, 'review' => null, 'stars' => null]);
         $this->assertDatabaseCount('library_entries', 1);
 
         $entry = LibraryEntry::factory()->for($game)->for($user)->create(['status' => 'completed']);
         $entry->completed_at = '2026-10-25';
         $entry->save();
         Review::factory()->for($entry)->create(['body' => 'My review', 'is_public' => false, 'contains_spoilers' => true]);
+        Rating::factory()->for($entry)->create(['score' => 9]);
         $response = $this->getJson(route('game-diary.options', $game->slug))->assertOk()
             ->assertJsonPath('status', 'completed')->assertJsonPath('completed_on', '2026-10-25')
             ->assertJsonPath('review.body', 'My review')->assertJsonPath('review.is_public', false)
+            ->assertJsonPath('stars', 4.5)
             ->assertJsonPath('review.contains_spoilers', true)->assertDontSee('FOREIGN PRIVATE REVIEW');
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $this->assertDatabaseCount('game_diary_logs', 0);
@@ -101,6 +104,64 @@ class GameDiaryTest extends TestCase
     public static function statuses(): array
     {
         return [['playing'], ['completed'], ['paused'], ['dropped']];
+    }
+
+    public static function ratings(): array
+    {
+        return array_map(fn (int $score) => [$score / 2], range(1, 10));
+    }
+
+    #[DataProvider('ratings')]
+    public function test_diary_rating_is_saved_to_the_same_rating_shown_on_game_details(float $stars): void
+    {
+        $game = Game::factory()->create();
+        $user = User::factory()->create();
+        $foreign = LibraryEntry::factory()->for($game)->create();
+        $foreignRating = Rating::factory()->for($foreign)->create(['score' => 2]);
+        $this->actingAs($user)->post(route('game-diary.store', $game->slug), $this->data([
+            'stars' => $stars, 'review_body' => 'My rated diary entry',
+        ]))->assertRedirect(route('games.show', $game->slug));
+        $entry = $user->libraryEntries()->sole();
+        $this->assertSame((int) ($stars * 2), $entry->rating()->sole()->score);
+        $this->assertSame(2, $foreignRating->fresh()->score);
+        $this->get(route('games.show', $game->slug))->assertInertia(fn (Assert $page) => $page
+            ->where('personalRating', fn (int|float $value) => (float) $value === $stars)->where('personalReview.body', 'My rated diary entry')
+            ->where('game.ratings_count', 2));
+        $this->get(route('diary.index'))->assertInertia(fn (Assert $page) => $page
+            ->where('logs.data.0.rating', fn (int|float $value) => (float) $value === $stars));
+    }
+
+    public function test_diary_updates_and_explicitly_clears_the_current_rating_without_duplicate_votes(): void
+    {
+        $entry = LibraryEntry::factory()->create(['is_favorite' => true]);
+        $rating = Rating::factory()->for($entry)->create(['score' => 8]);
+        $this->actingAs($entry->user);
+        $url = route('game-diary.store', $entry->game->slug);
+        $this->post($url, $this->data(['stars' => 3.5, 'return_to_diary' => true]))->assertRedirect(route('diary.index'));
+        $this->assertSame(7, $rating->fresh()->score);
+        $this->assertDatabaseCount('ratings', 1);
+        $this->post($url, $this->data())->assertRedirect();
+        $this->assertSame(7, $rating->fresh()->score);
+        $this->post($url, $this->data(['stars' => null]))->assertRedirect();
+        $this->assertModelMissing($rating);
+        $this->assertTrue($entry->fresh()->is_favorite);
+        $this->get(route('games.show', $entry->game->slug))->assertInertia(fn (Assert $page) => $page
+            ->where('personalRating', null)->where('game.ratings_count', 0));
+    }
+
+    public function test_invalid_diary_rating_does_not_partially_change_status_review_or_completion(): void
+    {
+        $entry = LibraryEntry::factory()->create(['status' => 'playing']);
+        $rating = Rating::factory()->for($entry)->create(['score' => 9]);
+        $review = Review::factory()->for($entry)->create(['body' => 'Keep original']);
+        $this->actingAs($entry->user)->post(route('game-diary.store', $entry->game->slug), $this->data([
+            'stars' => 4.2, 'status' => 'completed', 'completed_on' => '2026-10-30', 'review_body' => 'Do not save',
+        ]))->assertSessionHasErrors('stars');
+        $this->assertSame('playing', $entry->fresh()->status->value);
+        $this->assertNull($entry->fresh()->completed_at);
+        $this->assertSame(9, $rating->fresh()->score);
+        $this->assertSame('Keep original', $review->fresh()->body);
+        $this->assertDatabaseCount('game_diary_logs', 0);
     }
 
     #[DataProvider('statuses')]
@@ -182,6 +243,10 @@ class GameDiaryTest extends TestCase
             'spoiler type' => [['contains_spoilers' => 'yes'], 'contains_spoilers'],
             'visibility type' => [['is_public' => 'public'], 'is_public'],
             'return type' => [['return_to_diary' => '/players'], 'return_to_diary'],
+            'rating zero' => [['stars' => 0], 'stars'],
+            'rating over five' => [['stars' => 5.5], 'stars'],
+            'rating invalid increment' => [['stars' => 4.2], 'stars'],
+            'rating invalid type' => [['stars' => ['bad']], 'stars'],
         ];
     }
 

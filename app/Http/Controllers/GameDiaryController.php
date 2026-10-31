@@ -50,12 +50,13 @@ class GameDiaryController extends Controller
 
     public function options(Request $request, Game $game): JsonResponse
     {
-        $entry = $request->user()->libraryEntries()->with('review')->where('game_id', $game->id)->first();
+        $entry = $request->user()->libraryEntries()->with(['review', 'rating'])->where('game_id', $game->id)->first();
 
         return response()->json([
             'today' => now()->toDateString(),
             'status' => $entry?->status?->value,
             'completed_on' => $entry?->completed_at?->format('Y-m-d'),
+            'stars' => $entry?->rating?->stars,
             'review' => $entry?->review ? [
                 'body' => $entry->review->getAttribute('body'),
                 'contains_spoilers' => (bool) $entry->review->contains_spoilers,
@@ -73,6 +74,14 @@ class GameDiaryController extends Controller
             $entry->completed_at = $entry->status === LibraryStatus::Completed
                 ? CarbonImmutable::parse($request->validated('completed_on'), 'UTC')->startOfDay() : null;
             $entry->save();
+            if (array_key_exists('stars', $request->validated())) {
+                $stars = $request->validated('stars');
+                if ($stars === null) {
+                    $entry->rating()->delete();
+                } else {
+                    $entry->rating()->updateOrCreate([], ['score' => (int) ((float) $stars * 2)]);
+                }
+            }
             $body = $request->validated('review_body');
             if (is_string($body) && $body !== '') {
                 $entry->review()->updateOrCreate([], [

@@ -2,6 +2,7 @@ import { Link, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import GameCover from '@/components/game-cover';
 import InputError from '@/components/input-error';
+import RatingEditor from '@/components/rating-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +16,7 @@ type DiaryOptions = {
     today: string;
     status: LibraryStatus | null;
     completed_on: string | null;
+    stars: number | null;
     review: {
         body: string;
         contains_spoilers: boolean;
@@ -90,6 +92,7 @@ function LoadedDiaryForm({
         status: options.status ?? 'playing',
         logged_on: options.today,
         completed_on: options.completed_on ?? options.today,
+        stars: options.stars,
         review_body: options.review?.body ?? '',
         contains_spoilers: options.review?.contains_spoilers ?? false,
         is_public: options.review?.is_public ?? false,
@@ -200,6 +203,16 @@ function LoadedDiaryForm({
                         {error('completed_on')}
                     </div>
                 )}
+                <div>
+                    <RatingEditor
+                        rating={form.data.stars}
+                        onChange={(stars) => form.setData('stars', stars)}
+                        disabled={form.processing}
+                        compact
+                        deferred
+                    />
+                    {error('stars')}
+                </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="game-diary-review" className="text-xs">
                         Review{' '}
@@ -267,7 +280,7 @@ function LoadedDiaryForm({
                 {error('is_public')}
             </fieldset>
             <p className="text-[11px] leading-4 text-[#bdb6b1]">
-                Saving updates your current library status and game review.
+                Saving updates your current library status, rating, and review.
                 Diary logs stay private; publishing shares the review on the
                 game page.
             </p>

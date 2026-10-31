@@ -58,7 +58,7 @@ export default function GameDetails({
                 <ArrowLeft className="size-3.5" aria-hidden="true" />
                 All games
             </Link>
-            <article className="grid items-start gap-8 md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)_260px] xl:grid-cols-[240px_minmax(0,1fr)_280px] xl:gap-10">
+            <article className="grid items-start gap-8 md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)_220px] xl:grid-cols-[220px_minmax(0,1fr)_240px]">
                 <aside className="md:row-span-2">
                     <GameCover
                         key={game.id}
@@ -152,7 +152,7 @@ export default function GameDetails({
                         </div>
                     </div>
                 </div>
-                <aside className="min-w-0 self-start md:col-start-2 lg:sticky lg:top-6 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+                <aside className="w-full max-w-[280px] min-w-0 self-start justify-self-center md:col-start-2 md:max-w-60 md:justify-self-start lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:max-w-none">
                     <GameActionCard
                         game={game}
                         entry={libraryEntry}

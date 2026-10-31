@@ -5,18 +5,28 @@ export default function RatingEditor({
     rating,
     onChange,
     disabled = false,
+    compact = false,
+    deferred = false,
 }: {
     rating: number | null;
     onChange: (stars: number | null) => void;
     disabled?: boolean;
+    compact?: boolean;
+    deferred?: boolean;
 }) {
     const [preview, setPreview] = useState<number | null>(null);
     const choices = useRef<(HTMLButtonElement | null)[]>([]);
     const helpId = useId();
     const shown = preview ?? rating ?? 0;
     return (
-        <div className="border-t border-white/10 px-4 py-4 text-center">
-            <p className="mb-3 text-xs text-[#bdb6b1]">Your rating</p>
+        <div
+            className={`border-t border-white/10 text-center ${compact ? 'px-3 py-2.5' : 'px-4 py-4'}`}
+        >
+            <p
+                className={`${compact ? 'mb-1 text-[11px]' : 'mb-3 text-xs'} text-[#bdb6b1]`}
+            >
+                Your rating
+            </p>
             <div
                 role="group"
                 aria-label="Rate this game"
@@ -31,19 +41,26 @@ export default function RatingEditor({
                 }}
             >
                 {Array.from({ length: 5 }, (_, index) => (
-                    <span key={index} className="relative block h-11 w-8">
+                    <span
+                        key={index}
+                        className={`relative block ${compact ? 'h-9 w-6' : 'h-11 w-8'}`}
+                    >
                         <span
                             aria-hidden="true"
-                            className={`pointer-events-none absolute inset-x-0 top-1.5 h-8 ${preview !== null ? 'text-white' : 'text-[#d5cec7]'}`}
+                            className={`pointer-events-none absolute inset-x-0 top-1.5 ${compact ? 'h-6' : 'h-8'} ${preview !== null ? 'text-white' : 'text-[#d5cec7]'}`}
                         >
-                            <Star className="absolute inset-0 size-8 text-[#807d7d]" />
+                            <Star
+                                className={`absolute inset-0 ${compact ? 'size-6' : 'size-8'} text-[#807d7d]`}
+                            />
                             <span
                                 className="absolute inset-y-0 left-0 overflow-hidden"
                                 style={{
                                     width: `${Math.min(1, Math.max(0, shown - index)) * 100}%`,
                                 }}
                             >
-                                <Star className="size-8 fill-current" />
+                                <Star
+                                    className={`${compact ? 'size-6' : 'size-8'} fill-current`}
+                                />
                             </span>
                         </span>
                         {[0.5, 1].map((half, side) => {
@@ -100,7 +117,7 @@ export default function RatingEditor({
                 ))}
             </div>
             <p
-                className="mt-2 min-h-5 text-xs text-[#bdb6b1]"
+                className={`${compact ? 'mt-0.5 min-h-4 text-[11px]' : 'mt-2 min-h-5 text-xs'} text-[#bdb6b1]`}
                 aria-hidden="true"
             >
                 {disabled
@@ -111,10 +128,13 @@ export default function RatingEditor({
             </p>
             <p id={helpId} className="sr-only">
                 Choose half or full stars. Use arrow keys to preview a score,
-                then Enter or Space to save.
+                then Enter or Space to{' '}
+                {deferred
+                    ? 'select it. Save the game log to save your rating.'
+                    : 'save.'}
                 {rating === null
-                    ? ' No rating saved.'
-                    : ` Saved rating: ${rating} out of 5 stars.`}
+                    ? ` No rating ${deferred ? 'selected' : 'saved'}.`
+                    : ` ${deferred ? 'Selected' : 'Saved'} rating: ${rating} out of 5 stars.`}
             </p>
             {rating !== null && (
                 <button
@@ -124,7 +144,7 @@ export default function RatingEditor({
                         setPreview(null);
                         onChange(null);
                     }}
-                    className="mt-1 min-h-8 rounded-sm px-2 text-[11px] text-[#bdb6b1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                    className={`${compact ? 'min-h-6' : 'mt-1 min-h-8'} rounded-sm px-2 text-[11px] text-[#bdb6b1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50`}
                 >
                     Clear rating
                 </button>
