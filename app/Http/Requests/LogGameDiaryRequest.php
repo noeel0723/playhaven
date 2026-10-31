@@ -2,23 +2,35 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\PlaythroughStatus;
-use App\Models\Game;
+use App\Enums\LibraryStatus;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class LogGameDiaryRequest extends SaveDiaryEntryRequest
+class LogGameDiaryRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return $this->user() !== null;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('review_body'))) {
+            $this->merge(['review_body' => preg_replace('/^[\s\p{Z}]+|[\s\p{Z}]+$/u', '', $this->input('review_body'))]);
+        }
+    }
+
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        $game = $this->route('game');
-        $newRun = ! $this->filled('playthrough_id');
-
-        return array_merge(parent::rules(), [
-            'playthrough_id' => ['nullable', 'integer', 'min:1'],
-            'label' => [Rule::excludeIf(! $newRun), 'nullable', 'string', 'max:100'],
-            'status' => [Rule::excludeIf(! $newRun), 'required', Rule::enum(PlaythroughStatus::class)],
-            'platform_id' => [Rule::excludeIf(! $newRun), 'nullable', 'integer', Rule::exists('game_platform', 'platform_id')->where('game_id', $game instanceof Game ? $game->id : null)],
-        ]);
+        return [
+            'status' => ['required', Rule::enum(LibraryStatus::class)],
+            'logged_on' => ['required', 'date_format:Y-m-d', 'after_or_equal:0001-01-01', 'before_or_equal:today'],
+            'completed_on' => ['exclude_unless:status,completed', 'required', 'date_format:Y-m-d', 'after_or_equal:0001-01-01', 'before_or_equal:today', 'before_or_equal:logged_on'],
+            'review_body' => ['nullable', 'string', 'max:10000'],
+            'contains_spoilers' => ['required', 'boolean'],
+            'is_public' => ['required', 'boolean'],
+            'return_to_diary' => ['sometimes', 'boolean'],
+        ];
     }
 }

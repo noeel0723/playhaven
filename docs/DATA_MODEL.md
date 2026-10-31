@@ -10,6 +10,7 @@ erDiagram
     users ||--o{ library_entries : owns
     games ||--o{ library_entries : collected_in
     library_entries ||--o{ playthroughs : records
+    library_entries ||--o{ game_diary_logs : snapshots
     playthroughs ||--o{ diary_entries : logs
     platforms o|--o{ playthroughs : played_on
     library_entries ||--o| ratings : rated
@@ -47,12 +48,13 @@ Local foreign keys always reference local IDs, never provider IDs. This keeps pl
 | `library_entries` | One row per user/game. Status is nullable: `playing`, `completed`, `paused`, or `dropped`. Null means saved without a playing status. Also stores favorite state.             |
 | `playthroughs`    | Multiple runs per library entry. Optional label and platform, status, start and finish dates. A run has no backlog status; finish date cannot precede a known start date.     |
 | `diary_entries`   | Sessions attached to a playthrough, with log date, optional nonnegative minutes, and notes. Multiple sessions on the same day are valid.                                      |
+| `game_diary_logs` | Private dated Library-status snapshots with optional completion date, review text, and spoiler flag. Later changes do not rewrite previous logs.                              |
 | `ratings`         | At most one current rating per library entry. Integer `score` between 1 and 10; no row means unrated.                                                                         |
 | `reviews`         | At most one current review per library entry. Nonblank body, spoiler flag, public/private flag. Editing updates the same row.                                                 |
 
 Playthroughs, ratings, and reviews inherit their user and game through `library_entry_id`. Diary entries inherit them through their playthrough. There are no separate user/game columns that could contradict each other.
 
-Library status and playthrough status are independent. Starting a replay preserves the earlier run and the game's overall rating. Current history actions preserve the user's library status; changes to that status remain explicit in the library editor.
+Library status and playthrough status are independent. Starting a replay preserves the earlier run and the game's overall rating. Playthrough/session editors preserve Library status. The game Diary popup explicitly updates current Library status/completion date and a nonblank canonical review while appending a private `game_diary_logs` snapshot; ratings, favorites, runs, and playing sessions are preserved. See [the Diary workflow](PLAYING_HISTORY.md).
 
 Ratings describe a player's overall opinion of a game. Replaying a game does not add another vote to community averages. A review and a rating can exist independently. A player may review/rate a game without marking it completed.
 

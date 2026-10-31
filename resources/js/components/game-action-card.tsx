@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { login } from '@/routes';
 import { save, destroy } from '@/routes/library';
 import { index as lists } from '@/routes/lists';
+import { index as playingHistory } from '@/routes/playthroughs';
 import { store as addToList } from '@/routes/list-items';
 import { update as rate } from '@/routes/ratings';
 import { libraryStatuses } from '@/types/library';
@@ -230,6 +231,15 @@ export default function GameActionCard({
                         <ListPlus className="size-4" aria-hidden="true" />
                         Add to a list
                     </button>
+                    {entry && (
+                        <Link
+                            href={playingHistory(gameSlug)}
+                            className={rowClass}
+                        >
+                            <BookOpen className="size-4" aria-hidden="true" />
+                            Playing history
+                        </Link>
+                    )}
                     {!entry && (
                         <p className="border-t border-white/10 px-4 py-3 text-center text-[10px] leading-5 text-[#a9a19b]">
                             Rating, reviewing, or favoriting also adds this game
@@ -286,7 +296,7 @@ export default function GameActionCard({
                             className={`pr-6 ${panel === 'diary' ? 'text-sm font-medium' : ''}`}
                         >
                             {panel === 'diary'
-                                ? 'Log a playing session'
+                                ? 'Log a game'
                                 : panel === 'review'
                                   ? 'Your game review'
                                   : panel === 'list'
@@ -297,7 +307,7 @@ export default function GameActionCard({
                             className={`text-[#bdb6b1] ${panel === 'diary' ? 'text-[11px]' : ''}`}
                         >
                             {panel === 'diary'
-                                ? 'Add to your private game diary.'
+                                ? 'Update your status, review, and completion date.'
                                 : gameName}
                         </DialogDescription>
                     </DialogHeader>
@@ -424,7 +434,7 @@ export default function GameActionCard({
                             <p className="text-sm leading-7 text-[#bdb6b1]">
                                 This game is in your library. Removing it also
                                 removes its rating, review, playthroughs, and
-                                diary sessions.
+                                diary logs and playing sessions.
                             </p>
                             <Label className="flex items-start gap-3 text-sm leading-6">
                                 <input

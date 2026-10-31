@@ -22,6 +22,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::pattern('playthrough', '[1-9][0-9]{0,17}');
 Route::pattern('diaryEntry', '[1-9][0-9]{0,17}');
+Route::pattern('gameDiaryLog', '[1-9][0-9]{0,17}');
 Route::pattern('gameList', '[1-9][0-9]{0,17}');
 Route::pattern('listItem', '[1-9][0-9]{0,17}');
 Route::pattern('listOwner', '[1-9][0-9]{0,17}');
@@ -75,7 +76,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('playthroughs/{playthrough}', [PlaythroughController::class, 'show'])->name('playthroughs.show');
     Route::put('playthroughs/{playthrough}', [PlaythroughController::class, 'update'])->name('playthroughs.update');
     Route::delete('playthroughs/{playthrough}', [PlaythroughController::class, 'destroy'])->name('playthroughs.destroy');
-    Route::get('diary', [DiaryController::class, 'index'])->name('diary.index');
+    Route::get('diary', [GameDiaryController::class, 'index'])->name('diary.index');
+    Route::get('diary/sessions', [DiaryController::class, 'index'])->name('diary.sessions');
+    Route::delete('diary/logs/{gameDiaryLog}', [GameDiaryController::class, 'destroy'])->name('game-diary.destroy');
     Route::post('playthroughs/{playthrough}/sessions', [DiaryController::class, 'store'])->name('sessions.store');
     Route::put('playthroughs/{playthrough}/sessions/{diaryEntry}', [DiaryController::class, 'update'])->name('sessions.update');
     Route::delete('playthroughs/{playthrough}/sessions/{diaryEntry}', [DiaryController::class, 'destroy'])->name('sessions.destroy');

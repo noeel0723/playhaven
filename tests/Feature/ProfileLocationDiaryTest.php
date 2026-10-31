@@ -61,7 +61,7 @@ class ProfileLocationDiaryTest extends TestCase
         $one = DiaryEntry::factory()->for($first)->create(['logged_on' => now()->subDays(2)->toDateString()]);
         $two = DiaryEntry::factory()->for($second)->create(['logged_on' => now()->subDay()->toDateString()]);
         DiaryEntry::factory()->create(['notes' => 'OTHER USER DIARY SECRET']);
-        $this->actingAs($owner)->get(route('diary.index'))->assertDontSee('OTHER USER DIARY SECRET')->assertDontSee('PRIVATE REVIEW BODY NOT NEEDED IN DIARY')
+        $this->actingAs($owner)->get(route('diary.sessions'))->assertDontSee('OTHER USER DIARY SECRET')->assertDontSee('PRIVATE REVIEW BODY NOT NEEDED IN DIARY')
             ->assertInertia(fn (Assert $page) => $page->has('sessions.data', 2)->where('sessions.data.0.id', $two->id)
                 ->where('sessions.data.0.catalog_game.id', $game->id)->where('sessions.data.0.catalog_game.cover_url', null)
                 ->where('sessions.data.0.catalog_game.released_on', '2020-01-02')->where('sessions.data.0.rating', 4.5)
@@ -77,7 +77,7 @@ class ProfileLocationDiaryTest extends TestCase
         $date = now()->subDays(10)->toDateString();
         $oldest = DiaryEntry::factory()->for($run)->create(['logged_on' => $date]);
         DiaryEntry::factory()->for($run)->count(20)->create(['logged_on' => now()->subDay()->toDateString()]);
-        $this->actingAs($owner)->get(route('diary.index', ['from' => $date, 'to' => $date]))->assertInertia(fn (Assert $page) => $page
+        $this->actingAs($owner)->get(route('diary.sessions', ['from' => $date, 'to' => $date]))->assertInertia(fn (Assert $page) => $page
             ->has('sessions.data', 1)->where('sessions.data.0.id', $oldest->id)->where('sessions.data.0.session_page', 2));
         $this->get(route('playthroughs.show', [$run, 'page' => 2]))->assertInertia(fn (Assert $page) => $page
             ->where('sessions.data.0.id', $oldest->id)->missing('sessions.data.0.catalog_game'));

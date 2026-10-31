@@ -42,7 +42,7 @@ class DiaryController extends Controller
         $sessions = (clone $query)->count();
         $minutes = (int) (clone $query)->sum('minutes_played');
 
-        return Inertia::render('diary/index', [
+        return Inertia::render('diary/sessions', [
             'sessions' => DiaryEntryResource::collection($query->with(['playthrough' => fn (BelongsTo $run) => $run->select('playthroughs.*')
                 ->selectSub(DB::table('playthroughs as earlier')->selectRaw('1')->whereColumn('earlier.library_entry_id', 'playthroughs.library_entry_id')->whereColumn('earlier.id', '<', 'playthroughs.id')->limit(1), 'is_replay')
                 ->with(['libraryEntry.rating', 'libraryEntry.review:id,library_entry_id,is_public', 'libraryEntry.game.genres', 'libraryEntry.game.platforms'])])

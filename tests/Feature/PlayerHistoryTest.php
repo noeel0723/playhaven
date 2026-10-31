@@ -34,7 +34,7 @@ class PlayerHistoryTest extends TestCase
     {
         $run = Playthrough::factory()->create();
         $session = DiaryEntry::factory()->for($run)->create();
-        foreach ([route('playthroughs.index', $run->libraryEntry->game->slug), route('playthroughs.show', $run->id), route('diary.index')] as $url) {
+        foreach ([route('playthroughs.index', $run->libraryEntry->game->slug), route('playthroughs.show', $run->id), route('diary.sessions')] as $url) {
             $this->get($url)->assertRedirect(route('login'));
         }
         $this->post(route('playthroughs.store', $run->libraryEntry->game->slug), $this->runData())->assertRedirect(route('login'));
@@ -128,7 +128,7 @@ class PlayerHistoryTest extends TestCase
         $session = $run->diaryEntries()->where('minutes_played', 90)->sole();
         $this->put(route('sessions.update', [$run->id, $session->id]), $this->sessionData(['minutes_played' => 30, 'notes' => 'Updated notes.']))->assertRedirect();
         $this->assertSame(30, $session->fresh()->minutes_played);
-        $this->get(route('diary.index'))->assertInertia(fn (Assert $page) => $page->where('totals.sessions', 3)->where('totals.minutes', 30));
+        $this->get(route('diary.sessions'))->assertInertia(fn (Assert $page) => $page->where('totals.sessions', 3)->where('totals.minutes', 30));
     }
 
     public function test_session_values_and_playthrough_boundaries_are_validated(): void
@@ -189,8 +189,8 @@ class PlayerHistoryTest extends TestCase
         $match = DiaryEntry::factory()->for($run)->create(['logged_on' => '2026-01-05', 'minutes_played' => 75, 'notes' => 'My private memory.']);
         DiaryEntry::factory()->for($run)->create(['logged_on' => '2026-01-01', 'minutes_played' => 20]);
         DiaryEntry::factory()->create(['logged_on' => '2026-01-05', 'minutes_played' => 100, 'notes' => 'OTHER_PRIVATE_MEMORY']);
-        $this->actingAs($entry->user)->get(route('diary.index', ['q' => '%_', 'from' => '2026-01-04', 'to' => '2026-01-06']))->assertDontSee('OTHER_PRIVATE_MEMORY')->assertInertia(fn (Assert $page) => $page
-            ->component('diary/index')->where('totals.sessions', 1)->where('totals.minutes', 75)->has('sessions.data', 1)->where('sessions.data.0.id', $match->id)
+        $this->actingAs($entry->user)->get(route('diary.sessions', ['q' => '%_', 'from' => '2026-01-04', 'to' => '2026-01-06']))->assertDontSee('OTHER_PRIVATE_MEMORY')->assertInertia(fn (Assert $page) => $page
+            ->component('diary/sessions')->where('totals.sessions', 1)->where('totals.minutes', 75)->has('sessions.data', 1)->where('sessions.data.0.id', $match->id)
             ->where('sessions.data.0.playthrough.game.name', '100%_Adventure')->missing('sessions.data.0.user_id'));
         $this->get(route('games.show', $entry->game->slug))->assertDontSee('My private memory.')->assertInertia(fn (Assert $page) => $page->missing('playthroughs')->missing('sessions'));
     }
@@ -201,7 +201,7 @@ class PlayerHistoryTest extends TestCase
         DiaryEntry::factory()->for($run)->count(21)->create(['logged_on' => '2026-01-05']);
         $latest = DiaryEntry::factory()->for($run)->create(['logged_on' => '2026-01-06']);
         Playthrough::factory()->for($run->libraryEntry)->count(11)->create();
-        $this->actingAs($run->libraryEntry->user)->get(route('diary.index', ['q' => $run->libraryEntry->game->name, 'from' => '2026-01-01']))->assertInertia(fn (Assert $page) => $page
+        $this->actingAs($run->libraryEntry->user)->get(route('diary.sessions', ['q' => $run->libraryEntry->game->name, 'from' => '2026-01-01']))->assertInertia(fn (Assert $page) => $page
             ->has('sessions.data', 20)->where('sessions.meta.total', 22)->where('sessions.data.0.id', $latest->id)
             ->where('sessions.links.next', fn ($url) => str_contains($url, 'from=2026-01-01') && str_contains($url, 'page=2')));
         $this->get(route('playthroughs.show', $run->id))->assertInertia(fn (Assert $page) => $page->has('sessions.data', 20)->where('sessions.meta.total', 22));
@@ -210,7 +210,7 @@ class PlayerHistoryTest extends TestCase
 
     public function test_filter_shapes_and_invalid_route_ids_are_rejected(): void
     {
-        $this->actingAs(User::factory()->create())->get(route('diary.index', ['from' => '2026-01-10', 'to' => '2026-01-01', 'q' => ['bad'], 'page' => 0]))->assertSessionHasErrors(['to', 'q', 'page']);
+        $this->actingAs(User::factory()->create())->get(route('diary.sessions', ['from' => '2026-01-10', 'to' => '2026-01-01', 'q' => ['bad'], 'page' => 0]))->assertSessionHasErrors(['to', 'q', 'page']);
         $this->get('/playthroughs/not-a-number')->assertNotFound();
         $this->get('/playthroughs/999999999999999999999999')->assertNotFound();
     }
@@ -252,12 +252,12 @@ class PlayerHistoryTest extends TestCase
     public function test_verification_is_required_outside_local_but_the_local_bypass_still_applies(): void
     {
         $entry = LibraryEntry::factory()->for(User::factory()->unverified())->create();
-        $this->actingAs($entry->user)->get(route('diary.index'))->assertRedirect(route('verification.notice'));
+        $this->actingAs($entry->user)->get(route('diary.sessions'))->assertRedirect(route('verification.notice'));
         $this->post(route('playthroughs.store', $entry->game->slug), $this->runData())->assertRedirect(route('verification.notice'));
         $this->app->instance('env', 'local');
         config(['auth.require_email_verification' => false]);
         $this->withSession(['_token' => 'history-test-token'])->withHeader('X-CSRF-TOKEN', 'history-test-token');
-        $this->get(route('diary.index'))->assertOk();
+        $this->get(route('diary.sessions'))->assertOk();
         $this->post(route('playthroughs.store', $entry->game->slug), $this->runData())->assertRedirect();
         $this->assertDatabaseCount('playthroughs', 1);
         $this->assertNull($entry->user->fresh()->email_verified_at);

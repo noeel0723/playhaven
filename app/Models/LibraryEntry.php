@@ -62,6 +62,12 @@ class LibraryEntry extends Model
         return $this->hasMany(Playthrough::class);
     }
 
+    /** @return HasMany<GameDiaryLog, $this> */
+    public function diaryLogs(): HasMany
+    {
+        return $this->hasMany(GameDiaryLog::class);
+    }
+
     /** @return HasOne<Rating, $this> */
     public function rating(): HasOne
     {

@@ -36,4 +36,4 @@ The game-detail review section uses compact, avatar-led rows with thin separator
 
 `tests/Feature/GameExperienceTest.php` covers all ten half-star values, invalid inputs, clearing ratings, edits without duplicate rows, history preservation, ownership spoofing, privacy changes, public pagination, spoiler flags, confirmed deletion, and aggregate updates. Both SQLite and the isolated PostgreSQL test database are supported.
 
-Multiple playthroughs and dated private diary sessions are now implemented; see [playing history](PLAYING_HISTORY.md). Their actions preserve the overall rating and review.
+Multiple playthroughs and dated private playing sessions preserve the overall rating and review. The game Diary popup can explicitly update the current review, its visibility/spoiler flags, Library status, and completion date while saving a separate private history snapshot. Blank review text preserves an existing review. See [the Diary workflow and playing history](PLAYING_HISTORY.md).
