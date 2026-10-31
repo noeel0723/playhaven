@@ -178,6 +178,46 @@ class CommunityTest extends TestCase
         $this->assertDatabaseHas('follows', ['follower_id' => $other->id, 'followed_id' => $target->id]);
     }
 
+    public function test_directory_follow_and_unfollow_return_to_players_with_filters_and_refreshed_counts(): void
+    {
+        $viewer = User::factory()->create();
+        $target = $this->player('target_player');
+        $filters = ['q' => 'Player target', 'page' => 1];
+        $context = ['return_to_players' => true, ...$filters];
+        $this->actingAs($viewer)->post(route('follows.store', 'target_player'), $context)
+            ->assertRedirect(route('players.index', $filters));
+        $this->get(route('players.index', $filters))->assertInertia(fn (Assert $page) => $page
+            ->component('players/index')->where('query', 'Player target')->has('players.data', 1)
+            ->where('players.data.0.is_following', true)->where('players.data.0.followers_count', 1));
+        $this->post(route('follows.store', 'target_player'), ['return_to_players' => true, 'q' => 'Player target', 'page' => 2])
+            ->assertRedirect(route('players.index', ['q' => 'Player target', 'page' => 2]));
+        $this->assertDatabaseCount('follows', 1);
+        $this->delete(route('follows.destroy', 'target_player'), $context)
+            ->assertRedirect(route('players.index', $filters));
+        $this->get(route('players.index', $filters))->assertInertia(fn (Assert $page) => $page
+            ->where('players.data.0.is_following', false)->where('players.data.0.followers_count', 0));
+        $this->assertDatabaseCount('follows', 0);
+        $this->post(route('follows.store', 'target_player'), ['return_to_players' => true, 'return_to' => 'https://example.com'])
+            ->assertRedirect(route('players.index'));
+        $this->assertDatabaseHas('follows', ['follower_id' => $viewer->id, 'followed_id' => $target->id]);
+    }
+
+    public function test_invalid_directory_context_is_rejected_before_follow_or_unfollow_changes(): void
+    {
+        $viewer = User::factory()->create();
+        $target = $this->player('target_player');
+        $this->actingAs($viewer);
+        foreach ([['return_to_players' => 'https://example.com'], ['return_to_players' => true, 'q' => ['bad']],
+            ['return_to_players' => true, 'q' => str_repeat('x', 101)], ['return_to_players' => true, 'page' => 0],
+            ['return_to_players' => true, 'page' => 100001]] as $invalid) {
+            $this->postJson(route('follows.store', 'target_player'), $invalid)->assertUnprocessable();
+        }
+        $this->assertDatabaseCount('follows', 0);
+        Follow::create(['follower_id' => $viewer->id, 'followed_id' => $target->id]);
+        $this->deleteJson(route('follows.destroy', 'target_player'), ['return_to_players' => true, 'page' => -1])->assertUnprocessable();
+        $this->assertDatabaseCount('follows', 1);
+    }
+
     public function test_guests_cannot_change_profiles_or_follow_and_private_targets_are_not_followable(): void
     {
         $hidden = $this->player('hidden_target', false);

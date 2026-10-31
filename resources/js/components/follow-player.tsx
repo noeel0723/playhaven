@@ -1,4 +1,5 @@
 import { Form, Link, usePage } from '@inertiajs/react';
+import { useRef } from 'react';
 import { Check, Plus, UserMinus, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { login } from '@/routes';
@@ -13,7 +14,11 @@ export default function FollowPlayer({
     player: PublicPlayer;
     compact?: boolean;
 }) {
-    const { auth } = usePage().props;
+    const page = usePage();
+    const { auth } = page.props;
+    const button = useRef<HTMLButtonElement>(null);
+    const fromPlayers = page.component === 'players/index';
+    const filters = new URL(page.url, 'http://localhost').searchParams;
     const compactClass = compact
         ? 'size-7 rounded-full border border-caviar bg-[#d5cec7] p-0 font-sans text-xs text-[#211d1a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
         : undefined;
@@ -51,10 +56,31 @@ export default function FollowPlayer({
             }
             method={player.is_following ? 'delete' : 'post'}
             options={{ preserveScroll: true }}
+            onSuccess={() => button.current?.focus({ preventScroll: true })}
         >
             {({ processing, errors }) => (
                 <div>
+                    {fromPlayers && (
+                        <>
+                            <input
+                                type="hidden"
+                                name="return_to_players"
+                                value="1"
+                            />
+                            <input
+                                type="hidden"
+                                name="q"
+                                value={filters.get('q') ?? ''}
+                            />
+                            <input
+                                type="hidden"
+                                name="page"
+                                value={filters.get('page') ?? '1'}
+                            />
+                        </>
+                    )}
                     <Button
+                        ref={button}
                         type="submit"
                         disabled={processing}
                         className={compactClass}
