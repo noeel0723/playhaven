@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { ListPlus, Search } from 'lucide-react';
 import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
@@ -7,6 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { discover, index } from '@/routes/lists';
 import type { GameList, ListPagination } from '@/types/lists';
+
+const gridClass =
+    'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3';
+const headingClass =
+    'text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase';
+const buttonClass =
+    'h-7 gap-1.5 border-white/10 bg-rein/20 px-2.5 text-[11px] text-[#e0d9d3] hover:bg-rein hover:text-white [&_svg]:size-3';
 
 export default function DiscoverLists({
     lists,
@@ -19,33 +26,75 @@ export default function DiscoverLists({
     sort: 'recent' | 'largest' | 'name';
     featuredLists: GameList[];
 }) {
-    const gridClass =
-        'grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3';
+    const { auth } = usePage().props;
     return (
-        <>
+        <div className="mx-auto max-w-4xl font-sans">
             <Head title="Community lists" />
-            <div className="max-w-[1008px]">
-                <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-medium tracking-tight">
-                            Lists
-                        </h1>
-                        <p className="mt-1 text-xs leading-5 text-[#bdb6b1]">
-                            Game collections from the community.
-                        </p>
+            <header className="mx-auto mb-7 max-w-2xl text-center">
+                <h1 className="text-lg leading-7 font-light tracking-tight text-[#d5cec7] sm:text-xl">
+                    Discover game collections.
+                </h1>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                    <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className={buttonClass}
+                    >
+                        <Link href={`${index().url}#create-list`}>
+                            <ListPlus aria-hidden="true" />
+                            Create a list
+                        </Link>
+                    </Button>
+                    {auth.user && (
+                        <Link
+                            href={index()}
+                            className="inline-flex h-7 items-center rounded px-2 text-[11px] text-[#bdb6b1] hover:bg-rein/30 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                            Manage lists
+                        </Link>
+                    )}
+                </div>
+            </header>
+            {featuredLists.length > 0 && (
+                <section aria-labelledby="featured-lists" className="mb-7">
+                    <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
+                        <h2 id="featured-lists" className={headingClass}>
+                            Featured lists
+                        </h2>
+                        <span
+                            className="text-[11px] text-[#a9a19b]"
+                            title="Public collections with the most games"
+                        >
+                            Most games
+                        </span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Button asChild size="sm" variant="ghost">
-                            <Link href={index()}>Lists</Link>
-                        </Button>
-                        <Button asChild size="sm">
-                            <Link href={`${index().url}#create-list`}>
-                                <ListPlus aria-hidden="true" />
-                                Create a list
-                            </Link>
-                        </Button>
+                    <div className={gridClass}>
+                        {featuredLists.map((list) => (
+                            <GameListCard key={list.id} list={list} compact />
+                        ))}
                     </div>
-                </header>
+                </section>
+            )}
+            <section aria-labelledby="browse-lists">
+                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
+                    <h2 id="browse-lists" className={headingClass}>
+                        {query
+                            ? 'Search results'
+                            : sort === 'largest'
+                              ? 'Largest collections'
+                              : sort === 'name'
+                                ? 'All lists'
+                                : 'Recently updated'}
+                    </h2>
+                    <span
+                        className="text-[11px] text-[#a9a19b]"
+                        aria-live="polite"
+                    >
+                        {lists.meta.total} public{' '}
+                        {lists.meta.total === 1 ? 'list' : 'lists'}
+                    </span>
+                </div>
                 <Form
                     action={discover()}
                     method="get"
@@ -54,9 +103,9 @@ export default function DiscoverLists({
                     aria-label="Find public lists"
                 >
                     {({ processing, errors }) => (
-                        <div className="mb-7">
-                            <div className="flex flex-wrap items-end gap-2">
-                                <div className="min-w-0 flex-1 basis-44">
+                        <div className="mb-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="min-w-0 flex-1 basis-40 sm:max-w-xs">
                                     <Label
                                         htmlFor="list-search"
                                         className="sr-only"
@@ -66,13 +115,14 @@ export default function DiscoverLists({
                                     <Input
                                         id="list-search"
                                         name="q"
+                                        type="search"
                                         defaultValue={query}
                                         maxLength={100}
                                         placeholder="Find a list…"
-                                        className="h-9 border-shadow bg-rein/30 text-xs"
+                                        className="h-7 border-white/10 bg-rein/30 px-2 text-xs"
                                     />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <Label
                                         htmlFor="list-sort"
                                         className="sr-only"
@@ -83,7 +133,7 @@ export default function DiscoverLists({
                                         id="list-sort"
                                         name="sort"
                                         defaultValue={sort}
-                                        className="h-9 max-w-full rounded-md border border-shadow bg-rein px-2 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
+                                        className="h-7 max-w-full rounded border border-white/10 bg-rein/30 px-2 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2 [&>option]:bg-[#211f1f]"
                                     >
                                         <option value="recent">
                                             Recently updated
@@ -97,19 +147,17 @@ export default function DiscoverLists({
                                 <Button
                                     type="submit"
                                     disabled={processing}
+                                    variant="outline"
                                     size="sm"
-                                    className="h-9"
+                                    className={buttonClass}
                                 >
-                                    <Search
-                                        className="size-3.5"
-                                        aria-hidden="true"
-                                    />
-                                    {processing ? 'Searching…' : 'Apply'}
+                                    <Search aria-hidden="true" />
+                                    {processing ? 'Searching…' : 'Search'}
                                 </Button>
                                 {(query || sort !== 'recent') && (
                                     <Link
                                         href={discover()}
-                                        className="px-2 py-2 text-xs text-[#bdb6b1] underline underline-offset-4"
+                                        className="inline-flex h-7 items-center rounded px-2 text-[11px] text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
                                     >
                                         Reset
                                     </Link>
@@ -126,72 +174,31 @@ export default function DiscoverLists({
                         </div>
                     )}
                 </Form>
-                {featuredLists.length > 0 && (
-                    <section aria-labelledby="featured-lists" className="mb-9">
-                        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
-                            <h2
-                                id="featured-lists"
-                                className="text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase"
-                            >
-                                Featured lists
-                            </h2>
-                            <span className="text-[11px] text-[#a9a19b]">
-                                Public collections with the most games
-                            </span>
-                        </div>
-                        <div className={gridClass}>
-                            {featuredLists.map((list) => (
-                                <GameListCard key={list.id} list={list} />
-                            ))}
-                        </div>
-                    </section>
-                )}
-                <section aria-labelledby="browse-lists">
-                    <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
-                        <h2
-                            id="browse-lists"
-                            className="text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase"
-                        >
-                            {query
-                                ? 'Search results'
-                                : sort === 'largest'
-                                  ? 'Largest collections'
-                                  : sort === 'name'
-                                    ? 'All lists'
-                                    : 'Recently updated'}
-                        </h2>
-                        <span className="text-[11px] text-[#a9a19b]">
-                            {lists.meta.total} public{' '}
-                            {lists.meta.total === 1 ? 'list' : 'lists'}
-                        </span>
+                {lists.data.length ? (
+                    <div className={gridClass}>
+                        {lists.data.map((list) => (
+                            <GameListCard key={list.id} list={list} compact />
+                        ))}
                     </div>
-                    {lists.data.length ? (
-                        <div className={gridClass}>
-                            {lists.data.map((list) => (
-                                <GameListCard key={list.id} list={list} />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="rounded-md border border-dashed border-shadow px-4 py-8">
-                            <h3 className="text-sm font-medium">
-                                {query
-                                    ? 'No lists found.'
-                                    : 'No public lists yet.'}
-                            </h3>
-                            <p className="mt-2 text-xs leading-6 text-[#bdb6b1]">
-                                {query
-                                    ? 'Try another list name.'
-                                    : 'Create a list and choose Public to share it here.'}
-                            </p>
-                        </div>
-                    )}
-                    <HistoryPagination
-                        pagination={lists}
-                        label="Community lists pagination"
-                        compact
-                    />
-                </section>
-            </div>
-        </>
+                ) : (
+                    <div className="rounded-md border border-dashed border-shadow px-4 py-6 text-center">
+                        <h3 className="text-sm font-medium">
+                            {query ? 'No lists found.' : 'No public lists yet.'}
+                        </h3>
+                        <p className="mt-1 text-xs leading-5 text-[#bdb6b1]">
+                            {query
+                                ? 'Try another list name.'
+                                : 'Create a list and choose Public to share it here.'}
+                        </p>
+                    </div>
+                )}
+                <HistoryPagination
+                    pagination={lists}
+                    label="Community lists pagination"
+                    compact
+                    dense
+                />
+            </section>
+        </div>
     );
 }

@@ -9,25 +9,30 @@ import type { GameList } from '@/types/lists';
 export default function GameListCard({
     list,
     showVisibility = false,
+    compact = false,
 }: {
     list: GameList;
     showVisibility?: boolean;
+    compact?: boolean;
 }) {
+    const Heading = compact ? 'h3' : 'h2';
     return (
-        <article className="w-full max-w-[320px] min-w-0">
+        <article
+            className={`w-full min-w-0 font-sans ${compact ? 'mx-auto max-w-[280px]' : 'max-w-[320px]'}`}
+        >
             <Link
                 href={show({ listOwner: list.owner.id, listSlug: list.slug })}
                 className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
             >
                 <GameListCoverStrip list={list} />
-                <h2
+                <Heading
                     className="mt-2 line-clamp-2 text-sm leading-5 font-medium wrap-break-word text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4"
                     title={list.name}
                 >
                     {list.name}
-                </h2>
+                </Heading>
             </Link>
-            {list.description && (
+            {!compact && list.description && (
                 <p
                     className="mt-1 line-clamp-1 text-xs leading-5 text-[#bdb6b1]"
                     title={list.description}
@@ -35,7 +40,9 @@ export default function GameListCard({
                     {list.description}
                 </p>
             )}
-            <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-5 text-[#bdb6b1]">
+            <div
+                className={`${compact ? 'mt-1' : 'mt-2'} flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-5 text-[#bdb6b1]`}
+            >
                 <span className="flex max-w-full min-w-0 items-center gap-1.5">
                     <PlayerAvatar
                         name={list.owner.name}
