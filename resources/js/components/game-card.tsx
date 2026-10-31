@@ -15,7 +15,7 @@ export default function GameCard({
         ?.map((developer) => developer.name)
         .join(', ');
     return (
-        <article className="min-w-0">
+        <article className="min-w-0 font-sans">
             <Link
                 href={show(game.slug)}
                 className="group block rounded-lg outline-offset-4 focus-visible:outline-2 focus-visible:outline-[#e0d9d3]"
@@ -25,16 +25,17 @@ export default function GameCard({
                     compact={poster}
                     className={
                         poster
-                            ? 'aspect-[2/3] rounded-md group-hover:border-[#bdb6b1]'
+                            ? 'aspect-[2/3] rounded-sm group-hover:border-[#bdb6b1]'
                             : undefined
                     }
                 />
                 <h2
                     className={
                         poster
-                            ? 'mt-3 line-clamp-2 min-h-10 text-sm leading-5 font-medium text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4'
+                            ? 'mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 font-medium wrap-break-word text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4'
                             : 'mt-4 text-sm leading-5 font-semibold text-[#f4f1ed] group-hover:underline group-hover:underline-offset-4'
                     }
+                    title={game.name}
                 >
                     {game.name}
                 </h2>
@@ -48,7 +49,9 @@ export default function GameCard({
                     {developerNames || 'Developer not listed'}
                 </p>
             )}
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[#bdb6b1]">
+            <div
+                className={`${poster ? 'mt-1 gap-1 text-[11px]' : 'mt-2 gap-2 text-xs'} flex flex-wrap items-center justify-between text-[#bdb6b1]`}
+            >
                 <span>{game.released_on?.slice(0, 4) ?? 'Release TBA'}</span>
                 {game.rating !== null ? (
                     <span
