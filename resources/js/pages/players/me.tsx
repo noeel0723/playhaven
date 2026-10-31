@@ -143,7 +143,7 @@ export default function YourProfile({
                             href={stats()}
                             className="rounded-sm hover:underline focus-visible:outline-2"
                         >
-                            Your statistics
+                            Statistic
                         </Link>
                     </div>
                 </aside>

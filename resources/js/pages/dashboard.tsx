@@ -19,9 +19,9 @@ export default function Dashboard({
     playerName: string;
 }) {
     return (
-        <>
+        <div className="mx-auto max-w-4xl font-sans">
             <Head title="Your haven" />
-            <h1 className="mx-auto mb-7 max-w-4xl text-center text-lg leading-relaxed font-light wrap-break-word text-[#bdb6b1] sm:text-xl lg:text-2xl">
+            <h1 className="mx-auto mb-5 max-w-2xl text-center text-base leading-6 font-normal wrap-break-word text-[#bdb6b1] sm:text-lg">
                 Welcome back,{' '}
                 <Link
                     href={profile()}
@@ -31,12 +31,12 @@ export default function Dashboard({
                 </Link>
                 . Here’s your latest gaming activity.
             </h1>
-            <section aria-labelledby="library-overview" className="mb-8">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 pb-3">
+            <section aria-labelledby="library-overview" className="mb-6">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 pb-2.5">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                         <h2
                             id="library-overview"
-                            className="text-sm font-medium"
+                            className="text-xs font-medium"
                         >
                             Library overview
                         </h2>
@@ -65,80 +65,87 @@ export default function Dashboard({
                             href={statistics()}
                             className="inline-flex h-7 items-center rounded px-2 text-[#bdb6b1] hover:bg-rein/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
-                            Your statistics
+                            Statistic
                         </Link>
                     </nav>
                 </div>
                 <nav
                     aria-label="Library status filters"
-                    className="grid max-w-2xl grid-cols-2 gap-2 sm:grid-cols-5"
+                    className="flex flex-wrap gap-1.5"
                 >
                     {libraryStatuses.map((status) => (
                         <Link
                             key={status.value}
                             href={library({ query: { status: status.value } })}
-                            className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-white/10 bg-rein/15 px-3 py-2 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="inline-flex min-h-8 items-center gap-3 rounded border border-white/10 bg-rein/20 px-2.5 py-1 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
-                            <span className="text-xs text-[#bdb6b1]">
+                            <span className="text-[11px] text-[#bdb6b1]">
                                 {status.label}
                             </span>
-                            <span className="text-sm font-medium tabular-nums">
+                            <span className="text-xs font-medium tabular-nums">
                                 {counts[status.value]}
                             </span>
                         </Link>
                     ))}
                     <Link
                         href={library({ query: { favorite: 1 } })}
-                        className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-white/10 bg-rein/15 px-3 py-2 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
+                        className="inline-flex min-h-8 items-center gap-3 rounded border border-white/10 bg-rein/20 px-2.5 py-1 transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                        <span className="text-xs text-[#bdb6b1]">
+                        <span className="text-[11px] text-[#bdb6b1]">
                             Favorites
                         </span>
-                        <span className="text-sm font-medium tabular-nums">
+                        <span className="text-xs font-medium tabular-nums">
                             {counts.favorites}
                         </span>
                     </Link>
                 </nav>
             </section>
             <section aria-labelledby="recent-games">
-                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                    <h2 id="recent-games" className="font-serif text-3xl">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                    <h2 id="recent-games" className="text-xs font-medium">
                         On your shelf
                     </h2>
                     <Link
                         href={library()}
-                        className="inline-flex items-center gap-2 rounded-sm text-xs text-[#c5bfba] underline underline-offset-4 focus-visible:outline-2"
+                        className="inline-flex min-h-7 items-center gap-1.5 rounded-sm text-[11px] text-[#c5bfba] underline-offset-4 hover:underline focus-visible:outline-2"
                     >
                         View all games{' '}
-                        <ArrowRight className="size-3.5" aria-hidden="true" />
+                        <ArrowRight className="size-3" aria-hidden="true" />
                     </Link>
                 </div>
                 {recentEntries.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 lg:grid-cols-6">
+                    <div className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 lg:grid-cols-6 [&_.font-serif]:font-sans">
                         {recentEntries.map((entry) => (
-                            <LibraryGameCard key={entry.id} entry={entry} />
+                            <LibraryGameCard
+                                key={entry.id}
+                                entry={entry}
+                                compact
+                            />
                         ))}
                     </div>
                 ) : (
-                    <div className="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed border-shadow px-6 py-12 text-center">
+                    <div className="flex min-h-40 flex-col items-center justify-center rounded-md border border-dashed border-shadow px-4 py-6 text-center">
                         <BookOpen
-                            className="mb-5 size-9 text-mustang"
+                            className="mb-2 size-5 text-mustang"
                             strokeWidth={1}
                             aria-hidden="true"
                         />
-                        <h3 className="font-serif text-2xl">
-                            Make this haven yours.
+                        <h3 className="text-sm font-medium">
+                            No games in your library yet.
                         </h3>
-                        <p className="mt-3 max-w-md text-sm leading-6 text-[#bdb6b1]">
-                            Start with a favorite, a game you’re playing, or
-                            something on your wishlist.
+                        <p className="mt-2 max-w-sm text-xs leading-5 text-[#bdb6b1]">
+                            Add a game to start tracking your library.
                         </p>
-                        <Button asChild variant="outline" className="mt-6">
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="mt-3 h-7 border-white/10 bg-rein/20 px-2.5 text-[11px] text-[#f4f1ed] hover:bg-rein hover:text-white"
+                        >
                             <Link href={games()}>Find your first game</Link>
                         </Button>
                     </div>
                 )}
             </section>
-        </>
+        </div>
     );
 }

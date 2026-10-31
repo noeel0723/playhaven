@@ -60,7 +60,7 @@ export function UserMenuContent({ user }: Props) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className={menuItemClass}>
                     <Link href={statistics()} onClick={cleanup}>
-                        Your statistics
+                        Statistic
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className={menuItemClass}>
