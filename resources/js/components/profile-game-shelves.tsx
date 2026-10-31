@@ -29,11 +29,12 @@ function Poster({
                 <GameCover
                     game={game}
                     compact
-                    className="aspect-[2/3] rounded-md shadow-lg transition-colors group-hover:border-[#c5bfba]"
+                    hideFallbackTitle
+                    className="aspect-[2/3] rounded-sm transition-colors group-hover:border-[#c5bfba]"
                 />
                 {rank && (
                     <span
-                        className="pointer-events-none absolute top-2 left-2 flex size-5 items-center justify-center rounded-full bg-caviar/80 text-[10px] text-[#f4f1ed] sm:size-6 sm:text-xs"
+                        className="pointer-events-none absolute top-1.5 left-1.5 flex size-4 items-center justify-center rounded-full bg-caviar/80 text-[10px] text-[#f4f1ed]"
                         aria-hidden="true"
                     >
                         {rank}
@@ -41,7 +42,7 @@ function Poster({
                 )}
             </div>
             {showTitle && (
-                <span className="mt-2 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba] group-hover:text-white sm:text-xs">
+                <span className="mt-1.5 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba] group-hover:text-white">
                     {game.name}
                 </span>
             )}
@@ -67,23 +68,23 @@ export default function ProfileGameShelves({
     return (
         <>
             <section aria-labelledby="top-four-games">
-                <div className="mb-4 flex items-baseline justify-between gap-3 border-b border-shadow pb-3">
+                <div className="mb-3 flex items-baseline justify-between gap-2 border-b border-white/10 pb-2">
                     <h2
                         id="top-four-games"
-                        className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
+                        className="text-xs font-medium tracking-[0.1em] text-[#c5bfba] uppercase"
                     >
                         Top 4 games
                     </h2>
                     {isOwner && showEditLinks && (
                         <Link
                             href={shelfLink}
-                            className="rounded-sm text-xs text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
+                            className="inline-flex min-h-7 items-center rounded-sm text-[11px] text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
                         >
                             Edit picks
                         </Link>
                     )}
                 </div>
-                <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
+                <div className="grid grid-cols-4 items-start gap-2 sm:gap-3">
                     {Array.from({ length: 4 }, (_, index) => (
                         <div
                             key={topGames[index]?.id ?? `empty-${index}`}
@@ -96,15 +97,15 @@ export default function ProfileGameShelves({
                                 />
                             ) : (
                                 <div
-                                    className="flex aspect-[2/3] flex-col items-center justify-center gap-3 rounded-md border border-dashed border-shadow bg-rein/10 p-2 text-[#807d7d]"
+                                    className="flex aspect-[2/3] flex-col items-center justify-center gap-1.5 rounded-sm border border-dashed border-shadow bg-rein/10 p-1 text-[#807d7d]"
                                     aria-label={`Top game ${index + 1} not selected`}
                                 >
                                     <Gamepad2
-                                        className="size-5 sm:size-7"
+                                        className="size-4 sm:size-5"
                                         strokeWidth={1}
                                         aria-hidden="true"
                                     />
-                                    <span className="text-[10px] sm:text-xs">
+                                    <span className="text-[10px]">
                                         No. {index + 1}
                                     </span>
                                 </div>
@@ -113,7 +114,7 @@ export default function ProfileGameShelves({
                     ))}
                 </div>
                 {!topGames.length && (
-                    <p className="mt-4 text-xs leading-6 text-[#bdb6b1]">
+                    <p className="mt-2 text-[11px] leading-4 text-[#bdb6b1]">
                         {emptyTopGamesMessage ??
                             (isOwner
                                 ? 'Choose four games that feel like you. Add your picks from Edit picks.'
@@ -124,51 +125,51 @@ export default function ProfileGameShelves({
             {showRecentCompleted && (
                 <section
                     aria-labelledby="recent-completed-games"
-                    className="mt-10 sm:mt-12"
+                    className="mt-6"
                 >
-                    <div className="mb-4 flex items-baseline justify-between gap-3 border-b border-shadow pb-3">
+                    <div className="mb-3 flex items-baseline justify-between gap-2 border-b border-white/10 pb-2">
                         <h2
                             id="recent-completed-games"
-                            className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
+                            className="text-xs font-medium tracking-[0.1em] text-[#c5bfba] uppercase"
                         >
                             Recently completed
                         </h2>
                         {isOwner && showEditLinks && (
                             <Link
                                 href={shelfLink}
-                                className="rounded-sm text-xs text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
+                                className="inline-flex min-h-7 items-center rounded-sm text-[11px] text-[#bdb6b1] underline-offset-4 hover:underline focus-visible:outline-2"
                             >
                                 Manage
                             </Link>
                         )}
                     </div>
                     {recentCompleted.length ? (
-                        <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
+                        <div className="grid grid-cols-4 items-start gap-2 sm:gap-3">
                             {recentCompleted.map((entry) => (
                                 <div key={entry.game.id} className="min-w-0">
                                     <Poster
                                         game={entry.game}
                                         showTitle={false}
                                     />
-                                    <div className="mt-2 flex h-4 items-center">
+                                    <div className="mt-1.5 flex h-4 items-center">
                                         {entry.rating !== null ? (
                                             <StarRating
                                                 value={entry.rating}
                                                 compact
                                             />
                                         ) : (
-                                            <span className="text-[10px] text-[#807d7d] sm:text-xs">
+                                            <span className="text-[10px] text-[#807d7d]">
                                                 Unrated
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba] sm:text-xs">
+                                    <p className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#c5bfba]">
                                         {entry.game.name}
                                     </p>
                                     {entry.completed_at ? (
                                         <time
                                             dateTime={entry.completed_at}
-                                            className="mt-1 block text-[10px] leading-4 text-[#bdb6b1] sm:text-xs"
+                                            className="mt-1 block text-[10px] leading-4 text-[#bdb6b1]"
                                         >
                                             {new Intl.DateTimeFormat('en', {
                                                 month: 'short',
@@ -180,7 +181,7 @@ export default function ProfileGameShelves({
                                             )}
                                         </time>
                                     ) : (
-                                        <p className="mt-1 text-[10px] leading-4 text-[#807d7d] sm:text-xs">
+                                        <p className="mt-1 text-[10px] leading-4 text-[#807d7d]">
                                             Date not recorded
                                         </p>
                                     )}
@@ -188,7 +189,7 @@ export default function ProfileGameShelves({
                             ))}
                         </div>
                     ) : (
-                        <p className="rounded-md border border-dashed border-shadow px-5 py-7 text-sm leading-7 text-[#bdb6b1]">
+                        <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
                             {isOwner
                                 ? 'Mark a game Completed in your library to begin this shelf.'
                                 : 'No completed games to share yet.'}

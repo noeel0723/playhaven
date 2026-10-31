@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import GameCover from '@/components/game-cover';
+import ReviewBody from '@/components/review-body';
 import StarRating from '@/components/star-rating';
 import { show } from '@/routes/games';
 import type { ProfileReview } from '@/types/community';
@@ -10,7 +11,7 @@ export default function ProfileReviewCard({
     review: ProfileReview;
 }) {
     return (
-        <article className="grid min-w-0 grid-cols-[56px_minmax(0,1fr)] gap-4 border-b border-white/10 py-6 first:pt-0 sm:grid-cols-[92px_minmax(0,1fr)] sm:gap-6">
+        <article className="grid min-w-0 grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-b border-white/10 py-3 font-sans first:pt-0 sm:grid-cols-[56px_minmax(0,1fr)] sm:gap-3">
             <Link
                 href={show(review.game.slug)}
                 aria-label={`View ${review.game.name}`}
@@ -20,11 +21,11 @@ export default function ProfileReviewCard({
                     game={review.game}
                     compact
                     hideFallbackTitle
-                    className="aspect-[2/3] rounded-md"
+                    className="aspect-[2/3] rounded-sm"
                 />
             </Link>
             <div className="min-w-0">
-                <h3 className="font-serif text-xl leading-tight wrap-break-word sm:text-3xl">
+                <h3 className="text-sm leading-5 font-medium wrap-break-word">
                     <Link
                         href={show(review.game.slug)}
                         className="rounded-sm hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -32,12 +33,12 @@ export default function ProfileReviewCard({
                         {review.game.name}
                     </Link>
                     {review.game.released_on && (
-                        <span className="ml-2 inline-block font-sans text-sm text-[#a9a19b] sm:text-lg">
+                        <span className="ml-1.5 inline-block text-[11px] font-normal text-[#a9a19b]">
                             {review.game.released_on.slice(0, 4)}
                         </span>
                     )}
                 </h3>
-                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-[#bdb6b1]">
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[#bdb6b1]">
                     {review.rating !== null && (
                         <StarRating value={review.rating} compact />
                     )}
@@ -50,24 +51,20 @@ export default function ProfileReviewCard({
                         }).format(new Date(review.updated_at))}
                     </time>
                     {review.is_public === false && (
-                        <span className="rounded border border-shadow px-2 py-0.5 text-[10px] text-[#c5bfba]">
+                        <span className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] text-[#c5bfba]">
                             Private · only you
                         </span>
                     )}
                 </div>
                 {review.contains_spoilers ? (
-                    <details className="mt-4">
-                        <summary className="w-fit cursor-pointer rounded-sm text-xs leading-6 text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-4">
+                    <details className="mt-1.5">
+                        <summary className="min-h-7 w-fit cursor-pointer rounded-sm py-1.5 text-[11px] leading-4 text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-2">
                             Contains spoilers · Show review
                         </summary>
-                        <p className="mt-3 text-sm leading-7 wrap-break-word whitespace-pre-wrap text-[#c5bfba]">
-                            {review.body}
-                        </p>
+                        <ReviewBody body={review.body} />
                     </details>
                 ) : (
-                    <p className="mt-4 text-sm leading-7 wrap-break-word whitespace-pre-wrap text-[#c5bfba]">
-                        {review.body}
-                    </p>
+                    <ReviewBody body={review.body} />
                 )}
             </div>
         </article>

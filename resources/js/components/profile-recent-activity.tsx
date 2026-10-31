@@ -18,18 +18,15 @@ export default function ProfileRecentActivity({
     activities: ProfileGameActivity[];
 }) {
     return (
-        <section
-            aria-labelledby="recent-game-activity"
-            className="mt-10 sm:mt-12"
-        >
+        <section aria-labelledby="recent-game-activity" className="mt-6">
             <h2
                 id="recent-game-activity"
-                className="mb-4 border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
+                className="mb-3 border-b border-white/10 pb-2 text-xs font-medium tracking-[0.1em] text-[#c5bfba] uppercase"
             >
                 Recent activity
             </h2>
             {activities.length ? (
-                <div className="grid grid-cols-4 items-start gap-2 sm:gap-4">
+                <div className="grid grid-cols-4 items-start gap-2 sm:gap-3">
                     {activities.map((activity) => (
                         <article key={activity.game.id} className="min-w-0">
                             <Link
@@ -41,10 +38,10 @@ export default function ProfileRecentActivity({
                                     game={activity.game}
                                     compact
                                     hideFallbackTitle
-                                    className="aspect-[2/3] rounded-md group-hover:border-[#c5bfba]"
+                                    className="aspect-[2/3] rounded-sm group-hover:border-[#c5bfba]"
                                 />
                             </Link>
-                            <div className="mt-2 flex min-h-4 flex-wrap items-center gap-x-1 gap-y-1">
+                            <div className="mt-1.5 flex min-h-4 flex-wrap items-center gap-x-1 gap-y-1">
                                 {activity.rating !== null ? (
                                     <StarRating
                                         value={activity.rating}
@@ -62,17 +59,17 @@ export default function ProfileRecentActivity({
                                     />
                                 )}
                             </div>
-                            <p className="mt-2 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#d5cec7] sm:text-xs">
+                            <p className="mt-1 line-clamp-2 min-h-8 text-[11px] leading-4 text-[#d5cec7]">
                                 {activity.game.name}
                             </p>
-                            <p className="mt-1 text-[10px] text-[#bdb6b1] sm:text-xs">
+                            <p className="mt-1 text-[10px] text-[#bdb6b1]">
                                 {activity.status === null
                                     ? 'In library'
                                     : statusLabels[activity.status]}
                             </p>
                             <time
                                 dateTime={activity.occurred_at}
-                                className="mt-1 block text-[10px] leading-4 text-[#9e9690] sm:text-xs"
+                                className="mt-1 block text-[10px] leading-4 text-[#9e9690]"
                             >
                                 {new Intl.DateTimeFormat('en', {
                                     month: 'short',
@@ -85,13 +82,13 @@ export default function ProfileRecentActivity({
                     ))}
                 </div>
             ) : (
-                <p className="border-b border-white/10 py-7 text-sm leading-7 text-[#bdb6b1]">
+                <p className="border-b border-white/10 py-3 text-xs leading-5 text-[#bdb6b1]">
                     Your latest game activity will appear here as you update
                     your library, rate, review, or log a play session.
                 </p>
             )}
             {activities.length > 0 && (
-                <p className="mt-4 text-xs leading-6 text-[#9e9690]">
+                <p className="mt-2 text-[11px] leading-4 text-[#9e9690]">
                     Your four most recently active games across library,
                     ratings, reviews, playthroughs, and diary updates.
                 </p>

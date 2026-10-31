@@ -2,6 +2,8 @@
 
 The public player profile uses a main column with two four-cover shelves, thin section dividers, and a sidebar for public review/list counts and public lists. The editorial layout follows the supplied reference while retaining PlayHaven's palette, typography, game artwork, and components. On narrow screens the sidebar stacks below the main column and both shelves keep four covers per row.
 
+Personal and public profile pages use a centered 896px container with the global sans-serif font. Profile photos are 64–80px, statistics use a compact four-column row, and profile actions/pagination use 28px controls. A 200px sidebar leaves smaller game shelves beside it on desktop. Section headings, metadata, gaps, review covers, and empty states are reduced; long reviews use the shared **Read more / Show less** control and spoiler reviews stay closed by default. The personal page retains its private activity/reviews and visibility notice; public pages retain published content only. The profile editor remains a separate page.
+
 ## Choose Top 4 games
 
 Open **Profile → Edit profile**, then use **Top 4 Games** in the editor's right column. Picks can be saved immediately without saving profile information or uploading a photo. A successful first save creates a private profile; it does not choose a username or publish the profile:

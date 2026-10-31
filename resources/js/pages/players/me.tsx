@@ -28,7 +28,7 @@ export default function YourProfile({
     reviews: ProfileReviewPagination;
 }) {
     return (
-        <>
+        <div className="mx-auto max-w-4xl font-sans">
             <Head title="Profile" />
             <PlayerProfileHeader
                 name={player.name}
@@ -46,13 +46,13 @@ export default function YourProfile({
                     <Button
                         asChild
                         variant="outline"
-                        className="border-shadow bg-rein/60 text-[#f4f1ed] hover:bg-rein hover:text-white"
+                        className="h-7 border-shadow bg-rein/60 px-2.5 text-[11px] text-[#f4f1ed] hover:bg-rein hover:text-white"
                     >
                         <Link href={edit()}>Edit profile</Link>
                     </Button>
                 }
             />
-            <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-14">
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_200px]">
                 <div className="min-w-0">
                     <ProfileGameShelves
                         topGames={topGames}
@@ -65,16 +65,16 @@ export default function YourProfile({
                     <ProfileRecentActivity activities={activities} />
                     <section
                         aria-labelledby="your-recent-reviews"
-                        className="mt-10 sm:mt-12"
+                        className="mt-6"
                     >
-                        <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-shadow pb-3">
+                        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
                             <h2
                                 id="your-recent-reviews"
-                                className="text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm"
+                                className="text-xs font-medium tracking-[0.1em] text-[#c5bfba] uppercase"
                             >
                                 Recent reviews
                             </h2>
-                            <span className="text-xs text-[#a9a19b]">
+                            <span className="text-[11px] text-[#a9a19b]">
                                 {reviews.meta.total}{' '}
                                 {reviews.meta.total === 1
                                     ? 'review'
@@ -91,7 +91,7 @@ export default function YourProfile({
                                 ))}
                             </div>
                         ) : (
-                            <p className="py-5 text-sm leading-7 text-[#bdb6b1]">
+                            <p className="py-3 text-xs leading-5 text-[#bdb6b1]">
                                 Your reviews will appear here when you share
                                 your thoughts about a game.
                             </p>
@@ -99,18 +99,20 @@ export default function YourProfile({
                         <HistoryPagination
                             pagination={reviews}
                             label="Your profile review pages"
+                            dense
+                            preserveState
                         />
                     </section>
                 </div>
-                <aside className="min-w-0 border-t border-shadow pt-7 lg:border-t-0 lg:pt-0">
-                    <h2 className="border-b border-shadow pb-3 text-xs font-medium tracking-[0.16em] text-[#c5bfba] uppercase sm:text-sm">
+                <aside className="min-w-0 border-t border-white/10 pt-4 lg:border-t-0 lg:pt-0">
+                    <h2 className="border-b border-white/10 pb-2 text-xs font-medium tracking-[0.1em] text-[#c5bfba] uppercase">
                         Your space
                     </h2>
-                    <p className="mt-5 text-sm leading-7 text-[#bdb6b1]">
-                        This overview is just for you, including your private
-                        reviews and recent game activity.
+                    <p className="mt-3 text-xs leading-5 text-[#bdb6b1]">
+                        Private reviews and recent activity are visible only to
+                        you.
                     </p>
-                    <p className="mt-4 text-xs leading-6 text-[#a9a19b]">
+                    <p className="mt-2 text-[11px] leading-4 text-[#a9a19b]">
                         Public profile:{' '}
                         <span className="text-[#d5cec7]">
                             {player.is_public ? 'Visible' : 'Hidden'}
@@ -119,12 +121,12 @@ export default function YourProfile({
                     {player.is_public && player.username && (
                         <Link
                             href={show(player.username)}
-                            className="mt-4 inline-block rounded-sm text-xs text-[#d5cec7] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+                            className="mt-2 inline-flex min-h-7 items-center rounded-sm text-[11px] text-[#d5cec7] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
                         >
                             View public profile
                         </Link>
                     )}
-                    <div className="mt-7 flex flex-col items-start gap-4 border-t border-white/10 pt-6 text-sm text-[#c5bfba]">
+                    <div className="mt-3 flex flex-col items-start gap-1 border-t border-white/10 pt-2 text-[11px] text-[#c5bfba] [&_a]:inline-flex [&_a]:min-h-7 [&_a]:items-center">
                         <Link
                             href={library()}
                             className="rounded-sm hover:underline focus-visible:outline-2"
@@ -146,6 +148,6 @@ export default function YourProfile({
                     </div>
                 </aside>
             </div>
-        </>
+        </div>
     );
 }
