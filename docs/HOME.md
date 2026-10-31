@@ -1,6 +1,8 @@
 # Home
 
-Halaman `/` memakai komposisi hero sinematik dengan identitas PlayHaven: palet Caviar, Rein, Shadow, Saddle, dan Mustang, logo gamepad, headline serif, serta teks antarmuka berbahasa Inggris.
+Halaman `/` memakai komposisi hero sinematik dengan identitas PlayHaven: palet Caviar, Rein, Shadow, Saddle, dan Mustang, logo gamepad, font sans-serif global, serta teks antarmuka berbahasa Inggris.
+
+Konten katalog dan fitur berada dalam container terpusat 896px. Hero, tombol, footer, jarak antarbagian, dan kartu fitur dibuat compact; kartu fitur memakai padding 12–16px, ikon 16px di samping judul 13px, deskripsi 12px, dan tautan tindakan 11px. Grid fitur menampilkan tiga kolom desktop, dua tablet, dan satu pada ponsel. Label **Featured world** dan teks **Made for the love of play.** tidak ditampilkan. Gambar RDR2, navigasi, serta kredit artwork tetap tersedia.
 
 Header home menggunakan komponen global `resources/js/components/site-header.tsx`, yang juga dipakai katalog, dashboard, halaman publik, halaman privat, login/registrasi, dan pengaturan. Tinggi tetap dan container yang sama menjaga posisi logo serta navigasi konsisten sebelum dan setelah login. Home mempertahankan header transparan di atas artwork; halaman katalog menambahkan garis pemisah di bawahnya.
 
@@ -10,7 +12,7 @@ Header home menggunakan komponen global `resources/js/components/site-header.tsx
 - Header menyediakan Games, Lists, Community, Players, dan pencarian GET ke `/games?q=...`. Untuk mencari judul di RAWG, lanjutkan melalui **Find more games** di katalog.
 - Tamu mendapat tautan Log in dan Join PlayHaven. Setelah login, tersedia Your haven, menu akun desktop, dan tombol **Back to your library**. Menu mobile menyediakan Your library dan Your haven.
 - Enam cover berasal dari database lokal: RDR2 diprioritaskan, lalu jumlah rating, jumlah pemain, tanggal rilis, dan ID. Jumlah game berasal dari database, bukan angka contoh.
-- Tautan **Featured world** membuka detail RDR2 bila game tersebut sudah tersedia di katalog. Tanpa data itu, judul tetap tampil sebagai teks. Katalog kosong memiliki tampilan pengganti.
+- Nama RDR2 di bawah hero membuka detail game bila sudah tersedia di katalog. Tanpa data itu, judul tetap tampil sebagai teks. Katalog kosong memiliki tampilan pengganti.
 - Bagian pengalaman menghubungkan library, rating/review, diary, list, komunitas, dan statistik pribadi yang sudah tersedia. Tautan privat tetap mengikuti autentikasi aplikasi.
 - Halaman ini tidak melakukan pencarian atau impor RAWG otomatis dan tidak menampilkan kredensial provider, review privat, atau data library pribadi.
 
