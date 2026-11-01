@@ -32,7 +32,9 @@ class WeeklyPopularGames
 
         return Game::query()->select('games.*')->selectRaw('COALESCE(weekly_activity.weekly_players_count, 0) AS weekly_players_count')
             ->leftJoinSub($activity, 'weekly_activity', fn (JoinClause $join) => $join->on('weekly_activity.game_id', '=', 'games.id'))
-            ->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')
+            ->with(['genres', 'platforms', 'developers'])
+            ->withCount(['ratings', 'libraryEntries as players_count', 'reviews as public_reviews_count' => fn ($query) => $query->where('reviews.is_public', true)])
+            ->withAvg('ratings', 'score')
             ->orderByDesc('weekly_players_count')->orderByDesc('players_count')->orderByDesc('ratings_count')->orderBy('games.id')->limit($limit)->get();
     }
 

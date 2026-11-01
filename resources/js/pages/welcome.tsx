@@ -10,12 +10,12 @@ import {
     ListOrdered,
     Users,
 } from 'lucide-react';
-import GameCover from '@/components/game-cover';
+import GamePreviewLink from '@/components/game-preview-link';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
 import PopularGameBackdrop from '@/components/popular-game-backdrop';
 import type { FeaturedWorld } from '@/types/home';
-import { dashboard, register } from '@/routes';
+import { register } from '@/routes';
 import { index as community } from '@/routes/community';
 import { index as diary } from '@/routes/diary';
 import { index as games, show } from '@/routes/games';
@@ -202,23 +202,16 @@ export default function Welcome({ featuredGames, featuredWorld }: Props) {
                                                     key={game.id}
                                                     className="min-w-0"
                                                 >
-                                                    <Link
-                                                        href={show(game.slug)}
-                                                        className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
+                                                    <GamePreviewLink
+                                                        game={game}
+                                                        compact
+                                                        hideFallbackTitle
+                                                        coverClassName="aspect-[2/3] rounded-sm transition-colors group-hover:border-[#bdb6b1]"
                                                     >
-                                                        <GameCover
-                                                            game={game}
-                                                            compact
-                                                            hideFallbackTitle
-                                                            className="aspect-[2/3] rounded-sm transition-colors group-hover:border-[#bdb6b1]"
-                                                        />
-                                                        <h3
-                                                            title={game.name}
-                                                            className="mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 text-[#d5cec7] group-hover:text-white"
-                                                        >
+                                                        <h3 className="mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 text-[#d5cec7] group-hover:text-white">
                                                             {game.name}
                                                         </h3>
-                                                    </Link>
+                                                    </GamePreviewLink>
                                                 </article>
                                             ))}
                                         </div>
@@ -280,44 +273,6 @@ export default function Welcome({ featuredGames, featuredWorld }: Props) {
                                                 </Link>
                                             ),
                                         )}
-                                    </div>
-                                </section>
-                                <section
-                                    aria-labelledby="home-next-chapter"
-                                    className="border-t border-white/10 py-6 text-center sm:py-8"
-                                >
-                                    <p className="mb-2 text-[11px] tracking-[0.1em] text-[#9e9690] uppercase">
-                                        There is always another world
-                                    </p>
-                                    <h2
-                                        id="home-next-chapter"
-                                        className="text-xl font-medium tracking-tight sm:text-2xl"
-                                    >
-                                        The next chapter is yours.
-                                    </h2>
-                                    <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#bdb6b1]">
-                                        Keep a little more of what you play.
-                                        Share a little more of what you love.
-                                    </p>
-                                    <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
-                                        <Link
-                                            href={
-                                                auth.user
-                                                    ? dashboard()
-                                                    : register()
-                                            }
-                                            className="inline-flex min-h-7 items-center rounded-md border border-shadow bg-rein/40 px-2.5 py-1 text-[11px] text-[#e0d9d3] transition-colors hover:bg-rein focus-visible:outline-2 focus-visible:outline-offset-4"
-                                        >
-                                            {auth.user
-                                                ? 'Open your haven'
-                                                : 'Join PlayHaven'}
-                                        </Link>
-                                        <Link
-                                            href={community()}
-                                            className="inline-flex min-h-7 items-center rounded-sm text-[11px] text-[#bdb6b1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
-                                        >
-                                            Meet the community
-                                        </Link>
                                     </div>
                                 </section>
                             </div>

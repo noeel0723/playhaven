@@ -11,6 +11,7 @@ export type CatalogGame = {
     platforms: CatalogTerm[];
     rating: number | null;
     ratings_count: number;
+    public_reviews_count?: number;
     players_count: number;
     weekly_players_count?: number;
     summary?: string | null;

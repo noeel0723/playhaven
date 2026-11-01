@@ -78,6 +78,32 @@ class HomePageTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_card_previews_include_developers_and_community_ratings_but_count_only_public_reviews(): void
+    {
+        $game = Game::factory()->create();
+        $developer = Developer::create(['rawg_id' => 502, 'name' => 'Preview Studio', 'slug' => 'preview-studio']);
+        $game->developers()->attach($developer);
+        $first = LibraryEntry::factory()->for($game)->create();
+        $second = LibraryEntry::factory()->for($game)->create();
+        Rating::factory()->for($first)->create(['score' => 8]);
+        Rating::factory()->for($second)->create(['score' => 10]);
+        Review::factory()->for($first)->create(['is_public' => true, 'body' => 'PUBLIC PREVIEW BODY']);
+        Review::factory()->for($second)->create(['is_public' => false, 'body' => 'PRIVATE PREVIEW BODY']);
+
+        foreach (['/' => 'featuredGames', '/games' => 'games.data'] as $url => $key) {
+            $this->get($url)->assertOk()->assertDontSee('PRIVATE PREVIEW BODY')->assertDontSee('PUBLIC PREVIEW BODY')
+                ->assertInertia(fn (Assert $page) => $page
+                    ->where($key.'.0.rating', 4.5)->where($key.'.0.ratings_count', 2)
+                    ->where($key.'.0.public_reviews_count', 1)->where($key.'.0.developers.0.name', 'Preview Studio')
+                    ->missing($key.'.0.reviews')->missing($key.'.0.library_entries'));
+        }
+        $unrated = Game::factory()->create();
+        $this->get('/games?q='.urlencode($unrated->name))->assertInertia(fn (Assert $page) => $page
+            ->where('games.data.0.rating', null)->where('games.data.0.ratings_count', 0)
+            ->where('games.data.0.public_reviews_count', 0)->has('games.data.0.developers', 0));
+        Http::assertNothingSent();
+    }
+
     public function test_new_additions_status_changes_ratings_and_public_reviews_count_but_private_notes_and_metadata_do_not(): void
     {
         $user = $this->publicPlayer();

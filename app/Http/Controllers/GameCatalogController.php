@@ -31,7 +31,7 @@ class GameCatalogController extends Controller
         $year = $request->filled('year') ? $request->integer('year') : null;
         $sort = $request->filled('sort') ? $request->string('sort')->value() : 'rating';
         $query = Game::query()->with(['genres', 'platforms', 'developers'])
-            ->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score');
+            ->withCount(['ratings', 'libraryEntries as players_count', 'reviews as public_reviews_count' => fn ($query) => $query->where('reviews.is_public', true)])->withAvg('ratings', 'score');
 
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
