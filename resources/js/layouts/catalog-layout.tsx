@@ -4,6 +4,7 @@ import type { PropsWithChildren } from 'react';
 import GameBanner from '@/components/game-banner';
 import ProfileBanner from '@/components/profile-banner';
 import SiteHeader from '@/components/site-header';
+import SiteFooter from '@/components/site-footer';
 import type { CatalogGame } from '@/types/catalog';
 
 export default function CatalogLayout({ children }: PropsWithChildren) {
@@ -35,7 +36,7 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
         );
     }
     return (
-        <div className="dark relative isolate min-h-svh bg-caviar bg-[radial-gradient(ellipse_at_top,rgba(92,85,81,0.14),transparent_70%)] text-[#f4f1ed] selection:bg-mustang selection:text-caviar">
+        <div className="dark relative isolate flex min-h-svh flex-col bg-caviar bg-[radial-gradient(ellipse_at_top,rgba(92,85,81,0.14),transparent_70%)] text-[#f4f1ed] selection:bg-mustang selection:text-caviar">
             {banner && (
                 <GameBanner
                     key={banner}
@@ -70,25 +71,11 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
             <main
                 id="catalog-main"
                 tabIndex={-1}
-                className={`relative z-10 mx-auto max-w-7xl px-6 pb-10 sm:px-10 sm:pb-12 ${profileBanner ? 'pt-40 sm:pt-52 lg:pt-72' : banner ? 'pt-36 sm:pt-48 lg:pt-60' : 'pt-10 sm:pt-12'}`}
+                className={`relative z-10 mx-auto w-full max-w-7xl flex-1 px-6 pb-10 sm:px-10 sm:pb-12 ${profileBanner ? 'pt-40 sm:pt-52 lg:pt-72' : banner ? 'pt-36 sm:pt-48 lg:pt-60' : 'pt-10 sm:pt-12'}`}
             >
                 {children}
             </main>
-            <footer className="relative z-10 mx-auto flex max-w-7xl flex-wrap justify-between gap-3 border-t border-white/10 px-6 py-8 text-xs text-[#bdb6b1] sm:px-10">
-                <span>PlayHaven · Your Games. Your Stories.</span>
-                <span>
-                    Game metadata and artwork from{' '}
-                    <a
-                        href="https://rawg.io"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline underline-offset-4 hover:text-white"
-                    >
-                        RAWG
-                    </a>
-                    .
-                </span>
-            </footer>
+            <SiteFooter />
         </div>
     );
 }

@@ -21,14 +21,15 @@ export default function Register({ passwordRules }: Props) {
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
-                className="flex flex-col gap-6"
+                className="flex flex-col gap-4 [&_label]:text-xs"
             >
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
+                        <div className="grid gap-4">
+                            <div className="grid gap-1.5">
                                 <Label htmlFor="name">Name</Label>
                                 <Input
+                                    className="h-8 border-shadow bg-caviar/60 text-xs md:text-xs"
                                     id="name"
                                     type="text"
                                     required
@@ -40,13 +41,15 @@ export default function Register({ passwordRules }: Props) {
                                 />
                                 <InputError
                                     message={errors.name}
-                                    className="mt-2"
+                                    className="text-[11px]"
+                                    role="alert"
                                 />
                             </div>
 
-                            <div className="grid gap-2">
+                            <div className="grid gap-1.5">
                                 <Label htmlFor="email">Email address</Label>
                                 <Input
+                                    className="h-8 border-shadow bg-caviar/60 text-xs md:text-xs"
                                     id="email"
                                     type="email"
                                     required
@@ -55,12 +58,17 @@ export default function Register({ passwordRules }: Props) {
                                     name="email"
                                     placeholder="email@example.com"
                                 />
-                                <InputError message={errors.email} />
+                                <InputError
+                                    message={errors.email}
+                                    className="text-[11px]"
+                                    role="alert"
+                                />
                             </div>
 
-                            <div className="grid gap-2">
+                            <div className="grid gap-1.5">
                                 <Label htmlFor="password">Password</Label>
                                 <PasswordInput
+                                    className="h-8 border-shadow bg-caviar/60 text-xs md:text-xs"
                                     id="password"
                                     required
                                     tabIndex={3}
@@ -69,14 +77,19 @@ export default function Register({ passwordRules }: Props) {
                                     placeholder="Password"
                                     passwordrules={passwordRules}
                                 />
-                                <InputError message={errors.password} />
+                                <InputError
+                                    message={errors.password}
+                                    className="text-[11px]"
+                                    role="alert"
+                                />
                             </div>
 
-                            <div className="grid gap-2">
+                            <div className="grid gap-1.5">
                                 <Label htmlFor="password_confirmation">
                                     Confirm password
                                 </Label>
                                 <PasswordInput
+                                    className="h-8 border-shadow bg-caviar/60 text-xs md:text-xs"
                                     id="password_confirmation"
                                     required
                                     tabIndex={4}
@@ -87,12 +100,14 @@ export default function Register({ passwordRules }: Props) {
                                 />
                                 <InputError
                                     message={errors.password_confirmation}
+                                    className="text-[11px]"
+                                    role="alert"
                                 />
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full"
+                                className="mt-1 h-8 w-full bg-[#e7dfd6] text-xs text-[#211d1a] hover:bg-white"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >
@@ -101,9 +116,13 @@ export default function Register({ passwordRules }: Props) {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="text-center text-[11px] text-[#bdb6b1]">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                            <TextLink
+                                href={login()}
+                                tabIndex={6}
+                                className="text-[#e0d9d3] hover:text-white"
+                            >
                                 Log in
                             </TextLink>
                         </div>

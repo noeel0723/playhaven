@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+
 import {
     ArrowRight,
     ArrowUpRight,
@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import GameCover from '@/components/game-cover';
 import SiteHeader from '@/components/site-header';
+import SiteFooter from '@/components/site-footer';
+import PopularGameBackdrop from '@/components/popular-game-backdrop';
+import type { FeaturedWorld } from '@/types/home';
 import { dashboard, register } from '@/routes';
 import { index as community } from '@/routes/community';
 import { index as diary } from '@/routes/diary';
@@ -23,34 +26,11 @@ import type { CatalogGame } from '@/types/catalog';
 
 type Props = {
     featuredGames: CatalogGame[];
-    featuredWorld: {
-        name: string;
-        slug: string;
-        banner_url: string | null;
-        cover_url: string | null;
-        developers: string[];
-    } | null;
-    popularity: { from: string; to: string; has_weekly_activity: boolean };
-    catalogCount: number;
+    featuredWorld: FeaturedWorld | null;
 };
 
-export default function Welcome({
-    featuredGames,
-    featuredWorld,
-    popularity,
-    catalogCount,
-}: Props) {
+export default function Welcome({ featuredGames, featuredWorld }: Props) {
     const { auth } = usePage().props;
-    const [failedImages, setFailedImages] = useState<string[]>([]);
-    const heroImage = [
-        featuredWorld?.banner_url,
-        featuredWorld?.cover_url,
-    ].find(
-        (source): source is string =>
-            typeof source === 'string' &&
-            source.length > 0 &&
-            !failedImages.includes(source),
-    );
     const experiences = [
         {
             icon: Library,
@@ -108,14 +88,6 @@ export default function Welcome({
                     name="description"
                     content="Track the games you play. Remember every journey. Discover games, rate and review your favorites, build lists, and find your people on PlayHaven."
                 />
-                {heroImage && (
-                    <link
-                        head-key="home-hero-image"
-                        rel="preload"
-                        as="image"
-                        href={heroImage}
-                    />
-                )}
             </Head>
             <div className="dark min-h-svh overflow-x-clip bg-caviar font-sans text-[#f4f1ed] selection:bg-mustang selection:text-caviar">
                 <a
@@ -125,32 +97,7 @@ export default function Welcome({
                     Skip to content
                 </a>
                 <div className="relative isolate">
-                    <div
-                        data-home-hero
-                        className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-[520px] max-w-[1800px] overflow-hidden sm:h-[600px] lg:h-[680px]"
-                        aria-hidden="true"
-                    >
-                        {heroImage && (
-                            <img
-                                src={heroImage}
-                                alt=""
-                                width="1920"
-                                height="1080"
-                                fetchPriority="high"
-                                loading="eager"
-                                onError={() =>
-                                    setFailedImages((sources) =>
-                                        sources.includes(heroImage)
-                                            ? sources
-                                            : [...sources, heroImage],
-                                    )
-                                }
-                                className="h-full w-full object-cover object-center"
-                            />
-                        )}
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,1,0.68)_0%,rgba(1,1,1,0.08)_30%,rgba(1,1,1,0.12)_47%,rgba(1,1,1,0.7)_73%,#010101_100%)]" />
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,#010101_0%,rgba(1,1,1,0.2)_14%,transparent_35%,transparent_65%,rgba(1,1,1,0.2)_86%,#010101_100%)] opacity-45 sm:opacity-80" />
-                    </div>
+                    <PopularGameBackdrop world={featuredWorld} />
                     <SiteHeader />
                     <main id="home-main" tabIndex={-1}>
                         <section
@@ -248,73 +195,38 @@ export default function Welcome({
                                             />
                                         </Link>
                                     </div>
-                                    {featuredGames.length > 0 && (
-                                        <p className="mb-3 text-[11px] leading-5 text-[#a9a19b]">
-                                            {popularity.has_weekly_activity
-                                                ? 'Based on active players on public profiles in the last 7 days.'
-                                                : 'No activity in the last 7 days. Showing overall popularity.'}
-                                        </p>
-                                    )}
                                     {featuredGames.length ? (
                                         <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-3">
-                                            {featuredGames.map(
-                                                (game, position) => (
-                                                    <article
-                                                        key={game.id}
-                                                        className="min-w-0"
+                                            {featuredGames.map((game) => (
+                                                <article
+                                                    key={game.id}
+                                                    className="min-w-0"
+                                                >
+                                                    <Link
+                                                        href={show(game.slug)}
+                                                        className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
                                                     >
-                                                        <Link
-                                                            href={show(
-                                                                game.slug,
-                                                            )}
-                                                            className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
+                                                        <GameCover
+                                                            game={game}
+                                                            compact
+                                                            hideFallbackTitle
+                                                            className="aspect-[2/3] rounded-sm transition-colors group-hover:border-[#bdb6b1]"
+                                                        />
+                                                        <h3
+                                                            title={game.name}
+                                                            className="mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 text-[#d5cec7] group-hover:text-white"
                                                         >
-                                                            <GameCover
-                                                                game={game}
-                                                                compact
-                                                                hideFallbackTitle
-                                                                className="aspect-[2/3] rounded-sm transition-colors group-hover:border-[#bdb6b1]"
-                                                            />
-                                                            <h3
-                                                                title={
-                                                                    game.name
-                                                                }
-                                                                className="mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 text-[#d5cec7] group-hover:text-white"
-                                                            >
-                                                                {game.name}
-                                                            </h3>
-                                                        </Link>
-                                                        <p className="mt-1 text-[11px] text-[#a9a19b]">
-                                                            #{position + 1} ·{' '}
-                                                            {popularity.has_weekly_activity
-                                                                ? (game.weekly_players_count ??
-                                                                  0)
-                                                                : game.players_count}{' '}
-                                                            {(popularity.has_weekly_activity
-                                                                ? (game.weekly_players_count ??
-                                                                  0)
-                                                                : game.players_count) ===
-                                                            1
-                                                                ? 'player'
-                                                                : 'players'}
-                                                            {popularity.has_weekly_activity
-                                                                ? ' this week'
-                                                                : ''}
-                                                        </p>
-                                                    </article>
-                                                ),
-                                            )}
+                                                            {game.name}
+                                                        </h3>
+                                                    </Link>
+                                                </article>
+                                            ))}
                                         </div>
                                     ) : (
                                         <div className="rounded-md border border-dashed border-shadow px-4 py-6 text-center text-xs leading-5 text-[#bdb6b1]">
                                             No games in the catalog yet.
                                         </div>
                                     )}
-                                    <p className="mt-3 text-[11px] text-[#a9a19b]">
-                                        {catalogCount.toLocaleString()}{' '}
-                                        {catalogCount === 1 ? 'game' : 'games'}{' '}
-                                        in the local catalog.
-                                    </p>
                                 </section>
                                 <section
                                     aria-labelledby="home-experiences"
@@ -412,30 +324,7 @@ export default function Welcome({
                         </div>
                     </main>
                 </div>
-                <footer className="mx-auto flex max-w-7xl flex-wrap items-start justify-between gap-3 border-t border-white/10 px-6 py-6 text-[11px] leading-5 text-[#9e9690] sm:px-10">
-                    <div>
-                        <p className="text-[#c5bfba]">
-                            PlayHaven · Your Games. Your Stories.
-                        </p>
-                    </div>
-                    <div className="sm:text-right">
-                        <p>
-                            Catalog data and artwork via{' '}
-                            <a
-                                href="https://rawg.io"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline underline-offset-4 hover:text-white"
-                            >
-                                RAWG
-                            </a>
-                            .
-                        </p>
-                        {featuredWorld && heroImage && (
-                            <p>Hero artwork: {featuredWorld.name}.</p>
-                        )}
-                    </div>
-                </footer>
+                <SiteFooter />
             </div>
         </>
     );

@@ -11,11 +11,11 @@ Home menampilkan hingga enam game lokal, diurutkan berdasarkan jumlah pemain uni
 - memberi atau memperbarui rating;
 - menulis atau memperbarui review publik.
 
-Satu pemain dihitung paling banyak sekali per game, termasuk jika beberapa aktivitas terjadi pada periode yang sama. Profil privat, profil tanpa username, review privat, isi Diary, catatan sesi, serta perubahan metadata Library saja tidak menjadi aktivitas mingguan. Tanggal di luar rentang, termasuk masa depan, tidak dihitung. Jumlah yang ditampilkan merupakan agregat; identitas pemain dan teks review tidak disertakan.
+Satu pemain dihitung paling banyak sekali per game, termasuk jika beberapa aktivitas terjadi pada periode yang sama. Profil privat, profil tanpa username, review privat, isi Diary, catatan sesi, serta perubahan metadata Library saja tidak menjadi aktivitas mingguan. Tanggal di luar rentang, termasuk masa depan, tidak dihitung. Peringkat memakai agregat; identitas pemain dan teks review tidak disertakan.
 
 Rentang tujuh hari bergerak mengikuti waktu aplikasi pada setiap request home. Peringkat dan hero otomatis mengikuti perubahan aktivitas serta keluarnya aktivitas lama dari rentang, tanpa job, scheduler, panggilan RAWG, atau impor katalog saat halaman dibuka. Urutan seri memakai jumlah pemain keseluruhan, jumlah rating, lalu ID game agar hasil stabil. Game dengan nol aktivitas mingguan mengisi sisa tempat bila jumlah game aktif kurang dari enam.
 
-Jika seluruh katalog belum memiliki aktivitas mingguan, home tetap menampilkan hingga enam game berdasarkan popularitas keseluruhan dan memberi keterangan **No activity in the last 7 days. Showing overall popularity.** Angka pada kartu saat itu adalah jumlah pemain keseluruhan, bukan jumlah mingguan. Katalog kosong memiliki tampilan pengganti tanpa game atau banner contoh.
+Jika seluruh katalog belum memiliki aktivitas mingguan, home tetap menampilkan hingga enam game berdasarkan popularitas keseluruhan. Kartu ditampilkan sesuai urutan dari kiri ke kanan tanpa nomor peringkat, jumlah pemain, penjelasan perhitungan, atau jumlah katalog. Katalog kosong memiliki tampilan pengganti tanpa game atau banner contoh.
 
 ## Hero dan artwork
 
@@ -27,10 +27,18 @@ Banner URL dibatasi oleh validator metadata katalog yang ada. URL eksternal tida
 
 Header global menyediakan Games, Lists, Community, Players, pencarian, dan menu akun. Tamu mendapat Log in/Join PlayHaven; pengguna masuk mendapat Your haven dan Back to your library. Nama game pada hero dan enam kartu membuka detail game yang sesuai. Bagian fitur lain tetap menghubungkan Library, rating/review, Diary, Lists, Community, dan statistik.
 
-Skip link, landmark navigasi, focus outline, pencarian berlabel, dan menu mobile dengan Escape tetap tersedia. Gambar hero bersifat dekoratif; judul game tetap tersedia sebagai teks dan tautan. Kartu menunjukkan posisi serta jumlah pemain mingguan atau keseluruhan sesuai mode ranking.
+Skip link, landmark navigasi, focus outline, pencarian berlabel, dan menu mobile dengan Escape tetap tersedia. Gambar hero bersifat dekoratif; judul game tetap tersedia sebagai teks dan tautan. Kartu menampilkan cover dan nama game; urutan kiri ke kanan menunjukkan popularitas tanpa nomor atau angka aktivitas.
 
 ## Verifikasi
 
 HomePageTest mencakup urutan enam game unik, pemilihan hero/developer/artwork, penghitungan pemain unik, seluruh sumber aktivitas, pengecualian aktivitas privat/metadata, batas rentang tujuh hari dan pergantian pemimpin, fallback tanpa aktivitas, katalog kosong, validasi URL, akses tamu/pengguna masuk, serta tidak adanya panggilan provider atau perubahan data Library.
 
-Tes SQLite memakai database in-memory dan tes PostgreSQL hanya menargetkan playhaven_testing. Pengecekan browser memeriksa hero dinamis, fallback banner ke cover, artwork gagal/kosong, label weekly/fallback, navigasi, dan layout desktop/mobile.
+Tes SQLite memakai database in-memory dan tes PostgreSQL hanya menargetkan playhaven_testing. Pengecekan browser memeriksa hero dinamis, fallback banner ke cover, artwork gagal/kosong, urutan kartu tanpa teks angka/perhitungan, navigasi, dan layout desktop/mobile.
+
+## Footer global dan autentikasi
+
+SiteFooter dipakai pada home, layout katalog, layout aplikasi/pengaturan, dan layout autentikasi. Container tengah 896 px menyusun brand, Explore, dan Your account, lalu baris copyright/kredit RAWG. Semua tautan menuju halaman yang sudah tersedia. Tautan akun mengikuti status login, dengan target fokus keyboard dan ukuran teks/tombol compact. Footer menempati akhir halaman tanpa duplikasi.
+
+Login dan pendaftaran memakai hero dari WeeklyPopularGames yang sama dengan home, termasuk fallback banner ke cover game yang sama dan gradasi bila artwork gagal. PopularGameBackdrop menyatukan render dan preload artwork untuk ketiganya. Tidak ada permintaan API game saat membuka form.
+
+Form autentikasi menggunakan panel tengah maksimal 384 px, padding 16–20 px, input/tombol utama 32 px, label/body 11–12 px, dan font sans-serif global. Login, password reveal, remember me, password recovery, passkey, password rules, validasi, CSRF, rate limit, serta redirect Fortify tetap memakai implementasi yang ada. Halaman recovery/verification tidak memuat peringkat hero. AuthHeroTest memeriksa sumber hero yang sama, pergantian pemimpin, artwork kosong/tidak tepercaya, dan tidak adanya panggilan provider.

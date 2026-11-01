@@ -15,6 +15,7 @@ type Props = {
     label?: string;
     loadingLabel?: string;
     separator?: string;
+    compact?: boolean;
 };
 
 export default function PasskeyVerify({
@@ -22,6 +23,7 @@ export default function PasskeyVerify({
     label,
     loadingLabel,
     separator,
+    compact = false,
 }: Props = {}) {
     const { verify, isLoading, error, isSupported } = usePasskeyVerify({
         ...(routes && {
@@ -45,7 +47,11 @@ export default function PasskeyVerify({
                 <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className={
+                        compact
+                            ? 'h-8 w-full border-shadow bg-rein/40 text-xs text-[#f4f1ed] hover:bg-rein hover:text-white'
+                            : 'w-full'
+                    }
                     onClick={verify}
                     disabled={isLoading}
                 >
@@ -59,12 +65,22 @@ export default function PasskeyVerify({
                 )}
             </div>
 
-            <div className="relative my-6">
+            <div className={compact ? 'relative my-3' : 'relative my-6'}>
                 <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
+                    <Separator
+                        className={compact ? 'w-full bg-white/15' : 'w-full'}
+                    />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
+                <div
+                    className={`relative flex justify-center uppercase ${compact ? 'text-[10px]' : 'text-xs'}`}
+                >
+                    <span
+                        className={
+                            compact
+                                ? 'bg-caviar px-2 text-[#bdb6b1]'
+                                : 'bg-background px-2 text-muted-foreground'
+                        }
+                    >
                         {separator ?? 'Or continue with email'}
                     </span>
                 </div>
