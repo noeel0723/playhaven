@@ -66,6 +66,14 @@ export type ProfileReview = Omit<CommunityReview, 'author'> & {
     is_public?: boolean;
 };
 export type ProfileReviewPagination = HistoryPagination<ProfileReview>;
+export type RecentProfileReviews = {
+    data: ProfileReview[];
+    meta: { total: number };
+};
+export type PlayerPageContext = {
+    owner: { name: string; username: string | null; avatar_url: string | null };
+    isOwnPage: boolean;
+};
 export type OwnPlayer = {
     banner_url: string | null;
     name: string;

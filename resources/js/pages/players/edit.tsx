@@ -231,7 +231,7 @@ export default function EditPlayer({
                                     aria-invalid={Boolean(
                                         form.errors.is_public,
                                     )}
-                                    title="Public profiles share recent completions and game updates."
+                                    title="Public profiles share diary activity, statistics, and public reviews."
                                     className="h-7 w-24 rounded border border-shadow bg-rein px-2 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
                                 >
                                     <option value="private">Private</option>
@@ -241,9 +241,10 @@ export default function EditPlayer({
                                     id="profile-visibility-help"
                                     className="sr-only"
                                 >
-                                    Public profiles show your four latest
-                                    completed games and share Playing, Paused,
-                                    and Completed updates with followers.
+                                    Public profiles show diary activity,
+                                    statistics, recent completed games, and
+                                    public reviews. Private review text and
+                                    diary notes remain hidden.
                                 </p>
                                 {form.errors.is_public && (
                                     <p

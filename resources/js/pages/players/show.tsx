@@ -5,9 +5,15 @@ import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
 import PlayerProfileHeader from '@/components/player-profile-header';
-import { index, followers, following } from '@/routes/players';
+import { PlayerPageLinks } from '@/components/player-page-navigation';
+import {
+    index,
+    followers,
+    following,
+    reviews as playerReviews,
+} from '@/routes/players';
 import type {
-    CommunityReviewPagination,
+    RecentProfileReviews,
     PublicPlayer,
     CompletedGame,
 } from '@/types/community';
@@ -22,7 +28,7 @@ export default function Player({
     recentCompleted,
 }: {
     player: PublicPlayer;
-    reviews: CommunityReviewPagination;
+    reviews: RecentProfileReviews;
     lists: ListPagination;
     topGames: CatalogGame[];
     recentCompleted: CompletedGame[];
@@ -36,9 +42,18 @@ export default function Player({
                 avatarUrl={player.avatar_url}
                 bio={player.bio}
                 location={player.location}
-                actions={<FollowPlayer player={player} />}
+                actions={
+                    <>
+                        <FollowPlayer player={player} />
+                        <PlayerPageLinks username={player.username} />
+                    </>
+                }
                 statistics={[
-                    { label: 'Public reviews', value: reviews.meta.total },
+                    {
+                        label: 'Public reviews',
+                        value: reviews.meta.total,
+                        href: playerReviews.url(player.username),
+                    },
                     { label: 'Public lists', value: lists.meta.total },
                     {
                         label: 'Following',
@@ -73,9 +88,12 @@ export default function Player({
                             >
                                 Recent reviews
                             </h2>
-                            <p className="text-[11px] text-[#bdb6b1]">
-                                {reviews.meta.total} public reviews
-                            </p>
+                            <Link
+                                href={playerReviews(player.username)}
+                                className="inline-flex min-h-7 items-center rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                            >
+                                More
+                            </Link>
                         </div>
                         {reviews.data.length ? (
                             <div>
@@ -91,12 +109,6 @@ export default function Player({
                                 No public reviews to share yet.
                             </p>
                         )}
-                        <HistoryPagination
-                            pagination={reviews}
-                            label="Player review pages"
-                            dense
-                            preserveState
-                        />
                     </section>
                 </div>
                 <aside className="min-w-0 border-t border-white/10 pt-4 lg:border-t-0 lg:pt-0">

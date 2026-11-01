@@ -34,8 +34,9 @@ class PlayerController extends Controller
     {
         $user = $request->user()->load('profile')->loadCount(['followers', 'following', 'libraryEntries']);
         $profile = $user->profile;
-        $reviews = $user->reviews()->with(['libraryEntry.rating', 'libraryEntry.game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])])
-            ->orderByDesc('reviews.updated_at')->orderByDesc('reviews.id')->paginate(4, ['reviews.*'], 'reviews_page')->withQueryString();
+        $reviewQuery = $user->reviews()->with(['libraryEntry.rating', 'libraryEntry.game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])]);
+        $reviewCount = (clone $reviewQuery)->count();
+        $reviews = $reviewQuery->orderByDesc('reviews.updated_at')->orderByDesc('reviews.id')->limit(4)->get();
 
         return Inertia::render('players/me', [
             'player' => [
@@ -52,7 +53,7 @@ class PlayerController extends Controller
             ],
             'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
             'activities' => ProfileActivityResource::collection($activity->recent($user))->resolve($request),
-            'reviews' => ProfileReviewResource::collection($reviews),
+            'reviews' => ['data' => ProfileReviewResource::collection($reviews)->resolve($request), 'meta' => ['total' => $reviewCount]],
         ]);
     }
 
@@ -83,12 +84,14 @@ class PlayerController extends Controller
     public function show(CommunityRequest $request, string $username, Community $community, PlayerShowcase $showcase): Response
     {
         $user = $community->players($request->user())->whereHas('profile', fn (Builder $query) => $query->whereRaw('LOWER(username) = ?', [strtolower($username)]))->firstOrFail();
+        $reviewQuery = $community->reviews()->whereHas('libraryEntry', fn (Builder $query) => $query->where('user_id', $user->id));
+        $reviewCount = (clone $reviewQuery)->reorder()->count();
 
         return Inertia::render('players/show', [
             'player' => (new PublicPlayerResource($user))->resolve($request),
             'topGames' => GameResource::collection($showcase->topGames($user->profile))->resolve($request),
             'recentCompleted' => CompletedGameResource::collection($showcase->completed($user))->resolve($request),
-            'reviews' => CommunityReviewResource::collection($community->reviews()->whereHas('libraryEntry', fn (Builder $query) => $query->where('user_id', $user->id))->paginate(12, ['*'], 'reviews_page')->withQueryString()),
+            'reviews' => ['data' => CommunityReviewResource::collection($reviewQuery->limit(4)->get())->resolve($request), 'meta' => ['total' => $reviewCount]],
             'lists' => GameListResource::collection($user->gameLists()->where('visibility', ListVisibility::Public)->with(['user.profile', 'previewItems'])->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(6, ['*'], 'lists_page')->withQueryString()),
         ]);
     }

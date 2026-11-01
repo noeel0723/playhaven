@@ -271,8 +271,10 @@ class CommunityTest extends TestCase
         $this->get('/community?feed=following&page=2')->assertInertia(fn (Assert $page) => $page
             ->has('reviews.data', 5)->where('feed', 'following')->where('reviews.meta.current_page', 2)
             ->where('reviews.links.prev', fn ($url) => str_contains($url, 'feed=following'))->where('reviews.links.next', null));
-        $this->get('/players/many_stories')->assertInertia(fn (Assert $page) => $page->has('reviews.data', 12)->has('lists.data', 6)
-            ->where('reviews.links.next', fn ($url) => str_contains($url, 'reviews_page=2'))->where('lists.links.next', fn ($url) => str_contains($url, 'lists_page=2')));
+        $this->get('/players/many_stories')->assertInertia(fn (Assert $page) => $page->has('reviews.data', 4)->where('reviews.meta.total', 13)->missing('reviews.links')->has('lists.data', 6)
+            ->where('lists.links.next', fn ($url) => str_contains($url, 'lists_page=2')));
+        $this->get('/players/many_stories/reviews')->assertInertia(fn (Assert $page) => $page->has('reviews.data', 8)->where('reviews.meta.per_page', 8)
+            ->where('reviews.links.next', fn ($url) => str_contains($url, 'page=2')));
     }
 
     public function test_browse_query_shapes_are_rejected_before_database_searches(): void

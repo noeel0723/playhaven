@@ -1,8 +1,9 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, ArrowUpRight, LockKeyhole } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, LockKeyhole, Globe } from 'lucide-react';
 import { useState } from 'react';
 import GameCover from '@/components/game-cover';
 import PlayerAvatar from '@/components/player-avatar';
+import PlayerPageNavigation from '@/components/player-page-navigation';
 import StarRating from '@/components/star-rating';
 import {
     StatColumns,
@@ -15,6 +16,12 @@ import { sessions as diarySessions, index as diary } from '@/routes/diary';
 import { index as games, show as gameDetails } from '@/routes/games';
 import { index as library } from '@/routes/library';
 import { me as profile } from '@/routes/players';
+import {
+    show as playerProfile,
+    diary as playerDiary,
+    stats as playerStats,
+} from '@/routes/players';
+import type { PlayerPageContext } from '@/types/community';
 import { index } from '@/routes/stats';
 import { formatMinutes } from '@/types/history';
 import { libraryStatuses } from '@/types/library';
@@ -37,8 +44,31 @@ const months = [
 const linkClass =
     'inline-flex min-h-7 items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2';
 
-export default function Statistics({ stats }: { stats: PlayerStatistics }) {
+export default function Statistics({
+    stats,
+    playerPage,
+    sharedOnProfile = false,
+}: {
+    stats: PlayerStatistics;
+    playerPage?: PlayerPageContext;
+    sharedOnProfile?: boolean;
+}) {
     const { auth } = usePage().props;
+    const publicView = Boolean(playerPage);
+    const owner = playerPage?.owner ?? {
+        name: auth.user.name,
+        avatar_url: auth.user.avatar ?? null,
+        username: null,
+    };
+    const profileUrl = playerPage
+        ? playerProfile.url(owner.username!)
+        : profile.url();
+    const diaryUrl = playerPage
+        ? playerDiary.url(owner.username!)
+        : diary.url();
+    const statisticsUrl = playerPage
+        ? playerStats.url(owner.username!)
+        : index.url();
     const [releaseMetric, setReleaseMetric] = useState<'games' | 'ratings'>(
         'games',
     );
@@ -93,18 +123,41 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
     ];
     return (
         <div className="mx-auto max-w-4xl space-y-7 font-sans sm:space-y-9">
-            <Head title="Statistic">
+            <Head
+                title={publicView ? `Statistic · ${owner.name}` : 'Statistic'}
+            >
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
+            {playerPage && (
+                <PlayerPageNavigation
+                    context={playerPage}
+                    current="stats"
+                    showIdentity={false}
+                />
+            )}
             <div>
                 <div className="mb-3 flex items-center justify-between gap-3">
-                    <Link href={dashboard()} className={linkClass}>
-                        <ArrowLeft className="size-3" aria-hidden="true" /> Your
-                        haven
+                    <Link
+                        href={publicView ? profileUrl : dashboard()}
+                        className={linkClass}
+                    >
+                        <ArrowLeft className="size-3" aria-hidden="true" />{' '}
+                        {publicView ? 'Profile' : 'Your haven'}
                     </Link>
                     <span className="inline-flex items-center gap-1.5 text-[10px] text-[#a9a19b]">
-                        <LockKeyhole className="size-3" aria-hidden="true" />{' '}
-                        Only visible to you
+                        {publicView || sharedOnProfile ? (
+                            <Globe className="size-3" aria-hidden="true" />
+                        ) : (
+                            <LockKeyhole
+                                className="size-3"
+                                aria-hidden="true"
+                            />
+                        )}{' '}
+                        {publicView
+                            ? 'Public profile statistics'
+                            : sharedOnProfile
+                              ? 'Shared on your public profile'
+                              : 'Only visible to you'}
                     </span>
                 </div>
                 <header className="relative isolate overflow-hidden border-y border-white/10 bg-rein/10 px-4 py-7 text-center sm:py-9">
@@ -119,15 +172,15 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         Statistics
                     </h1>
                     <Link
-                        href={profile()}
+                        href={profileUrl}
                         className="mx-auto mt-3 flex w-fit max-w-full items-center gap-2 rounded-sm text-xs text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
                     >
                         <PlayerAvatar
-                            name={auth.user.name}
-                            src={auth.user.avatar}
+                            name={owner.name}
+                            src={owner.avatar_url}
                             className="size-7 shrink-0"
                         />
-                        <span className="truncate">{auth.user.name}</span>
+                        <span className="truncate">{owner.name}</span>
                     </Link>
                 </header>
                 <section
@@ -160,7 +213,9 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
             {stats.library.total === 0 && (
                 <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-dashed border-white/15 p-3">
                     <p className="text-xs text-[#bdb6b1]">
-                        Add games to your library to start your statistics.
+                        {publicView
+                            ? 'No library games to show yet.'
+                            : 'Add games to your library to start your statistics.'}
                     </p>
                     <Link href={games()} className={linkClass}>
                         Discover games{' '}
@@ -183,14 +238,14 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         ]}
                     />
                 }
-                detail={`Games in your current library, grouped by release year.${stats.undated_games ? ` ${stats.undated_games} without a release date.` : ''}`}
+                detail={`Games in ${publicView ? 'this library' : 'your current library'}, grouped by release year.${stats.undated_games ? ` ${stats.undated_games} without a release date.` : ''}`}
             >
                 {releaseYears.length ? (
                     <StatColumns
                         label={
                             releaseMetric === 'games'
                                 ? 'Library games by release year'
-                                : 'Your average rating by release year'
+                                : 'Personal average rating by release year'
                         }
                         max={releaseMetric === 'ratings' ? 5 : undefined}
                         color={
@@ -218,14 +273,17 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
 
             <StatSection
                 id="highest-rated"
-                title="Your highest rated"
+                title={publicView ? 'Highest rated' : 'Your highest rated'}
                 controls={
-                    <Link href={library()} className={linkClass}>
-                        Library{' '}
+                    <Link
+                        href={publicView ? diaryUrl : library()}
+                        className={linkClass}
+                    >
+                        {publicView ? 'Diary' : 'Library'}{' '}
                         <ArrowUpRight className="size-3" aria-hidden="true" />
                     </Link>
                 }
-                detail="Your current ratings, one per game."
+                detail="Current personal ratings, one per game."
             >
                 {stats.highest_rated.length ? (
                     <ol className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-3">
@@ -262,7 +320,9 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                     </ol>
                 ) : (
                     <p className="py-4 text-xs text-[#a9a19b]">
-                        Rate a game to add it to this shelf.
+                        {publicView
+                            ? 'No rated games to show yet.'
+                            : 'Rate a game to add it to this shelf.'}
                     </p>
                 )}
             </StatSection>
@@ -346,9 +406,11 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                                 detail: String(
                                     stats.library.statuses[status.value],
                                 ),
-                                href: library.url({
-                                    query: { status: status.value },
-                                }),
+                                href: publicView
+                                    ? undefined
+                                    : library.url({
+                                          query: { status: status.value },
+                                      }),
                             })),
                             {
                                 key: 'unassigned',
@@ -377,7 +439,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                     detail={`${stats.ratings.total} current ratings · half-star increments`}
                 >
                     <StatColumns
-                        label="Your rating distribution"
+                        label="Personal rating distribution"
                         color="#c4cbbd"
                         data={stats.ratings.distribution.map((item) => ({
                             label: String(item.stars),
@@ -409,7 +471,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                             value={stats.activity.year}
                             onChange={(event) =>
                                 router.get(
-                                    index(),
+                                    statisticsUrl,
                                     { year: Number(event.target.value) },
                                     {
                                         preserveScroll: true,
@@ -469,7 +531,7 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                         sessions without a duration
                     </span>
                     <Link
-                        href={diary()}
+                        href={diaryUrl}
                         className="rounded-sm underline-offset-4 hover:text-white hover:underline focus-visible:outline-2"
                     >
                         Open diary
@@ -481,15 +543,22 @@ export default function Statistics({ stats }: { stats: PlayerStatistics }) {
                 id="most-played"
                 title="Most played"
                 controls={
-                    <Link href={diarySessions()} className={linkClass}>
-                        Sessions{' '}
+                    <Link
+                        href={publicView ? diaryUrl : diarySessions()}
+                        className={linkClass}
+                    >
+                        {publicView ? 'Diary' : 'Sessions'}{' '}
                         <ArrowUpRight className="size-3" aria-hidden="true" />
                     </Link>
                 }
                 detail="All recorded session time, combined across playthroughs. Unknown durations are excluded."
             >
                 <StatRows
-                    empty="Add a duration to a diary session to see your most played games."
+                    empty={
+                        publicView
+                            ? 'No recorded session durations yet.'
+                            : 'Add a duration to a diary session to see your most played games.'
+                    }
                     rows={stats.most_played.map((game) => ({
                         key: game.id,
                         name: game.name,
