@@ -1,6 +1,6 @@
 import { Form, Link, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
-import { Check, Plus, UserMinus, UserPlus } from 'lucide-react';
+import { Check, Plus, UserMinus, UserPlus, UsersRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { login } from '@/routes';
 import { store, destroy } from '@/routes/follows';
@@ -116,9 +116,21 @@ export default function FollowPlayer({
                         disabled={processing}
                         className={compactClass}
                         aria-label={`${player.is_following ? 'Unfollow' : 'Follow'} ${player.name}`}
+                        title={
+                            player.is_friend
+                                ? `Friends · Unfollow ${player.name}`
+                                : player.is_following
+                                  ? `Following · Unfollow ${player.name}`
+                                  : `Follow ${player.name}`
+                        }
                     >
                         {compact ? (
-                            player.is_following ? (
+                            player.is_friend ? (
+                                <UsersRound
+                                    className="size-3.5"
+                                    aria-hidden="true"
+                                />
+                            ) : player.is_following ? (
                                 <Check
                                     className="size-3.5"
                                     aria-hidden="true"

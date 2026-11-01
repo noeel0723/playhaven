@@ -11,6 +11,7 @@ type Props = {
     location?: string | null;
     actions: ReactNode;
     statistics: { label: string; value: string | number; href?: string }[];
+    relationship?: ReactNode;
 };
 
 export default function PlayerProfileHeader({
@@ -21,6 +22,7 @@ export default function PlayerProfileHeader({
     location,
     actions,
     statistics,
+    relationship,
 }: Props) {
     return (
         <section
@@ -34,9 +36,12 @@ export default function PlayerProfileHeader({
                     className="size-16 shrink-0 border-white/20 sm:size-20 [&_[data-slot=avatar-fallback]]:text-xl"
                 />
                 <div className="min-w-0 flex-1">
-                    <h1 className="text-xl leading-tight font-medium tracking-tight wrap-break-word sm:text-2xl">
-                        {name}
-                    </h1>
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                        <h1 className="text-xl leading-tight font-medium tracking-tight wrap-break-word sm:text-2xl">
+                            {name}
+                        </h1>
+                        {relationship}
+                    </div>
                     {username && (
                         <p className="mt-1 text-[11px] wrap-break-word text-[#a9a19b]">
                             @{username}

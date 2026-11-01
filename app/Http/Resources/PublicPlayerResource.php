@@ -14,6 +14,10 @@ class PublicPlayerResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
+        $isFollowing = (bool) $this->getAttribute('is_following');
+        $followsYou = (bool) $this->getAttribute('follows_you');
+        $viewer = $request->user();
+
         return [
             'username' => $this->profile->username,
             'name' => $this->profile->display_name ?: $this->profile->username,
@@ -23,8 +27,10 @@ class PublicPlayerResource extends JsonResource
             'banner_url' => $this->when($request->routeIs('players.show'), fn () => ProfileBanners::url($this->profile)),
             'followers_count' => (int) $this->getAttribute('followers_count'),
             'following_count' => (int) $this->getAttribute('following_count'),
-            'is_following' => (bool) $this->getAttribute('is_following'),
-            'is_self' => $request->user()?->id === $this->id,
+            'is_following' => $isFollowing,
+            'follows_you' => $followsYou,
+            'is_friend' => $viewer !== null && $viewer->id !== $this->id && $isFollowing && $followsYou,
+            'is_self' => $viewer?->id === $this->id,
         ];
     }
 }

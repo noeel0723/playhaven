@@ -15,7 +15,10 @@ class Community
         $viewerId = $viewer === null ? 0 : $viewer->id;
 
         return User::publicPlayer()->with('profile')->withCount(['followers', 'following'])
-            ->withExists(['followers as is_following' => fn (Builder $query) => $query->where('follows.follower_id', $viewerId)]);
+            ->withExists([
+                'followers as is_following' => fn (Builder $query) => $query->where('follows.follower_id', $viewerId),
+                'following as follows_you' => fn (Builder $query) => $query->where('follows.followed_id', $viewerId),
+            ]);
     }
 
     /** @return Builder<Review> */

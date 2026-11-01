@@ -1,7 +1,8 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import FollowPlayer from '@/components/follow-player';
 import GameCover from '@/components/game-cover';
 import PlayerAvatar from '@/components/player-avatar';
+import PlayerRelationship from '@/components/player-relationship';
 import { show as gameDetail } from '@/routes/games';
 import { show } from '@/routes/players';
 import type { DiscoveredPlayer } from '@/types/community';
@@ -11,6 +12,7 @@ export default function PlayerDiscoveryCard({
 }: {
     player: DiscoveredPlayer;
 }) {
+    const { auth } = usePage().props;
     return (
         <article className="mx-auto w-full max-w-40 min-w-0 text-center font-sans">
             <div className="relative mx-auto w-fit">
@@ -43,6 +45,11 @@ export default function PlayerDiscoveryCard({
                     @{player.username}
                 </p>
             </Link>
+            {auth.user && (
+                <div className="mt-1 flex min-h-5 justify-center">
+                    <PlayerRelationship player={player} />
+                </div>
+            )}
             <p
                 className="mt-2 text-[11px] leading-4 text-[#bdb6b1]"
                 aria-label={`${player.followers_count} followers and ${player.public_reviews_count} public reviews`}

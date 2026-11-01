@@ -11,6 +11,8 @@ export type PublicPlayer = {
     followers_count: number;
     following_count: number;
     is_following: boolean;
+    follows_you: boolean;
+    is_friend: boolean;
     is_self: boolean;
 };
 export type CommunityReview = {

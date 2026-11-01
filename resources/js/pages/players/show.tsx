@@ -5,6 +5,7 @@ import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
 import PlayerProfileHeader from '@/components/player-profile-header';
+import PlayerRelationship from '@/components/player-relationship';
 import { PlayerPageLinks } from '@/components/player-page-navigation';
 import {
     index,
@@ -42,6 +43,7 @@ export default function Player({
                 avatarUrl={player.avatar_url}
                 bio={player.bio}
                 location={player.location}
+                relationship={<PlayerRelationship player={player} />}
                 actions={
                     <>
                         <FollowPlayer player={player} />
