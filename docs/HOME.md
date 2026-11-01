@@ -1,40 +1,36 @@
 # Home
 
-Halaman `/` memakai komposisi hero sinematik dengan identitas PlayHaven: palet Caviar, Rein, Shadow, Saddle, dan Mustang, logo gamepad, font sans-serif global, serta teks antarmuka berbahasa Inggris.
+Halaman / memakai hero sinematik dengan identitas PlayHaven, gradasi gelap, font sans-serif global, header bersama, dan konten compact di container tengah 896 px.
 
-Konten katalog dan fitur berada dalam container terpusat 896px. Hero, tombol, footer, jarak antarbagian, dan kartu fitur dibuat compact; kartu fitur memakai padding 12–16px, ikon 16px di samping judul 13px, deskripsi 12px, dan tautan tindakan 11px. Grid fitur menampilkan tiga kolom desktop, dua tablet, dan satu pada ponsel. Label **Featured world** dan teks **Made for the love of play.** tidak ditampilkan. Gambar RDR2, navigasi, serta kredit artwork tetap tersedia.
+## Popular this week
 
-Header home menggunakan komponen global `resources/js/components/site-header.tsx`, yang juga dipakai katalog, dashboard, halaman publik, halaman privat, login/registrasi, dan pengaturan. Tinggi tetap dan container yang sama menjaga posisi logo serta navigasi konsisten sebelum dan setelah login. Home mempertahankan header transparan di atas artwork; halaman katalog menambahkan garis pemisah di bawahnya.
+Home menampilkan hingga enam game lokal, diurutkan berdasarkan jumlah pemain unik pada profil publik yang aktif dalam tujuh hari terakhir. Aktivitas yang dihitung:
 
-## Konten dan navigasi
+- menambahkan game ke Library;
+- mengubah status game, memakai status_changed_at;
+- memberi atau memperbarui rating;
+- menulis atau memperbarui review publik.
 
-- Hero **Red Dead Redemption 2** memakai gambar lokal yang telah dioptimalkan, dengan gradasi gelap agar menyatu ke konten.
-- Header menyediakan Games, Lists, Community, Players, dan pencarian GET ke `/games?q=...`. Untuk mencari judul di RAWG, lanjutkan melalui **Find more games** di katalog.
-- Tamu mendapat tautan Log in dan Join PlayHaven. Setelah login, tersedia Your haven, menu akun desktop, dan tombol **Back to your library**. Menu mobile menyediakan Your library dan Your haven.
-- Enam cover berasal dari database lokal: RDR2 diprioritaskan, lalu jumlah rating, jumlah pemain, tanggal rilis, dan ID. Jumlah game berasal dari database, bukan angka contoh.
-- Nama RDR2 di bawah hero membuka detail game bila sudah tersedia di katalog. Tanpa data itu, judul tetap tampil sebagai teks. Katalog kosong memiliki tampilan pengganti.
-- Bagian pengalaman menghubungkan library, rating/review, diary, list, komunitas, dan statistik pribadi yang sudah tersedia. Tautan privat tetap mengikuti autentikasi aplikasi.
-- Halaman ini tidak melakukan pencarian atau impor RAWG otomatis dan tidak menampilkan kredensial provider, review privat, atau data library pribadi.
+Satu pemain dihitung paling banyak sekali per game, termasuk jika beberapa aktivitas terjadi pada periode yang sama. Profil privat, profil tanpa username, review privat, isi Diary, catatan sesi, serta perubahan metadata Library saja tidak menjadi aktivitas mingguan. Tanggal di luar rentang, termasuk masa depan, tidak dihitung. Jumlah yang ditampilkan merupakan agregat; identitas pemain dan teks review tidak disertakan.
 
-## Artwork
+Rentang tujuh hari bergerak mengikuti waktu aplikasi pada setiap request home. Peringkat dan hero otomatis mengikuti perubahan aktivitas serta keluarnya aktivitas lama dari rentang, tanpa job, scheduler, panggilan RAWG, atau impor katalog saat halaman dibuka. Urutan seri memakai jumlah pemain keseluruhan, jumlah rating, lalu ID game agar hasil stabil. Game dengan nol aktivitas mingguan mengisi sisa tempat bila jumlah game aktif kurang dari enam.
 
-Hero menggunakan screenshot Red Dead Redemption 2 yang tersedia melalui metadata RAWG (`background_image_additional`, game ID 28):
+Jika seluruh katalog belum memiliki aktivitas mingguan, home tetap menampilkan hingga enam game berdasarkan popularitas keseluruhan dan memberi keterangan **No activity in the last 7 days. Showing overall popularity.** Angka pada kartu saat itu adalah jumlah pemain keseluruhan, bukan jumlah mingguan. Katalog kosong memiliki tampilan pengganti tanpa game atau banner contoh.
 
-- Sumber gambar: <https://media.rawg.io/media/screenshots/f3d/f3d6c0eaf1db2bdbb44ad84f15e43f4f.jpg>
-- Game dan pemilik artwork: [Rockstar Games — Red Dead Redemption 2](https://www.rockstargames.com/reddeadredemption2/).
-- Penyedia metadata dan cover: [RAWG](https://rawg.io).
+## Hero dan artwork
 
-Gambar sumber diubah ukuran dan dikompresi ke WebP; tidak ada logo atau artwork Letterboxd yang digunakan. Kredit RAWG dan Rockstar Games juga tampil di footer.
+Game pada peringkat pertama menjadi satu-satunya sumber hero, judul, tautan detail, dan nama developer di bawah hero. Banner menggunakan games.banner_url yang sudah tersimpan dan tervalidasi, kemudian cover game yang sama jika banner tidak tersedia atau gagal dimuat. Bila kedua gambar tidak tersedia/gagal, hero memakai latar gradasi tanpa gambar. Tidak ada gambar RDR2 atau kredit Rockstar yang dipaksakan untuk game lain.
 
-| Asset lokal                              | Dimensi     | Ukuran        |
-| ---------------------------------------- | ----------- | ------------- |
-| `public/images/home/rdr2-hero-1920.webp` | 1920 × 1080 | 158,430 bytes |
-| `public/images/home/rdr2-hero-960.webp`  | 960 × 540   | 63,498 bytes  |
+Banner URL dibatasi oleh validator metadata katalog yang ada. URL eksternal tidak tepercaya, URL berkredensial, dan parameter provider tidak diteruskan. Hero mendapat preload dan fetch priority tinggi; preload mengikuti gambar yang benar-benar dipakai, termasuk saat fallback. Artwork tetap diberi kredit metadata katalog melalui RAWG. Asset RDR2 lokal lama boleh tetap tersimpan, tetapi tidak lagi dipakai otomatis oleh home.
 
-Browser memilih ukuran melalui `srcSet`; hero mendapat preload dan fetch priority tinggi. Cover katalog memakai komponen GameCover yang sudah tersedia.
+## Navigasi dan aksesibilitas
 
-## Aksesibilitas dan verifikasi
+Header global menyediakan Games, Lists, Community, Players, pencarian, dan menu akun. Tamu mendapat Log in/Join PlayHaven; pengguna masuk mendapat Your haven dan Back to your library. Nama game pada hero dan enam kartu membuka detail game yang sesuai. Bagian fitur lain tetap menghubungkan Library, rating/review, Diary, Lists, Community, dan statistik.
 
-Tersedia skip link, landmark navigasi, label pencarian, outline keyboard, serta menu mobile native `details` yang bisa ditutup dengan Escape. Gambar hero bersifat dekoratif karena informasi game tampil sebagai teks di bawahnya.
+Skip link, landmark navigasi, focus outline, pencarian berlabel, dan menu mobile dengan Escape tetap tersedia. Gambar hero bersifat dekoratif; judul game tetap tersedia sebagai teks dan tautan. Kartu menunjukkan posisi serta jumlah pemain mingguan atau keseluruhan sesuai mode ranking.
 
-`HomePageTest` memeriksa katalog kosong, pemilihan enam game tanpa duplikasi, pembatasan data publik, akses setelah login, dan tidak adanya panggilan provider. Tes default menggunakan SQLite in-memory; `scripts/test-postgres.ps1` memakai database `playhaven_testing` terpisah. Pemeriksaan browser mencakup pencarian desktop/mobile, navigasi setelah login, dan lebar 320–1920 px.
+## Verifikasi
+
+HomePageTest mencakup urutan enam game unik, pemilihan hero/developer/artwork, penghitungan pemain unik, seluruh sumber aktivitas, pengecualian aktivitas privat/metadata, batas rentang tujuh hari dan pergantian pemimpin, fallback tanpa aktivitas, katalog kosong, validasi URL, akses tamu/pengguna masuk, serta tidak adanya panggilan provider atau perubahan data Library.
+
+Tes SQLite memakai database in-memory dan tes PostgreSQL hanya menargetkan playhaven_testing. Pengecekan browser memeriksa hero dinamis, fallback banner ke cover, artwork gagal/kosong, label weekly/fallback, navigasi, dan layout desktop/mobile.

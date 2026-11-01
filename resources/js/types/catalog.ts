@@ -12,6 +12,7 @@ export type CatalogGame = {
     rating: number | null;
     ratings_count: number;
     players_count: number;
+    weekly_players_count?: number;
     summary?: string | null;
     storyline?: string | null;
     developers?: CatalogTerm[];

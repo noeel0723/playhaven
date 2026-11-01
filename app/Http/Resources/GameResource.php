@@ -29,6 +29,7 @@ class GameResource extends JsonResource
             'rating' => is_numeric($score) ? round((float) $score / 2, 1) : null,
             'ratings_count' => (int) $this->getAttribute('ratings_count'),
             'players_count' => (int) $this->getAttribute('players_count'),
+            'weekly_players_count' => $this->when($request->routeIs('home'), fn () => (int) $this->getAttribute('weekly_players_count')),
             'summary' => $this->when($request->routeIs('games.show'), $this->summary),
             'storyline' => $this->when($request->routeIs('games.show'), $this->storyline),
             'developers' => $this->when($request->routeIs('games.index', 'games.show'), fn () => $this->developers->map->only(['id', 'name', 'slug'])->values()),
