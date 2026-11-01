@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Developer;
 use App\Models\DiaryEntry;
 use App\Models\Game;
+use App\Models\GameDiaryLog;
 use App\Models\Genre;
 use App\Models\LibraryEntry;
 use App\Models\Platform;
@@ -204,5 +206,58 @@ class StatisticsTest extends TestCase
         $this->actingAs($owner)->get('/stats')->assertInertia(fn (Assert $page) => $page->has('stats.most_played', 5)->where('stats.diary.minutes', 21));
         $sessions[5]->delete();
         $this->get('/stats')->assertInertia(fn (Assert $page) => $page->where('stats.diary.minutes', 15)->where('stats.diary.sessions', 5));
+    }
+
+    public function test_release_years_and_highest_rated_shelf_use_only_owned_current_ratings_without_replay_duplication(): void
+    {
+        $owner = User::factory()->create();
+        $first = LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2020-04-01', 'rawg_id' => 201, 'cover_url' => 'https://media.rawg.io/media/games/owned.jpg']))->create();
+        $second = LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2020-12-20']))->create();
+        LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2022-01-01']))->create();
+        LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => null]))->create();
+        $rating = Rating::factory()->for($first)->create(['score' => 10]);
+        Rating::factory()->for($second)->create(['score' => 6]);
+        Rating::factory()->for(LibraryEntry::factory()->for($first->game)->create())->create(['score' => 1]);
+        Playthrough::factory()->for($first)->count(3)->create();
+        $other = LibraryEntry::factory()->for(Game::factory()->create(['name' => 'OTHER PRIVATE RANKED GAME', 'released_on' => '1999-01-01']))->create();
+        Rating::factory()->for($other)->create(['score' => 10]);
+        $this->actingAs($owner)->get('/stats')->assertOk()->assertDontSee('OTHER PRIVATE RANKED GAME')->assertInertia(fn (Assert $page) => $page
+            ->has('stats.release_years', 2)->where('stats.release_years.0.year', 2020)->where('stats.release_years.0.games', 2)
+            ->where('stats.release_years.0.average', 4)->where('stats.release_years.0.ratings_count', 2)
+            ->where('stats.release_years.1.average', null)->where('stats.undated_games', 1)
+            ->has('stats.highest_rated', 2)->where('stats.highest_rated.0.id', $first->game_id)->where('stats.highest_rated.0.rating', 5)
+            ->where('stats.highest_rated.0.cover_url', 'https://media.rawg.io/media/games/owned.jpg')->missing('stats.highest_rated.0.rawg_id'));
+        $rating->update(['score' => 1]);
+        $this->get('/stats')->assertInertia(fn (Assert $page) => $page->where('stats.highest_rated.0.id', $second->game_id)->where('stats.release_years.0.average', 1.8));
+    }
+
+    public function test_developers_count_unique_played_games_and_exclude_unassigned_and_other_players(): void
+    {
+        $owner = User::factory()->create();
+        $studio = Developer::create(['rawg_id' => 333, 'name' => 'Studio One', 'slug' => 'studio-one']);
+        $first = LibraryEntry::factory()->for($owner)->create(['status' => 'completed']);
+        $second = LibraryEntry::factory()->for($owner)->create(['status' => 'playing']);
+        $unassigned = LibraryEntry::factory()->for($owner)->create(['status' => null]);
+        $other = LibraryEntry::factory()->create(['status' => 'completed']);
+        foreach ([$first, $second, $unassigned, $other] as $entry) {
+            $entry->game->developers()->attach($studio);
+        }
+        Playthrough::factory()->for($first)->count(4)->create();
+        $this->actingAs($owner)->get('/stats')->assertInertia(fn (Assert $page) => $page
+            ->where('stats.developers_count', 1)->has('stats.developers', 1)->where('stats.developers.0.games', 2)->where('stats.developers.0.name', 'Studio One'));
+    }
+
+    public function test_game_diary_status_logs_have_their_own_monthly_counts_and_do_not_invent_playtime(): void
+    {
+        $owner = User::factory()->create();
+        $entry = LibraryEntry::factory()->for($owner)->create();
+        foreach (['2024-12-31', '2025-01-01', '2025-03-01', '2025-03-01', '2026-01-01'] as $date) {
+            GameDiaryLog::create(['library_entry_id' => $entry->id, 'status' => 'playing', 'logged_on' => $date, 'review_body' => 'PRIVATE STATUS LOG']);
+        }
+        GameDiaryLog::create(['library_entry_id' => LibraryEntry::factory()->create()->id, 'status' => 'completed', 'logged_on' => '2025-03-01', 'completed_on' => '2025-03-01']);
+        $this->actingAs($owner)->get('/stats?year=2025')->assertOk()->assertDontSee('PRIVATE STATUS LOG')->assertInertia(fn (Assert $page) => $page
+            ->where('stats.diary.logs', 5)->where('stats.activity.logs', 3)->where('stats.activity.months.0.logs', 1)->where('stats.activity.months.2.logs', 2)
+            ->where('stats.activity.available_years', [2026, 2025, 2024])->where('stats.diary.minutes', 0)->where('stats.diary.sessions', 0));
+        $this->get('/stats?year=2024')->assertInertia(fn (Assert $page) => $page->where('stats.activity.logs', 1)->where('stats.diary.logs', 5));
     }
 }

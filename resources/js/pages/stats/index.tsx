@@ -1,12 +1,20 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, ArrowUpRight, LockKeyhole } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import GameCover from '@/components/game-cover';
+import PlayerAvatar from '@/components/player-avatar';
+import StarRating from '@/components/star-rating';
+import {
+    StatColumns,
+    StatMetricTabs,
+    StatRows,
+    StatSection,
+} from '@/components/statistics-charts';
 import { dashboard } from '@/routes';
-import { index as diary } from '@/routes/diary';
+import { sessions as diarySessions, index as diary } from '@/routes/diary';
 import { index as games, show as gameDetails } from '@/routes/games';
 import { index as library } from '@/routes/library';
+import { me as profile } from '@/routes/players';
 import { index } from '@/routes/stats';
 import { formatMinutes } from '@/types/history';
 import { libraryStatuses } from '@/types/library';
@@ -26,586 +34,471 @@ const months = [
     'Nov',
     'Dec',
 ];
-
-function SectionTitle({
-    id,
-    children,
-    detail,
-}: {
-    id: string;
-    children: ReactNode;
-    detail?: string;
-}) {
-    return (
-        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-white/10 pb-2">
-            <h2
-                id={id}
-                className="text-xs font-medium tracking-[0.1em] uppercase"
-            >
-                {children}
-            </h2>
-            {detail && (
-                <p className="text-[11px] leading-4 text-[#bdb6b1]">{detail}</p>
-            )}
-        </div>
-    );
-}
+const linkClass =
+    'inline-flex min-h-7 items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2';
 
 export default function Statistics({ stats }: { stats: PlayerStatistics }) {
-    const ratingMax = Math.max(
-        1,
-        ...stats.ratings.distribution.map((rating) => rating.count),
+    const { auth } = usePage().props;
+    const [releaseMetric, setReleaseMetric] = useState<'games' | 'ratings'>(
+        'games',
     );
-    const monthMax = Math.max(
-        1,
-        ...stats.activity.months.map((month) => month.minutes),
-    );
-    const genreMax = Math.max(1, ...stats.genres.map((genre) => genre.games));
-    const platformMax = Math.max(
-        1,
-        ...stats.platforms.map((platform) => platform.playthroughs),
-    );
+    const [diaryMetric, setDiaryMetric] = useState<
+        'logs' | 'minutes' | 'sessions'
+    >('logs');
+    const [loadingYear, setLoadingYear] = useState(false);
+    // Keep calendar gaps visible without constructing an unbounded timeline for malformed catalog dates.
+    const firstYear = stats.release_years[0]?.year;
+    const lastYear = stats.release_years.at(-1)?.year;
+    const releaseYears =
+        firstYear !== undefined &&
+        lastYear !== undefined &&
+        lastYear - firstYear <= 120
+            ? Array.from(
+                  { length: lastYear - firstYear + 1 },
+                  (_, offset) =>
+                      stats.release_years.find(
+                          (item) => item.year === firstYear + offset,
+                      ) ?? {
+                          year: firstYear + offset,
+                          games: 0,
+                          ratings_count: 0,
+                          average: null,
+                      },
+              )
+            : stats.release_years;
+    const overview = [
+        { label: 'Games', value: stats.library.total.toLocaleString() },
+        {
+            label: 'Completed',
+            value: stats.library.statuses.completed.toLocaleString(),
+        },
+        {
+            label: 'Recorded hours',
+            value: (stats.diary.minutes / 60).toLocaleString(undefined, {
+                maximumFractionDigits: 1,
+            }),
+        },
+        {
+            label: 'Developers',
+            value: stats.developers_count.toLocaleString(),
+        },
+        { label: 'Diary logs', value: stats.diary.logs.toLocaleString() },
+        {
+            label: 'Average rating',
+            value:
+                stats.ratings.average === null
+                    ? '—'
+                    : `${stats.ratings.average.toFixed(1)} / 5`,
+        },
+    ];
     return (
-        <div className="mx-auto max-w-4xl font-sans">
-            <Head title="Your statistics">
+        <div className="mx-auto max-w-4xl space-y-7 font-sans sm:space-y-9">
+            <Head title="Statistic">
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
-            <Link
-                href={dashboard()}
-                className="mb-4 inline-flex min-h-7 items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
-            >
-                <ArrowLeft className="size-3" aria-hidden="true" />
-                Your haven
-            </Link>
-            <header className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-                <h1 className="text-xl font-medium tracking-tight">
-                    Statistics
-                </h1>
-                <p className="inline-flex items-center gap-1.5 text-[11px] text-[#bdb6b1]">
-                    <LockKeyhole className="size-3" aria-hidden="true" />
-                    Only visible to you
-                </p>
-            </header>
-            {stats.library.total === 0 && (
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-dashed border-shadow p-3">
-                    <p className="text-xs leading-5 text-[#bdb6b1]">
-                        Add games to your library to see your statistics.
-                    </p>
-                    <Button
-                        asChild
-                        variant="outline"
-                        className="h-7 gap-1.5 px-2.5 text-[11px] [&_svg]:size-3"
-                    >
-                        <Link href={games()}>
-                            Discover games
-                            <ArrowUpRight aria-hidden="true" />
-                        </Link>
-                    </Button>
+            <div>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                    <Link href={dashboard()} className={linkClass}>
+                        <ArrowLeft className="size-3" aria-hidden="true" /> Your
+                        haven
+                    </Link>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] text-[#a9a19b]">
+                        <LockKeyhole className="size-3" aria-hidden="true" />{' '}
+                        Only visible to you
+                    </span>
                 </div>
-            )}
-            <section
-                aria-label="All-time overview"
-                className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3"
-            >
-                {[
-                    {
-                        label: 'Games',
-                        value: stats.library.total.toLocaleString(),
-                        detail: `${stats.library.favorites} favorites`,
-                    },
-                    {
-                        label: 'Completed',
-                        value: stats.library.statuses.completed.toLocaleString(),
-                        detail: `${stats.library.completed_percent}% of your library`,
-                    },
-                    {
-                        label: 'Logged time',
-                        value: formatMinutes(stats.diary.minutes),
-                        detail: `${stats.diary.timed_sessions} of ${stats.diary.sessions} sessions timed`,
-                    },
-                    {
-                        label: 'Average rating',
-                        value:
-                            stats.ratings.average !== null
-                                ? `${stats.ratings.average.toFixed(1)} / 5`
-                                : '—',
-                        detail: stats.ratings.total
-                            ? `Across ${stats.ratings.total} current ratings`
-                            : 'No ratings yet',
-                    },
-                ].map((item) => (
+                <header className="relative isolate overflow-hidden border-y border-white/10 bg-rein/10 px-4 py-7 text-center sm:py-9">
                     <div
-                        key={item.label}
-                        className="min-w-0 rounded-md border border-white/10 bg-rein/20 p-3"
-                    >
-                        <h2 className="text-[11px] text-[#bdb6b1]">
-                            {item.label}
-                        </h2>
-                        <p className="mt-1.5 text-2xl leading-8 font-medium wrap-break-word tabular-nums">
-                            {item.value}
-                        </p>
-                        <p className="mt-1 text-[11px] leading-4 text-[#bdb6b1]">
-                            {item.detail}
-                        </p>
-                    </div>
-                ))}
-            </section>
-            <div className="grid items-start gap-6 md:grid-cols-2 md:gap-8">
-                <section aria-labelledby="collection-shape">
-                    <SectionTitle
-                        id="collection-shape"
-                        detail="Current library · all time"
-                    >
-                        Library status
-                    </SectionTitle>
-                    <div className="space-y-1">
-                        {libraryStatuses.map((status) => (
-                            <Link
-                                key={status.value}
-                                href={library({
-                                    query: { status: status.value },
-                                })}
-                                className="group grid min-h-7 grid-cols-[80px_minmax(0,1fr)_32px] items-center gap-2 rounded-sm py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
-                            >
-                                <span className="text-[#c5bfba] group-hover:text-white">
-                                    {status.label}
-                                </span>
-                                <span
-                                    className="h-1.5 overflow-hidden rounded-full bg-rein/50"
-                                    aria-hidden="true"
-                                >
-                                    <span
-                                        className="block h-full rounded-full bg-[#c5bfba]"
-                                        style={{
-                                            width: `${stats.library.total ? (stats.library.statuses[status.value] / stats.library.total) * 100 : 0}%`,
-                                        }}
-                                    />
-                                </span>
-                                <span className="text-right tabular-nums">
-                                    {stats.library.statuses[status.value]}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                        One game, one current status. Replays are tracked
-                        separately in your {stats.playthroughs} playthroughs.
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(213,206,199,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(213,206,199,0.035)_1px,transparent_1px)] mask-[radial-gradient(ellipse_at_center,black,transparent)] bg-size-[48px_48px]"
+                    />
+                    <p className="mb-2 text-[10px] tracking-[0.12em] text-[#a9a19b] uppercase">
+                        All-time overview
                     </p>
-                </section>
-                <section aria-labelledby="rating-signature">
-                    <SectionTitle
-                        id="rating-signature"
-                        detail={`${stats.ratings.total} current ratings`}
+                    <h1 className="text-2xl font-semibold tracking-tight text-[#f4f1ed] sm:text-4xl">
+                        Statistics
+                    </h1>
+                    <Link
+                        href={profile()}
+                        className="mx-auto mt-3 flex w-fit max-w-full items-center gap-2 rounded-sm text-xs text-[#bdb6b1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
                     >
-                        Rating distribution
-                    </SectionTitle>
-                    <figure aria-labelledby="rating-signature">
-                        <ol className="grid grid-cols-10 gap-1.5 pt-1 sm:gap-2">
-                            {stats.ratings.distribution.map((rating) => (
-                                <li
-                                    key={rating.stars}
-                                    aria-label={`${rating.stars} stars: ${rating.count} ratings`}
-                                    className="min-w-0 text-center"
-                                >
-                                    <span
-                                        className="mb-1 block text-[10px] text-[#bdb6b1] tabular-nums"
-                                        aria-hidden="true"
-                                    >
-                                        {rating.count}
-                                    </span>
-                                    <div
-                                        className="flex h-24 items-end rounded-t-sm bg-rein/20"
-                                        aria-hidden="true"
-                                    >
-                                        <div
-                                            className="w-full rounded-t-sm bg-[#c5bfba]"
-                                            style={{
-                                                height: `${(rating.count / ratingMax) * 100}%`,
-                                            }}
-                                        />
-                                    </div>
-                                    <span
-                                        className="mt-1.5 block text-[10px] text-[#c5bfba]"
-                                        aria-hidden="true"
-                                    >
-                                        {rating.stars}
-                                    </span>
-                                </li>
-                            ))}
-                        </ol>
-                        <figcaption className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                            Half-star scores from 0.5 to 5. One current rating
-                            per game; replays do not add extra votes.
-                        </figcaption>
-                    </figure>
+                        <PlayerAvatar
+                            name={auth.user.name}
+                            src={auth.user.avatar}
+                            className="size-7 shrink-0"
+                        />
+                        <span className="truncate">{auth.user.name}</span>
+                    </Link>
+                </header>
+                <section
+                    aria-label="All-time overview"
+                    className="border-b border-white/10 py-5"
+                >
+                    <dl className="grid grid-cols-3 gap-x-2 gap-y-5 sm:grid-cols-6">
+                        {overview.map((item) => (
+                            <div
+                                key={item.label}
+                                className="flex min-w-0 flex-col text-center"
+                            >
+                                <dt className="order-2 mt-1.5 text-[10px] leading-4 text-[#a9a19b]">
+                                    {item.label}
+                                </dt>
+                                <dd className="mt-1 text-xl leading-7 font-semibold wrap-break-word text-[#e0d9d3] tabular-nums sm:text-2xl">
+                                    {item.value}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                    <p className="mt-4 text-center text-[10px] text-[#a9a19b]">
+                        {stats.library.favorites.toLocaleString()} favorites ·{' '}
+                        {stats.library.completed_percent}% completed ·{' '}
+                        {stats.ratings.total.toLocaleString()} rated
+                    </p>
                 </section>
             </div>
-            <section
-                aria-labelledby="diary-activity"
-                className="mt-6 rounded-md border border-white/10 bg-rein/10 p-3 sm:p-4"
+
+            {stats.library.total === 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-dashed border-white/15 p-3">
+                    <p className="text-xs text-[#bdb6b1]">
+                        Add games to your library to start your statistics.
+                    </p>
+                    <Link href={games()} className={linkClass}>
+                        Discover games{' '}
+                        <ArrowUpRight className="size-3" aria-hidden="true" />
+                    </Link>
+                </div>
+            )}
+
+            <StatSection
+                id="release-years"
+                title="By release year"
+                controls={
+                    <StatMetricTabs
+                        label="Release-year metric"
+                        value={releaseMetric}
+                        onChange={setReleaseMetric}
+                        options={[
+                            { value: 'games', label: 'Games' },
+                            { value: 'ratings', label: 'Ratings' },
+                        ]}
+                    />
+                }
+                detail={`Games in your current library, grouped by release year.${stats.undated_games ? ` ${stats.undated_games} without a release date.` : ''}`}
             >
-                <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+                {releaseYears.length ? (
+                    <StatColumns
+                        label={
+                            releaseMetric === 'games'
+                                ? 'Library games by release year'
+                                : 'Your average rating by release year'
+                        }
+                        max={releaseMetric === 'ratings' ? 5 : undefined}
+                        color={
+                            releaseMetric === 'ratings' ? '#c4cbbd' : '#b8a795'
+                        }
+                        data={releaseYears.map((item) => ({
+                            label: String(item.year),
+                            value:
+                                releaseMetric === 'games'
+                                    ? item.games
+                                    : item.average,
+                            description:
+                                releaseMetric === 'games'
+                                    ? `${item.year}: ${item.games} ${item.games === 1 ? 'game' : 'games'}`
+                                    : `${item.year}: ${item.average === null ? 'Not rated' : `${item.average.toFixed(1)} / 5 from ${item.ratings_count} ratings`}`,
+                        }))}
+                    />
+                ) : (
+                    <p className="py-6 text-center text-xs text-[#a9a19b]">
+                        Release-year insights appear when library games have
+                        release dates.
+                    </p>
+                )}
+            </StatSection>
+
+            <StatSection
+                id="highest-rated"
+                title="Your highest rated"
+                controls={
+                    <Link href={library()} className={linkClass}>
+                        Library{' '}
+                        <ArrowUpRight className="size-3" aria-hidden="true" />
+                    </Link>
+                }
+                detail="Your current ratings, one per game."
+            >
+                {stats.highest_rated.length ? (
+                    <ol className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-3">
+                        {stats.highest_rated.map((game) => (
+                            <li key={game.id} className="min-w-0">
+                                <Link
+                                    href={gameDetails(game.slug)}
+                                    className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+                                >
+                                    <GameCover
+                                        game={game}
+                                        compact
+                                        hideFallbackTitle
+                                        className="aspect-[2/3] rounded-sm group-hover:border-[#bdb6b1]"
+                                    />
+                                    <h3
+                                        className="mt-1.5 line-clamp-2 min-h-8 text-xs leading-4 text-[#d5cec7] group-hover:underline"
+                                        title={game.name}
+                                    >
+                                        {game.name}
+                                    </h3>
+                                    <span className="mt-1 flex items-center gap-1 text-[10px] text-[#bdb6b1]">
+                                        <StarRating
+                                            value={game.rating}
+                                            compact
+                                        />
+                                        <span aria-hidden="true">
+                                            {game.rating.toFixed(1)}
+                                        </span>
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ol>
+                ) : (
+                    <p className="py-4 text-xs text-[#a9a19b]">
+                        Rate a game to add it to this shelf.
+                    </p>
+                )}
+            </StatSection>
+
+            <StatSection
+                id="gaming-preferences"
+                title="Genres, developers & platforms"
+                detail="Genres and developers count games with a playing status. Platforms use the choices recorded on your playthroughs."
+            >
+                <div className="grid min-w-0 grid-cols-1 items-start gap-6 md:grid-cols-3 md:gap-5">
                     <div className="min-w-0">
-                        <h2
-                            id="diary-activity"
-                            className="text-xs font-medium tracking-[0.1em] uppercase"
-                        >
-                            Diary activity
-                        </h2>
-                        <p className="mt-1 text-[11px] leading-4 text-[#bdb6b1]">
-                            {stats.activity.year} diary activity · library and
-                            rating summaries above remain all time.
+                        <h3 className="mb-3 text-[11px] text-[#a9a19b]">
+                            Genres
+                        </h3>
+                        <StatRows
+                            empty="No played genres yet."
+                            rows={stats.genres.map((item) => ({
+                                key: item.id,
+                                name: item.name,
+                                value: item.games,
+                                detail: `${item.games} games`,
+                                href: games.url({
+                                    query: { genre: item.slug },
+                                }),
+                            }))}
+                        />
+                    </div>
+                    <div className="min-w-0">
+                        <h3 className="mb-3 text-[11px] text-[#a9a19b]">
+                            Developers
+                        </h3>
+                        <StatRows
+                            empty="No developer credits for played games yet."
+                            color="#c4cbbd"
+                            rows={stats.developers.map((item) => ({
+                                key: item.id,
+                                name: item.name,
+                                value: item.games,
+                                detail: `${item.games} games`,
+                                href: games.url({
+                                    query: { developer: item.slug },
+                                }),
+                            }))}
+                        />
+                    </div>
+                    <div className="min-w-0">
+                        <h3 className="mb-3 text-[11px] text-[#a9a19b]">
+                            Platforms
+                        </h3>
+                        <StatRows
+                            empty="Choose a platform on a playthrough to start this chart."
+                            color="#a7b5c1"
+                            rows={stats.platforms.map((item) => ({
+                                key: item.id,
+                                name: item.name,
+                                value: item.playthroughs,
+                                detail: `${item.playthroughs} runs`,
+                            }))}
+                        />
+                        <p className="mt-2 text-[10px] leading-4 text-[#a9a19b]">
+                            {stats.playthroughs} playthroughs ·{' '}
+                            {stats.unspecified_platform_runs} without a platform
                         </p>
                     </div>
-                    <Form
-                        action={index()}
-                        method="get"
-                        key={stats.activity.year}
-                        options={{ preserveScroll: true }}
-                    >
-                        {({ processing, errors }) => (
-                            <>
-                                <Label
-                                    htmlFor="activity-year"
-                                    className="mb-1.5 text-[11px]"
-                                >
-                                    Diary year
-                                </Label>
-                                <div className="flex gap-1.5">
-                                    <select
-                                        id="activity-year"
-                                        name="year"
-                                        defaultValue={stats.activity.year}
-                                        className="h-7 rounded-md border border-shadow bg-rein px-2 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2"
-                                    >
-                                        {stats.activity.available_years.map(
-                                            (year) => (
-                                                <option key={year} value={year}>
-                                                    {year}
-                                                </option>
-                                            ),
-                                        )}
-                                    </select>
-                                    <Button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="h-7 px-2.5 text-[11px]"
-                                    >
-                                        {processing ? 'Loading…' : 'Apply year'}
-                                    </Button>
-                                </div>
-                                {errors.year && (
-                                    <p
-                                        role="alert"
-                                        className="mt-1.5 text-[11px] text-red-300"
-                                    >
-                                        {errors.year}
-                                    </p>
-                                )}
-                            </>
-                        )}
-                    </Form>
                 </div>
-                <dl className="mb-4 grid grid-cols-3 gap-3 border-y border-white/10 py-3">
+            </StatSection>
+
+            <div className="grid items-start gap-7 md:grid-cols-2 md:gap-8">
+                <StatSection
+                    id="library-status"
+                    title="Library status"
+                    detail={`${stats.library.total} games · including games without a status`}
+                >
+                    <StatRows
+                        empty="No library games yet."
+                        rows={[
+                            ...libraryStatuses.map((status) => ({
+                                key: status.value,
+                                name: status.label,
+                                value: stats.library.statuses[status.value],
+                                detail: String(
+                                    stats.library.statuses[status.value],
+                                ),
+                                href: library.url({
+                                    query: { status: status.value },
+                                }),
+                            })),
+                            {
+                                key: 'unassigned',
+                                name: 'No status',
+                                value:
+                                    stats.library.total -
+                                    Object.values(
+                                        stats.library.statuses,
+                                    ).reduce((sum, count) => sum + count, 0),
+                                detail: String(
+                                    stats.library.total -
+                                        Object.values(
+                                            stats.library.statuses,
+                                        ).reduce(
+                                            (sum, count) => sum + count,
+                                            0,
+                                        ),
+                                ),
+                            },
+                        ]}
+                    />
+                </StatSection>
+                <StatSection
+                    id="rating-distribution"
+                    title="Ratings"
+                    detail={`${stats.ratings.total} current ratings · half-star increments`}
+                >
+                    <StatColumns
+                        label="Your rating distribution"
+                        color="#c4cbbd"
+                        data={stats.ratings.distribution.map((item) => ({
+                            label: String(item.stars),
+                            value: item.count,
+                            description: `${item.stars} stars: ${item.count} ${item.count === 1 ? 'game' : 'games'}`,
+                        }))}
+                    />
+                </StatSection>
+            </div>
+
+            <StatSection
+                id="diary-activity"
+                title="Diary activity"
+                controls={
+                    <div className="flex flex-wrap items-center gap-2">
+                        <StatMetricTabs
+                            label="Diary chart metric"
+                            value={diaryMetric}
+                            onChange={setDiaryMetric}
+                            options={[
+                                { value: 'logs', label: 'Logs' },
+                                { value: 'minutes', label: 'Hours' },
+                                { value: 'sessions', label: 'Sessions' },
+                            ]}
+                        />
+                        <select
+                            aria-label="Diary year"
+                            disabled={loadingYear}
+                            value={stats.activity.year}
+                            onChange={(event) =>
+                                router.get(
+                                    index(),
+                                    { year: Number(event.target.value) },
+                                    {
+                                        preserveScroll: true,
+                                        preserveState: true,
+                                        onStart: () => setLoadingYear(true),
+                                        onFinish: () => setLoadingYear(false),
+                                    },
+                                )
+                            }
+                            className="h-7 rounded border border-white/15 bg-[#211f1f] px-2 font-sans text-[11px] text-[#d5cec7] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                        >
+                            {stats.activity.available_years.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                }
+                detail="The year filter applies to diary activity only. Recorded hours come from timed sessions, not game status logs."
+            >
+                <dl className="mb-4 grid grid-cols-3 gap-3 text-center">
                     {[
+                        { label: 'Diary logs', value: stats.activity.logs },
                         {
-                            label: 'Logged time',
+                            label: 'Recorded time',
                             value: formatMinutes(stats.activity.minutes),
                         },
                         {
-                            label: 'Sessions',
-                            value: stats.activity.sessions.toLocaleString(),
-                        },
-                        {
-                            label: 'Active days',
-                            value: stats.activity.active_days.toLocaleString(),
+                            label: 'Session days',
+                            value: stats.activity.active_days,
                         },
                     ].map((item) => (
-                        <div key={item.label} className="min-w-0">
-                            <dt className="text-[11px] text-[#bdb6b1]">
-                                {item.label}
+                        <div key={item.label}>
+                            <dt className="min-h-8 text-[10px] leading-4 text-[#a9a19b] sm:min-h-4">
+                                {item.label} · {stats.activity.year}
                             </dt>
-                            <dd className="mt-1 text-lg font-medium wrap-break-word tabular-nums sm:text-xl">
+                            <dd className="mt-1 text-lg font-medium text-[#d5cec7] tabular-nums">
                                 {item.value}
                             </dd>
                         </div>
                     ))}
                 </dl>
-                <figure aria-labelledby="diary-activity">
-                    <ol className="grid grid-cols-12 gap-1 sm:gap-2">
-                        {stats.activity.months.map((month) => (
-                            <li
-                                key={month.month}
-                                title={`${months[month.month - 1]}: ${formatMinutes(month.minutes)}, ${month.sessions} sessions, ${month.active_days} active days`}
-                                aria-label={`${months[month.month - 1]}: ${formatMinutes(month.minutes)} recorded, ${month.sessions} sessions, ${month.active_days} active days`}
-                                className="min-w-0 text-center"
-                            >
-                                <div
-                                    className="flex h-28 items-end rounded-t-sm bg-rein/25"
-                                    aria-hidden="true"
-                                >
-                                    <div
-                                        className="w-full rounded-t-sm bg-[#a8a09a]"
-                                        style={{
-                                            height: `${(month.minutes / monthMax) * 100}%`,
-                                        }}
-                                    />
-                                </div>
-                                <span
-                                    className="mt-1.5 block text-[9px] text-[#bdb6b1] sm:text-[11px]"
-                                    aria-hidden="true"
-                                >
-                                    {months[month.month - 1]}
-                                </span>
-                            </li>
-                        ))}
-                    </ol>
-                    <figcaption className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                        Bars show recorded diary minutes by month.{' '}
+                <StatColumns
+                    label={`${stats.activity.year} monthly ${diaryMetric === 'minutes' ? 'recorded hours' : diaryMetric}`}
+                    color="#a7b5c1"
+                    data={stats.activity.months.map((item) => ({
+                        label: months[item.month - 1],
+                        value: item[diaryMetric],
+                        description: `${months[item.month - 1]} ${stats.activity.year}: ${diaryMetric === 'minutes' ? formatMinutes(item.minutes) : `${item[diaryMetric]} ${diaryMetric}`}`,
+                    }))}
+                />
+                <div className="mt-2 flex flex-wrap justify-between gap-2 text-[11px] text-[#a9a19b]">
+                    <span>
                         {stats.activity.sessions -
                             stats.activity.timed_sessions}{' '}
-                        sessions have no recorded duration. A day with multiple
-                        sessions counts as one active day.
-                    </figcaption>
-                </figure>
-                {stats.activity.sessions === 0 && (
-                    <p className="mt-3 text-xs leading-5 text-[#c5bfba]">
-                        No diary sessions for this year yet.{' '}
-                        <Link
-                            href={diary()}
-                            className="underline underline-offset-4"
-                        >
-                            Open your diary
-                        </Link>{' '}
-                        to start recording.
-                    </p>
-                )}
-                <details className="mt-3 border-t border-white/10 pt-2">
-                    <summary className="min-h-7 w-fit cursor-pointer rounded-sm py-1.5 text-[11px] text-[#c5bfba] focus-visible:outline-2 focus-visible:outline-offset-2">
-                        View monthly data table
-                    </summary>
-                    <div className="mt-2 overflow-x-auto">
-                        <table className="w-full text-left text-[11px]">
-                            <caption className="sr-only">
-                                Monthly diary activity for {stats.activity.year}
-                            </caption>
-                            <thead className="text-[#bdb6b1]">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        className="py-2 pr-3 font-normal"
-                                    >
-                                        Month
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="py-2 pr-3 font-normal"
-                                    >
-                                        Logged time
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="py-2 pr-3 font-normal"
-                                    >
-                                        Sessions
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="py-2 font-normal"
-                                    >
-                                        Active days
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {stats.activity.months.map((month) => (
-                                    <tr
-                                        key={month.month}
-                                        className="border-t border-white/10"
-                                    >
-                                        <th
-                                            scope="row"
-                                            className="py-2 pr-3 font-normal"
-                                        >
-                                            {months[month.month - 1]}
-                                        </th>
-                                        <td className="py-2 pr-3 tabular-nums">
-                                            {formatMinutes(month.minutes)}
-                                        </td>
-                                        <td className="py-2 pr-3 tabular-nums">
-                                            {month.sessions}
-                                        </td>
-                                        <td className="py-2 tabular-nums">
-                                            {month.active_days}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-            </section>
-            <div className="mt-6 grid items-start gap-6 md:grid-cols-2 md:gap-8">
-                <section aria-labelledby="most-played">
-                    <SectionTitle
-                        id="most-played"
-                        detail="All-time recorded diary time"
+                        sessions without a duration
+                    </span>
+                    <Link
+                        href={diary()}
+                        className="rounded-sm underline-offset-4 hover:text-white hover:underline focus-visible:outline-2"
                     >
-                        Most played
-                    </SectionTitle>
-                    {stats.most_played.length ? (
-                        <ol>
-                            {stats.most_played.map((game, position) => (
-                                <li
-                                    key={game.id}
-                                    className="border-b border-white/10 py-2.5 first:pt-0"
-                                >
-                                    <Link
-                                        href={gameDetails(game.slug)}
-                                        className="group flex min-h-7 items-start justify-between gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
-                                    >
-                                        <div className="flex min-w-0 gap-2.5">
-                                            <span className="mt-0.5 text-[11px] text-[#807d7d] tabular-nums">
-                                                0{position + 1}
-                                            </span>
-                                            <div className="min-w-0">
-                                                <h3 className="text-xs leading-5 wrap-break-word text-[#e0d9d3] group-hover:underline">
-                                                    {game.name}
-                                                </h3>
-                                                <p className="mt-0.5 text-[11px] text-[#bdb6b1]">
-                                                    {game.sessions} diary{' '}
-                                                    {game.sessions === 1
-                                                        ? 'session'
-                                                        : 'sessions'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <span className="shrink-0 text-xs leading-5 text-[#c5bfba] tabular-nums">
-                                            {formatMinutes(game.minutes)}
-                                        </span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ol>
-                    ) : (
-                        <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
-                            Add session durations in your diary to discover
-                            where you spend the most time.
-                        </p>
-                    )}
-                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                        Sessions from every playthrough are combined per game.
-                        This includes only the time you logged.
-                    </p>
-                </section>
-                <section aria-labelledby="played-genres">
-                    <SectionTitle
-                        id="played-genres"
-                        detail="Current library · games with a playing status"
-                    >
-                        Played genres
-                    </SectionTitle>
-                    {stats.genres.length ? (
-                        <div className="space-y-3">
-                            {stats.genres.map((genre) => (
-                                <Link
-                                    key={genre.id}
-                                    href={games({
-                                        query: { genre: genre.slug },
-                                    })}
-                                    className="group block min-h-7 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
-                                >
-                                    <div className="mb-1.5 flex justify-between gap-3 text-xs">
-                                        <span className="min-w-0 wrap-break-word text-[#c5bfba] group-hover:text-white">
-                                            {genre.name}
-                                        </span>
-                                        <span className="shrink-0 text-[11px] text-[#bdb6b1]">
-                                            {genre.games}{' '}
-                                            {genre.games === 1
-                                                ? 'game'
-                                                : 'games'}
-                                        </span>
-                                    </div>
-                                    <div
-                                        className="h-1.5 overflow-hidden rounded-full bg-rein/50"
-                                        aria-hidden="true"
-                                    >
-                                        <div
-                                            className="h-full rounded-full bg-[#a8a09a]"
-                                            style={{
-                                                width: `${(genre.games / genreMax) * 100}%`,
-                                            }}
-                                        />
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="rounded-md border border-dashed border-shadow p-3 text-xs leading-5 text-[#bdb6b1]">
-                            Genre insights appear when games with a playing
-                            status have genre information.
-                        </p>
-                    )}
-                    <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                        Each game counts once per genre. A game can belong to
-                        several genres; replays do not multiply the counts.
-                    </p>
-                </section>
-            </div>
-            <section
-                aria-labelledby="played-platforms"
-                className="mt-6 border-t border-white/10 pt-4"
+                        Open diary
+                    </Link>
+                </div>
+            </StatSection>
+
+            <StatSection
+                id="most-played"
+                title="Most played"
+                controls={
+                    <Link href={diarySessions()} className={linkClass}>
+                        Sessions{' '}
+                        <ArrowUpRight className="size-3" aria-hidden="true" />
+                    </Link>
+                }
+                detail="All recorded session time, combined across playthroughs. Unknown durations are excluded."
             >
-                <SectionTitle
-                    id="played-platforms"
-                    detail={`${stats.playthroughs} playthroughs · ${stats.unspecified_platform_runs} without a platform`}
-                >
-                    Platforms
-                </SectionTitle>
-                {stats.platforms.length ? (
-                    <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-                        {stats.platforms.map((platform) => (
-                            <div key={platform.id}>
-                                <div className="mb-1.5 flex flex-wrap justify-between gap-x-3 gap-y-1">
-                                    <h3 className="min-w-0 text-xs wrap-break-word text-[#c5bfba]">
-                                        {platform.name}
-                                    </h3>
-                                    <p className="text-[11px] text-[#bdb6b1]">
-                                        {platform.playthroughs}{' '}
-                                        {platform.playthroughs === 1
-                                            ? 'playthrough'
-                                            : 'playthroughs'}{' '}
-                                        · {platform.games}{' '}
-                                        {platform.games === 1
-                                            ? 'game'
-                                            : 'games'}
-                                    </p>
-                                </div>
-                                <div
-                                    className="h-1.5 overflow-hidden rounded-full bg-rein/50"
-                                    aria-hidden="true"
-                                >
-                                    <div
-                                        className="h-full rounded-full bg-[#a8a09a]"
-                                        style={{
-                                            width: `${(platform.playthroughs / platformMax) * 100}%`,
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-xs leading-5 text-[#bdb6b1]">
-                        Choose a platform on a playthrough to start this
-                        breakdown.
-                    </p>
-                )}
-                <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                    Based on platforms you selected for your playthroughs,
-                    rather than the platforms a game supports.
-                </p>
-            </section>
+                <StatRows
+                    empty="Add a duration to a diary session to see your most played games."
+                    rows={stats.most_played.map((game) => ({
+                        key: game.id,
+                        name: game.name,
+                        value: game.minutes,
+                        detail: formatMinutes(game.minutes),
+                        href: gameDetails.url(game.slug),
+                    }))}
+                />
+            </StatSection>
         </div>
     );
 }
