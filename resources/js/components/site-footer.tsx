@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import AppWordmark from '@/components/app-wordmark';
 import { home, login, register } from '@/routes';
 import { index as games } from '@/routes/games';
 import { discover as discoverLists, index as lists } from '@/routes/lists';
@@ -45,8 +46,8 @@ export default function SiteFooter() {
                             aria-label="PlayHaven home"
                             className="inline-flex min-h-7 items-center gap-2 rounded-sm text-base font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4"
                         >
-                            <AppLogoIcon className="size-6" />
-                            PlayHaven
+                            <AppLogoIcon className="h-5 w-9" />
+                            <AppWordmark className="text-base" />
                         </Link>
                         <p className="mt-1 text-[11px] leading-5 text-[#a9a19b]">
                             Your Games. Your Stories.

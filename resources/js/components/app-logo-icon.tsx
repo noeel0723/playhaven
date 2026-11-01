@@ -1,8 +1,19 @@
-import { Gamepad2 } from 'lucide-react';
-import type { SVGAttributes } from 'react';
+import type { ComponentProps } from 'react';
+import { cn } from '@/lib/utils';
 
-export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {
+export default function AppLogoIcon({
+    className,
+    ...props
+}: Omit<ComponentProps<'img'>, 'src' | 'alt'>) {
     return (
-        <Gamepad2 {...props} fill="none" strokeWidth={1.6} aria-hidden="true" />
+        <img
+            {...props}
+            src="/brand/playhaven-logo.svg"
+            alt=""
+            aria-hidden="true"
+            width={696}
+            height={324}
+            className={cn('shrink-0 object-contain', className)}
+        />
     );
 }

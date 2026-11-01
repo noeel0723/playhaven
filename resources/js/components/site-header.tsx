@@ -1,6 +1,7 @@
 import { Form, Link, usePage } from '@inertiajs/react';
 import { Menu, Search, X } from 'lucide-react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import AppWordmark from '@/components/app-wordmark';
 import PlayerAvatar from '@/components/player-avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -107,18 +108,18 @@ export default function SiteHeader() {
         },
     ];
     return (
-        <header className="relative z-20 mx-auto flex h-24 max-w-7xl items-center justify-between gap-6 px-6 sm:px-10 lg:h-28">
+        <header className="relative z-20 mx-auto flex h-24 max-w-6xl items-center justify-between gap-4 px-6 sm:px-8 lg:h-28 lg:gap-6">
             <Link
                 href={home()}
                 aria-label="PlayHaven home"
-                className="flex shrink-0 items-center gap-2.5 rounded-sm text-2xl font-semibold tracking-tight text-white focus-visible:outline-2 focus-visible:outline-offset-8"
+                className="flex shrink-0 items-center gap-2 rounded-sm text-white focus-visible:outline-2 focus-visible:outline-offset-8 sm:gap-2.5"
             >
-                <AppLogoIcon className="size-9" />
-                <span>PlayHaven</span>
+                <AppLogoIcon className="h-6 w-11 sm:h-7 sm:w-14" />
+                <AppWordmark className="text-[28px] sm:text-[34px] lg:text-[36px]" />
             </Link>
             <nav
                 aria-label="Main navigation"
-                className="hidden h-11 min-w-0 items-center gap-5 lg:flex xl:gap-7"
+                className="hidden h-11 min-w-0 items-center gap-4 lg:flex xl:gap-5"
             >
                 {links.map((link) => (
                     <Link
@@ -130,7 +131,7 @@ export default function SiteHeader() {
                         {link.label}
                     </Link>
                 ))}
-                <div className="w-36 xl:w-44">
+                <div className="w-36 xl:w-40">
                     <GameSearch id="site-desktop-search" />
                 </div>
                 {auth.user ? (
@@ -185,7 +186,7 @@ export default function SiteHeader() {
                 </summary>
                 <nav
                     aria-label="Mobile navigation"
-                    className="absolute top-22 right-6 left-6 rounded-xl border border-shadow bg-caviar/95 p-5 text-[#f4f1ed] shadow-2xl backdrop-blur-xl sm:right-10 sm:left-10"
+                    className="absolute top-22 right-6 left-6 rounded-xl border border-shadow bg-caviar/95 p-5 text-[#f4f1ed] shadow-2xl backdrop-blur-xl sm:right-8 sm:left-8"
                 >
                     <GameSearch id="site-mobile-search" />
                     <div className="mt-4 grid grid-cols-2 gap-2">

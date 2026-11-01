@@ -1,5 +1,6 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import AppWordmark from '@/components/app-wordmark';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
@@ -8,8 +9,6 @@ export default function AuthSplitLayout({
     title,
     description,
 }: AuthLayoutProps) {
-    const { name } = usePage().props;
-
     return (
         <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
             <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
@@ -18,8 +17,8 @@ export default function AuthSplitLayout({
                     href={home()}
                     className="relative z-20 flex items-center text-lg font-medium"
                 >
-                    <AppLogoIcon className="mr-2 size-8 text-white" />
-                    {name}
+                    <AppLogoIcon className="mr-2 h-7 w-14" />
+                    <AppWordmark className="text-2xl" />
                 </Link>
             </div>
             <div className="w-full lg:p-8">
