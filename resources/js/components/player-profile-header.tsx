@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from '@inertiajs/react';
 import { MapPin } from 'lucide-react';
 import PlayerAvatar from '@/components/player-avatar';
 
@@ -9,7 +10,7 @@ type Props = {
     bio?: string | null;
     location?: string | null;
     actions: ReactNode;
-    statistics: { label: string; value: string | number }[];
+    statistics: { label: string; value: string | number; href?: string }[];
 };
 
 export default function PlayerProfileHeader({
@@ -70,9 +71,21 @@ export default function PlayerProfileHeader({
                             {stat.label}
                         </dt>
                         <dd className="text-xl leading-6 font-medium wrap-break-word text-[#e0d9d3] tabular-nums">
-                            {typeof stat.value === 'number'
-                                ? stat.value.toLocaleString()
-                                : stat.value}
+                            {stat.href ? (
+                                <Link
+                                    href={stat.href}
+                                    aria-label={`${stat.value} ${stat.label}`}
+                                    className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+                                >
+                                    {typeof stat.value === 'number'
+                                        ? stat.value.toLocaleString()
+                                        : stat.value}
+                                </Link>
+                            ) : typeof stat.value === 'number' ? (
+                                stat.value.toLocaleString()
+                            ) : (
+                                stat.value
+                            )}
                         </dd>
                     </div>
                 ))}

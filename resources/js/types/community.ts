@@ -27,6 +27,17 @@ export type DiscoveredPlayer = PublicPlayer & {
     top_games: Pick<CatalogGame, 'id' | 'name' | 'slug' | 'cover_url'>[];
 };
 export type PlayerPagination = HistoryPagination<DiscoveredPlayer>;
+export type NetworkPlayer = PublicPlayer & {
+    public_reviews_count: number;
+    public_lists_count: number;
+};
+export type NetworkDestination = {
+    username: string | null;
+    mine: boolean;
+    direction: 'followers' | 'following';
+    sort: 'recent' | 'name';
+    page: number;
+};
 export type CommunityReviewPagination = HistoryPagination<CommunityReview>;
 export type PlayerProfile = {
     banner_url: string | null;

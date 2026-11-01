@@ -5,7 +5,7 @@ import ProfileGameShelves from '@/components/profile-game-shelves';
 import ProfileRecentActivity from '@/components/profile-recent-activity';
 import ProfileReviewCard from '@/components/profile-review-card';
 import { Button } from '@/components/ui/button';
-import { edit, show } from '@/routes/players';
+import { edit, show, myFollowers, myFollowing } from '@/routes/players';
 import { index as library } from '@/routes/library';
 import { index as diary } from '@/routes/diary';
 import { index as stats } from '@/routes/stats';
@@ -39,8 +39,16 @@ export default function YourProfile({
                 statistics={[
                     { label: 'Games', value: player.games_count },
                     { label: 'Reviews', value: reviews.meta.total },
-                    { label: 'Following', value: player.following_count },
-                    { label: 'Followers', value: player.followers_count },
+                    {
+                        label: 'Following',
+                        value: player.following_count,
+                        href: myFollowing.url(),
+                    },
+                    {
+                        label: 'Followers',
+                        value: player.followers_count,
+                        href: myFollowers.url(),
+                    },
                 ]}
                 actions={
                     <Button

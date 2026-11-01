@@ -35,6 +35,15 @@ class FollowController extends Controller
 
     private function destination(FollowPlayerRequest $request, User $player): RedirectResponse
     {
+        if ($request->filled('return_to_network')) {
+            $direction = $request->validated('return_to_network');
+            $filters = array_filter($request->safe()->only(['sort', 'page']), fn ($value) => $value !== null && $value !== '');
+            if ($request->boolean('network_owner')) {
+                return to_route($direction === 'followers' ? 'players.myFollowers' : 'players.myFollowing', $filters);
+            }
+
+            return to_route('players.'.$direction, ['username' => $request->validated('network_username'), ...$filters]);
+        }
         if ($request->boolean('return_to_players')) {
             $filters = array_filter($request->safe()->only(['q', 'page']), fn ($value) => $value !== null && $value !== '');
 

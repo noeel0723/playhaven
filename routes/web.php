@@ -12,6 +12,7 @@ use App\Http\Controllers\GameListItemController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\PlayerNetworkController;
 use App\Http\Controllers\PlaythroughController;
 use App\Http\Controllers\ProfileBannerController;
 use App\Http\Controllers\ProfilePhotoController;
@@ -38,6 +39,8 @@ Route::get('player-banners/{playerProfile}/{banner}', [ProfileBannerController::
 Route::get('community', [CommunityController::class, 'index'])->name('community.index');
 Route::get('players', [PlayerController::class, 'index'])->name('players.index');
 Route::get('players/{username}', [PlayerController::class, 'show'])->name('players.show');
+Route::get('players/{username}/followers', [PlayerNetworkController::class, 'followers'])->name('players.followers');
+Route::get('players/{username}/following', [PlayerNetworkController::class, 'following'])->name('players.following');
 
 Route::get('/games', [GameCatalogController::class, 'index'])->name('games.index');
 Route::get('/games/{game:slug}', [GameCatalogController::class, 'show'])->name('games.show');
@@ -46,6 +49,8 @@ Route::get('lists/{listOwner}/{listSlug}', [GameListController::class, 'show'])-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('community/profile', [PlayerController::class, 'mine'])->name('players.me');
+    Route::get('community/profile/followers', [PlayerNetworkController::class, 'myFollowers'])->name('players.myFollowers');
+    Route::get('community/profile/following', [PlayerNetworkController::class, 'myFollowing'])->name('players.myFollowing');
     Route::get('community/profile/edit', [PlayerController::class, 'edit'])->name('players.edit');
     Route::put('community/profile', [PlayerController::class, 'update'])->name('players.update');
     Route::put('community/profile/showcase', [PlayerController::class, 'showcase'])->name('players.showcase');

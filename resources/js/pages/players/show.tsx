@@ -5,7 +5,7 @@ import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
 import PlayerProfileHeader from '@/components/player-profile-header';
-import { index } from '@/routes/players';
+import { index, followers, following } from '@/routes/players';
 import type {
     CommunityReviewPagination,
     PublicPlayer,
@@ -40,8 +40,16 @@ export default function Player({
                 statistics={[
                     { label: 'Public reviews', value: reviews.meta.total },
                     { label: 'Public lists', value: lists.meta.total },
-                    { label: 'Following', value: player.following_count },
-                    { label: 'Followers', value: player.followers_count },
+                    {
+                        label: 'Following',
+                        value: player.following_count,
+                        href: following.url(player.username),
+                    },
+                    {
+                        label: 'Followers',
+                        value: player.followers_count,
+                        href: followers.url(player.username),
+                    },
                 ]}
             />
             <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_200px]">

@@ -5,14 +5,16 @@ import { Button } from '@/components/ui/button';
 import { login } from '@/routes';
 import { store, destroy } from '@/routes/follows';
 import { edit } from '@/routes/players';
-import type { PublicPlayer } from '@/types/community';
+import type { PublicPlayer, NetworkDestination } from '@/types/community';
 
 export default function FollowPlayer({
     player,
     compact = false,
+    returnToNetwork,
 }: {
     player: PublicPlayer;
     compact?: boolean;
+    returnToNetwork?: NetworkDestination;
 }) {
     const page = usePage();
     const { auth } = page.props;
@@ -60,6 +62,35 @@ export default function FollowPlayer({
         >
             {({ processing, errors }) => (
                 <div>
+                    {returnToNetwork && (
+                        <>
+                            <input
+                                type="hidden"
+                                name="return_to_network"
+                                value={returnToNetwork.direction}
+                            />
+                            <input
+                                type="hidden"
+                                name="network_owner"
+                                value={returnToNetwork.mine ? '1' : '0'}
+                            />
+                            <input
+                                type="hidden"
+                                name="network_username"
+                                value={returnToNetwork.username ?? ''}
+                            />
+                            <input
+                                type="hidden"
+                                name="sort"
+                                value={returnToNetwork.sort}
+                            />
+                            <input
+                                type="hidden"
+                                name="page"
+                                value={returnToNetwork.page}
+                            />
+                        </>
+                    )}
                     {fromPlayers && (
                         <>
                             <input
