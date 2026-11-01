@@ -30,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         RateLimiter::for('profile-photos', fn (Request $request) => Limit::perMinute(10)->by('profile-photos:'.$request->user()->id)
             ->response(fn () => to_route('players.edit')->withFragment('profile-photo')->withErrors(['avatar' => 'Too many photo changes. Please try again in a minute.'])));
+        RateLimiter::for('profile-banners', fn (Request $request) => Limit::perMinute(10)->by('profile-banners:'.$request->user()->id)
+            ->response(fn () => to_route('players.edit')->withFragment('profile-banner')->withErrors(['banner' => 'Too many banner changes. Please try again in a minute.'])));
         RateLimiter::for('community-follows', fn (Request $request) => Limit::perMinute(30)->by('community-follows:'.$request->user()->id));
         RateLimiter::for('rawg-search', fn (Request $request) => [Limit::perMinute(12)->by('rawg-search:user:'.$request->user()->id), Limit::perMinute(30)->by('rawg-search:shared')]);
         RateLimiter::for('rawg-import', fn (Request $request) => [Limit::perMinute(6)->by('rawg-import:user:'.$request->user()->id), Limit::perMinute(20)->by('rawg-import:shared')]);

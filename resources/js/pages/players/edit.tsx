@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import ProfileShowcaseEditor from '@/components/profile-showcase-editor';
 import ProfilePhotoEditor from '@/components/profile-photo-editor';
+import ProfileBannerEditor from '@/components/profile-banner-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,8 +36,8 @@ export default function EditPlayer({
                         Edit profile
                     </h1>
                     <p className="mt-3 max-w-xl text-sm leading-7 text-[#bdb6b1]">
-                        Your public identity, profile photo, and four favorite
-                        games.
+                        Your public identity, profile photo, banner, and four
+                        favorite games.
                     </p>
                 </div>
                 <Link
@@ -46,7 +47,7 @@ export default function EditPlayer({
                     Back to your profile
                 </Link>
             </div>
-            <div className="mb-8 border-b border-white/10 pb-6">
+            <div className="mb-8 grid items-start gap-6 border-b border-white/10 pb-6 lg:grid-cols-2">
                 <ProfilePhotoEditor
                     name={
                         profile?.display_name || profile?.username || 'Player'
@@ -54,6 +55,7 @@ export default function EditPlayer({
                     avatarUrl={profile?.avatar_url ?? null}
                     embedded
                 />
+                <ProfileBannerEditor bannerUrl={profile?.banner_url ?? null} />
             </div>
             <div className="grid items-start gap-12 lg:grid-cols-2 xl:gap-20">
                 <div className="min-w-0">

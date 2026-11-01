@@ -17,6 +17,7 @@ use App\Http\Resources\PublicPlayerResource;
 use App\Services\Community;
 use App\Services\PlayerShowcase;
 use App\Services\ProfileActivity;
+use App\Services\ProfileBanners;
 use App\Services\ProfilePhotos;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +44,7 @@ class PlayerController extends Controller
                 'bio' => $profile?->bio,
                 'location' => $profile?->location,
                 'avatar_url' => $profile ? ProfilePhotos::url($profile, true) : null,
+                'banner_url' => ProfileBanners::url($profile, true),
                 'is_public' => (bool) $profile?->is_public,
                 'followers_count' => (int) $user->getAttribute('followers_count'),
                 'following_count' => (int) $user->getAttribute('following_count'),
@@ -97,7 +99,7 @@ class PlayerController extends Controller
         $search = trim($request->string('q')->value());
 
         return Inertia::render('players/edit', [
-            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'location', 'is_public']), 'avatar_url' => ProfilePhotos::url($profile, true)] : null,
+            'profile' => $profile ? [...$profile->only(['username', 'display_name', 'bio', 'location', 'is_public']), 'avatar_url' => ProfilePhotos::url($profile, true), 'banner_url' => ProfileBanners::url($profile, true)] : null,
             'topGames' => $profile ? GameResource::collection($showcase->topGames($profile))->resolve($request) : [],
             'availableGames' => $search !== '' ? GameResource::collection($showcase->search($search))->resolve($request) : [],
             'query' => $search,

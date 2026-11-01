@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Services\ProfileBanners;
 use App\Services\ProfilePhotos;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,6 +20,7 @@ class PublicPlayerResource extends JsonResource
             'bio' => $this->profile->bio,
             'location' => $this->profile->location,
             'avatar_url' => ProfilePhotos::url($this->profile),
+            'banner_url' => $this->when($request->routeIs('players.show'), fn () => ProfileBanners::url($this->profile)),
             'followers_count' => (int) $this->getAttribute('followers_count'),
             'following_count' => (int) $this->getAttribute('following_count'),
             'is_following' => (bool) $this->getAttribute('is_following'),

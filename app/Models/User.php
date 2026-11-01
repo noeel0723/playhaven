@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ProfileBanners;
 use App\Services\ProfilePhotos;
 use App\Support\EmailVerification;
 use Database\Factories\UserFactory;
@@ -49,6 +50,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         static::deleted(function (User $user): void {
             $path = $user->profile?->avatar_path;
             DB::afterCommit(fn () => ProfilePhotos::deleteFile($path));
+            $banner = $user->profile?->banner_path;
+            DB::afterCommit(fn () => ProfileBanners::deleteFile($banner));
         });
     }
 

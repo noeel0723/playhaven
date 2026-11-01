@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ProfileBanners;
 use App\Services\ProfilePhotos;
 use Database\Factories\UserProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,6 +23,8 @@ class UserProfile extends Model
         static::deleted(function (UserProfile $profile): void {
             $path = $profile->avatar_path;
             DB::afterCommit(fn () => ProfilePhotos::deleteFile($path));
+            $banner = $profile->banner_path;
+            DB::afterCommit(fn () => ProfileBanners::deleteFile($banner));
         });
     }
 

@@ -80,6 +80,8 @@ The schema permits list-position gaps or ties. The implemented list actions orde
 
 The existing `user_profiles.avatar_path` stores a generated normalized-photo path on the private local disk. Controlled image routes enforce ownership/profile visibility and resource DTOs expose only photo URLs. Replacements and account/profile deletion retire stored images after commit; no avatar migration is required. See [profile photos](PROFILE_PHOTOS.md).
 
+`user_profiles.banner_path` is a separate nullable path for a normalized 1600×600 profile backdrop. Its controlled image route follows the same owner/public-profile access rules. Uploads save independently of avatars and profile details, and deletion retires files after commit. See [profile banners](PROFILE_BANNERS.md).
+
 `profile_game_favorites` connects a profile to at most four distinct local games with unique positions 1–4, independently of library favorite flags. Completion sharing follows `user_profiles.is_public`. The legacy `share_recent_completed` column is retained for migration compatibility but is no longer read, accepted, or returned by the application. `library_entries.completed_at` tracks transitions into Completed without using metadata-edit timestamps or changing playthrough history. Old entries with unknown completion dates remain null. See [profile shelves](PROFILE_SHELVES.md).
 
 ## Ownership, deletion, and indexing

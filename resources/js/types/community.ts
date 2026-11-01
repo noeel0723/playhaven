@@ -2,6 +2,7 @@ import type { CatalogGame } from '@/types/catalog';
 import type { HistoryPagination } from '@/types/history';
 
 export type PublicPlayer = {
+    banner_url?: string | null;
     username: string;
     name: string;
     bio: string | null;
@@ -28,6 +29,7 @@ export type DiscoveredPlayer = PublicPlayer & {
 export type PlayerPagination = HistoryPagination<DiscoveredPlayer>;
 export type CommunityReviewPagination = HistoryPagination<CommunityReview>;
 export type PlayerProfile = {
+    banner_url: string | null;
     username: string | null;
     display_name: string | null;
     bio: string | null;
@@ -54,6 +56,7 @@ export type ProfileReview = Omit<CommunityReview, 'author'> & {
 };
 export type ProfileReviewPagination = HistoryPagination<ProfileReview>;
 export type OwnPlayer = {
+    banner_url: string | null;
     name: string;
     username: string | null;
     bio: string | null;

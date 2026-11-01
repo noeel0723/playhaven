@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlaythroughController;
+use App\Http\Controllers\ProfileBannerController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\RawgDiscoveryController;
 use App\Http\Controllers\StatisticsController;
@@ -30,7 +31,9 @@ Route::pattern('rawgId', '[1-9][0-9]{0,9}');
 Route::pattern('username', '[A-Za-z][A-Za-z0-9_]{2,29}');
 Route::pattern('playerProfile', '[1-9][0-9]{0,17}');
 Route::pattern('photo', '[a-f0-9]{32}');
+Route::pattern('banner', '[a-f0-9]{32}');
 Route::get('player-photos/{playerProfile}/{photo}', [ProfilePhotoController::class, 'show'])->name('player-photos.show');
+Route::get('player-banners/{playerProfile}/{banner}', [ProfileBannerController::class, 'show'])->name('player-banners.show');
 
 Route::get('community', [CommunityController::class, 'index'])->name('community.index');
 Route::get('players', [PlayerController::class, 'index'])->name('players.index');
@@ -48,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('community/profile/showcase', [PlayerController::class, 'showcase'])->name('players.showcase');
     Route::post('community/profile/photo', [ProfilePhotoController::class, 'store'])->middleware('throttle:profile-photos')->name('players.photo.store');
     Route::delete('community/profile/photo', [ProfilePhotoController::class, 'destroy'])->middleware('throttle:profile-photos')->name('players.photo.destroy');
+    Route::post('community/profile/banner', [ProfileBannerController::class, 'store'])->middleware('throttle:profile-banners')->name('players.banner.store');
+    Route::delete('community/profile/banner', [ProfileBannerController::class, 'destroy'])->middleware('throttle:profile-banners')->name('players.banner.destroy');
     Route::post('players/{username}/follow', [FollowController::class, 'store'])->middleware('throttle:community-follows')->name('follows.store');
     Route::delete('players/{username}/follow', [FollowController::class, 'destroy'])->middleware('throttle:community-follows')->name('follows.destroy');
     Route::post('games/{game:slug}/connections/refresh', [GameConnectionController::class, 'refresh'])->middleware('throttle:rawg-connections')->name('games.connections.refresh');
