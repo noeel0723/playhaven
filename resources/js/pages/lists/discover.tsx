@@ -5,7 +5,7 @@ import HistoryPagination from '@/components/history-pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { discover, index } from '@/routes/lists';
+import { create, discover, index } from '@/routes/lists';
 import type { GameList, ListPagination } from '@/types/lists';
 
 const gridClass =
@@ -41,7 +41,7 @@ export default function DiscoverLists({
                         size="sm"
                         className={buttonClass}
                     >
-                        <Link href={`${index().url}#create-list`}>
+                        <Link href={create()}>
                             <ListPlus aria-hidden="true" />
                             Create a list
                         </Link>

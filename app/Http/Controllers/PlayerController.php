@@ -7,7 +7,6 @@ use App\Http\Requests\CommunityRequest;
 use App\Http\Requests\SavePlayerProfileRequest;
 use App\Http\Requests\SavePlayerShowcaseRequest;
 use App\Http\Resources\CommunityReviewResource;
-use App\Http\Resources\CompletedGameResource;
 use App\Http\Resources\DiscoveredPlayerResource;
 use App\Http\Resources\GameListResource;
 use App\Http\Resources\GameResource;
@@ -81,7 +80,7 @@ class PlayerController extends Controller
         ]);
     }
 
-    public function show(CommunityRequest $request, string $username, Community $community, PlayerShowcase $showcase): Response
+    public function show(CommunityRequest $request, string $username, Community $community, PlayerShowcase $showcase, ProfileActivity $activity): Response
     {
         $user = $community->players($request->user())->whereHas('profile', fn (Builder $query) => $query->whereRaw('LOWER(username) = ?', [strtolower($username)]))->firstOrFail();
         $reviewQuery = $community->reviews()->whereHas('libraryEntry', fn (Builder $query) => $query->where('user_id', $user->id));
@@ -90,7 +89,7 @@ class PlayerController extends Controller
         return Inertia::render('players/show', [
             'player' => (new PublicPlayerResource($user))->resolve($request),
             'topGames' => GameResource::collection($showcase->topGames($user->profile))->resolve($request),
-            'recentCompleted' => CompletedGameResource::collection($showcase->completed($user))->resolve($request),
+            'activities' => ProfileActivityResource::collection($activity->recent($user, public: true))->resolve($request),
             'reviews' => ['data' => CommunityReviewResource::collection($reviewQuery->limit(4)->get())->resolve($request), 'meta' => ['total' => $reviewCount]],
             'lists' => GameListResource::collection($user->gameLists()->where('visibility', ListVisibility::Public)->with(['user.profile', 'previewItems'])->withCount('items')->orderByDesc('updated_at')->orderByDesc('id')->paginate(6, ['*'], 'lists_page')->withQueryString()),
         ]);

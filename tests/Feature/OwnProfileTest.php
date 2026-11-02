@@ -81,24 +81,24 @@ class OwnProfileTest extends TestCase
             ->where('activities.0.game.id', $entries[4]->game_id)->where('activities.1.game.id', $entries[0]->game_id));
     }
 
-    public function test_owner_activity_and_private_reviews_do_not_appear_on_the_public_profile(): void
+    public function test_public_activity_does_not_expose_owner_private_reviews(): void
     {
         $owner = User::factory()->create();
         UserProfile::factory()->for($owner)->create(['is_public' => true, 'username' => 'public_owner', 'share_recent_completed' => false]);
         $review = Review::factory()->for(LibraryEntry::factory()->for($owner)->create())->create(['is_public' => false, 'body' => 'OWNER ONLY REVIEW']);
         $this->actingAs($owner)->get(route('players.me'))->assertInertia(fn (Assert $page) => $page->has('activities', 1)->where('reviews.data.0.id', $review->id));
         $this->get('/players/public_owner')->assertDontSee('OWNER ONLY REVIEW')->assertInertia(fn (Assert $page) => $page
-            ->has('reviews.data', 0)->has('recentCompleted', 0)->missing('activities'));
+            ->has('reviews.data', 0)->has('activities', 1)->where('activities.0.has_review', false)->missing('recentCompleted'));
     }
 
-    public function test_recent_reviews_have_stable_pagination_and_include_public_and_private_owner_reviews(): void
+    public function test_recent_reviews_are_limited_to_four_and_include_public_and_private_owner_reviews(): void
     {
         $owner = User::factory()->create();
         for ($index = 0; $index < 6; $index++) {
             Review::factory()->for(LibraryEntry::factory()->for($owner)->create())->create(['is_public' => $index % 2 === 0]);
         }
         $this->actingAs($owner)->get(route('players.me'))->assertInertia(fn (Assert $page) => $page->has('reviews.data', 4)
-            ->where('reviews.meta.total', 6)->where('reviews.links.next', fn ($url) => str_contains($url, 'reviews_page=2')));
-        $this->get(route('players.me', ['reviews_page' => 2]))->assertInertia(fn (Assert $page) => $page->has('reviews.data', 2));
+            ->where('reviews.meta.total', 6)->missing('reviews.links'));
+        $this->get(route('players.me', ['reviews_page' => 2]))->assertInertia(fn (Assert $page) => $page->has('reviews.data', 4));
     }
 }

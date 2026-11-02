@@ -14,8 +14,10 @@ const statusLabels = {
 
 export default function ProfileRecentActivity({
     activities,
+    isOwner = true,
 }: {
     activities: ProfileGameActivity[];
+    isOwner?: boolean;
 }) {
     return (
         <section aria-labelledby="recent-game-activity" className="mt-6">
@@ -83,11 +85,12 @@ export default function ProfileRecentActivity({
                 </div>
             ) : (
                 <p className="border-b border-white/10 py-3 text-xs leading-5 text-[#bdb6b1]">
-                    Your latest game activity will appear here as you update
-                    your library, rate, review, or log a play session.
+                    {isOwner
+                        ? 'Your latest game activity will appear here as you update your library, rate, review, or log a play session.'
+                        : 'No recent game activity yet.'}
                 </p>
             )}
-            {activities.length > 0 && (
+            {isOwner && activities.length > 0 && (
                 <p className="mt-2 text-[11px] leading-4 text-[#9e9690]">
                     Your four most recently active games across library,
                     ratings, reviews, playthroughs, and diary updates.

@@ -67,6 +67,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('players/{username}/follow', [FollowController::class, 'destroy'])->middleware('throttle:community-follows')->name('follows.destroy');
     Route::post('games/{game:slug}/connections/refresh', [GameConnectionController::class, 'refresh'])->middleware('throttle:rawg-connections')->name('games.connections.refresh');
     Route::get('lists', [GameListController::class, 'index'])->name('lists.index');
+    Route::get('my-lists/create', [GameListController::class, 'create'])->name('lists.create');
     Route::get('my-lists/{gameList}/edit', [GameListController::class, 'edit'])->name('lists.edit');
     Route::post('my-lists', [GameListController::class, 'store'])->name('lists.store');
     Route::put('my-lists/{gameList}', [GameListController::class, 'update'])->name('lists.update');

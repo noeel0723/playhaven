@@ -15,6 +15,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -72,9 +73,28 @@ class GameListController extends Controller
             'featuredLists' => GameListResource::collection($featured)->resolve($request)]);
     }
 
+    public function create(GameListBrowseRequest $request): Response
+    {
+        $search = trim($request->string('q')->value());
+        $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));
+
+        return Inertia::render('lists/create', [
+            'query' => $search,
+            'availableGames' => $search === '' ? [] : GameResource::collection(Game::with(['genres', 'platforms'])
+                ->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%'])->orderBy('name')->orderBy('id')->limit(12)->get())->resolve($request),
+        ]);
+    }
+
     public function store(SaveGameListRequest $request): RedirectResponse
     {
-        $list = $request->user()->gameLists()->create([...$request->safe()->except(['return_to_edit']), 'slug' => substr(Str::slug($request->string('name')->value()) ?: 'list', 0, 100).'-'.strtolower((string) Str::ulid())]);
+        $list = DB::transaction(function () use ($request): GameList {
+            $list = $request->user()->gameLists()->create([...$request->safe()->except(['return_to_edit', 'games']), 'slug' => substr(Str::slug($request->string('name')->value()) ?: 'list', 0, 100).'-'.strtolower((string) Str::ulid())]);
+            foreach ($request->validated('games', []) as $position => $gameId) {
+                $list->items()->create(['game_id' => $gameId, 'position' => $position + 1]);
+            }
+
+            return $list;
+        });
 
         if ($request->boolean('return_to_edit')) {
             return to_route('lists.edit', $list->id);
@@ -125,7 +145,7 @@ class GameListController extends Controller
     public function update(SaveGameListRequest $request, GameList $gameList): RedirectResponse
     {
         $list = $request->user()->gameLists()->whereKey($gameList->id)->firstOrFail();
-        $list->update($request->safe()->except(['return_to_edit']));
+        $list->update($request->safe()->except(['return_to_edit', 'games']));
         Inertia::flash('toast', ['type' => 'success', 'message' => 'List updated.']);
 
         if ($request->boolean('return_to_edit')) {

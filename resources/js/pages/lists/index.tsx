@@ -1,13 +1,11 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { useEffect, useRef } from 'react';
+import { Head, Link } from '@inertiajs/react';
 import { Globe, Link2, LockKeyhole, Pencil, Search } from 'lucide-react';
 import GameListCoverStrip from '@/components/game-list-cover-strip';
-import GameListForm from '@/components/game-list-form';
 import HistoryPagination from '@/components/history-pagination';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAutoFilters } from '@/hooks/use-auto-filters';
-import { discover, index, edit, show } from '@/routes/lists';
+import { create, discover, index, edit, show } from '@/routes/lists';
 import type { ListPagination } from '@/types/lists';
 
 type Filters = { q: string; visibility: string; sort: string };
@@ -21,23 +19,13 @@ export default function Lists({
     lists: ListPagination;
     filters: Filters;
 }) {
-    const { url } = usePage();
-    const createPanel = useRef<HTMLDetailsElement>(null);
     const { values, change, apply, processing, errors } = useAutoFilters(
         index().url,
         filters,
     );
     const filtered = Boolean(filters.q || filters.visibility);
-    useEffect(() => {
-        if (window.location.hash === '#create-list' && createPanel.current) {
-            createPanel.current.open = true;
-            createPanel.current
-                .querySelector<HTMLInputElement>('#list-name')
-                ?.focus();
-        }
-    }, [url]);
     return (
-        <>
+        <div className="mx-auto max-w-4xl font-sans">
             <Head title="Lists" />
             <header className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-3">
                 <div className="flex items-baseline gap-3">
@@ -59,7 +47,7 @@ export default function Lists({
                     Community lists
                 </Link>
             </header>
-            <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_240px]">
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_180px]">
                 <div className="min-w-0">
                     <form
                         role="search"
@@ -243,21 +231,14 @@ export default function Lists({
                     className="order-first min-w-0 lg:order-last"
                     aria-label="Create a list"
                 >
-                    <details
-                        ref={createPanel}
-                        id="create-list"
-                        open={!filtered && lists.meta.total === 0}
-                        className="scroll-mt-6 rounded-md border border-white/15 bg-rein/20"
+                    <Link
+                        href={create()}
+                        className="inline-flex h-8 w-full items-center justify-center rounded border border-white/15 bg-rein/30 px-3 text-xs font-medium hover:bg-rein/60 focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                        <summary className="cursor-pointer list-none rounded-md px-4 py-3 text-center text-xs font-medium hover:bg-rein/40 focus-visible:outline-2">
-                            New list
-                        </summary>
-                        <div className="border-t border-white/10 p-3">
-                            <GameListForm compact returnToEdit />
-                        </div>
-                    </details>
+                        Start a new list…
+                    </Link>
                 </aside>
             </div>
-        </>
+        </div>
     );
 }

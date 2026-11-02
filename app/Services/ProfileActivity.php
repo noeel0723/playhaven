@@ -7,18 +7,21 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
 class ProfileActivity
 {
     /** @return Collection<int, LibraryEntry> */
-    public function recent(User $user): Collection
+    public function recent(User $user, bool $public = false): Collection
     {
         $changes = DB::table('library_entries')->where('user_id', $user->id)
             ->selectRaw('id AS library_entry_id, updated_at');
-        foreach (['ratings', 'reviews', 'playthroughs'] as $table) {
+        foreach (['ratings', 'reviews', 'playthroughs', 'game_diary_logs'] as $table) {
             $changes->unionAll(DB::table($table)->join('library_entries', 'library_entries.id', '=', "$table.library_entry_id")
-                ->where('library_entries.user_id', $user->id)->select("$table.library_entry_id", "$table.updated_at"));
+                ->where('library_entries.user_id', $user->id)
+                ->when($public && $table === 'reviews', fn ($query) => $query->where('reviews.is_public', true))
+                ->select("$table.library_entry_id", "$table.updated_at"));
         }
         $changes->unionAll(DB::table('diary_entries')->join('playthroughs', 'playthroughs.id', '=', 'diary_entries.playthrough_id')
             ->join('library_entries', 'library_entries.id', '=', 'playthroughs.library_entry_id')
@@ -27,7 +30,7 @@ class ProfileActivity
             ->selectRaw('MAX(updated_at) AS occurred_at')->groupBy('library_entry_id')
             ->orderByDesc('occurred_at')->orderByDesc('library_entry_id')->limit(4)->get();
         $entries = $user->libraryEntries()->whereIn('id', $latest->pluck('library_entry_id'))
-            ->with(['rating', 'review', 'game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])])->get()->keyBy('id');
+            ->with(['rating', 'review' => fn (HasOne $query) => $query->select('id', 'library_entry_id', 'is_public')->when($public, fn ($query) => $query->where('is_public', true)), 'game' => fn (BelongsTo $query) => $query->with(['genres', 'platforms'])])->get()->keyBy('id');
 
         return new Collection($latest->map(function ($change) use ($entries): ?LibraryEntry {
             $entry = $entries->get($change->library_entry_id);

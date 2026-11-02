@@ -23,6 +23,7 @@ class SaveGameListRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        return ['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string', 'max:5000'], 'visibility' => ['required', Rule::enum(ListVisibility::class)], 'return_to_edit' => ['sometimes', 'boolean']];
+        return ['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string', 'max:5000'], 'visibility' => ['required', Rule::enum(ListVisibility::class)], 'return_to_edit' => ['sometimes', 'boolean'],
+            'games' => ['sometimes', 'array', 'list', 'max:100'], 'games.*' => ['required', 'integer', 'distinct', Rule::exists('games', 'id')]];
     }
 }

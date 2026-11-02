@@ -4,6 +4,7 @@ import FollowPlayer from '@/components/follow-player';
 import GameListCard from '@/components/game-list-card';
 import HistoryPagination from '@/components/history-pagination';
 import ProfileGameShelves from '@/components/profile-game-shelves';
+import ProfileRecentActivity from '@/components/profile-recent-activity';
 import PlayerProfileHeader from '@/components/player-profile-header';
 import PlayerRelationship from '@/components/player-relationship';
 import { PlayerPageLinks } from '@/components/player-page-navigation';
@@ -16,7 +17,7 @@ import {
 import type {
     RecentProfileReviews,
     PublicPlayer,
-    CompletedGame,
+    ProfileGameActivity,
 } from '@/types/community';
 import type { ListPagination } from '@/types/lists';
 import type { CatalogGame } from '@/types/catalog';
@@ -26,13 +27,13 @@ export default function Player({
     reviews,
     lists,
     topGames,
-    recentCompleted,
+    activities,
 }: {
     player: PublicPlayer;
     reviews: RecentProfileReviews;
     lists: ListPagination;
     topGames: CatalogGame[];
-    recentCompleted: CompletedGame[];
+    activities: ProfileGameActivity[];
 }) {
     return (
         <div className="mx-auto max-w-4xl font-sans">
@@ -73,7 +74,8 @@ export default function Player({
                 <div className="min-w-0">
                     <ProfileGameShelves
                         topGames={topGames}
-                        recentCompleted={recentCompleted}
+                        recentCompleted={[]}
+                        showRecentCompleted={false}
                         isOwner={player.is_self}
                         showEditLinks={false}
                         emptyTopGamesMessage={
@@ -81,6 +83,10 @@ export default function Player({
                                 ? 'Your four favorite games will appear here once selected.'
                                 : undefined
                         }
+                    />
+                    <ProfileRecentActivity
+                        activities={activities}
+                        isOwner={false}
                     />
                     <section aria-labelledby="player-stories" className="mt-6">
                         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-white/10 pb-2">
