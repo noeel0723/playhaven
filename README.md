@@ -33,7 +33,22 @@ Untuk development dengan Apache Laragon:
 powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1 -Service laragon
 ```
 
-PlayHaven memakai PostgreSQL `5433` dan Vite `5181` yang terpisah dari Literahaven. Vite memakai `strictPort`, sehingga tidak pindah diam-diam ke port lain. Database proyek ini tidak otomatis menyala hanya dengan menyalakan Apache; jalankan launcher lagi setelah restart komputer. Launcher tidak mengubah proyek lain atau mendaftarkan service Windows.
+PlayHaven memakai PostgreSQL `5433` dan Vite `5181` yang terpisah dari Literahaven. Vite memakai `strictPort`, sehingga tidak pindah diam-diam ke port lain. Apache tidak menyalakan database ini. Untuk mencegah koneksi ditolak setelah restart Windows, pasang autostart satu kali dari akun Windows yang dipakai untuk development:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\database-autostart.ps1 install
+```
+
+Task Scheduler **`PlayHaven-PostgreSQL-5433`** menjalankan pemeriksaan tersembunyi saat login dan setiap menit selama akun tersebut login, termasuk saat laptop memakai baterai. Database yang berhenti akan dicoba dinyalakan kembali dari data yang sudah ada; pemeriksaan tidak membuat cluster/database pengganti atau menjalankan migrasi. Task memakai izin pengguna biasa dan tidak menyimpan password Windows. Tidak ada perubahan pada service PostgreSQL utama, Laragon, atau Literahaven. Jika autostart belum dipasang, gunakan launcher setelah restart.
+
+Periksa atau hapus tugas otomatis (penghapusan tugas tidak menghentikan database):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\database-autostart.ps1 status
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\database-autostart.ps1 remove
+```
+
+Pemulihan umumnya dicoba pada pemeriksaan berikutnya, sehingga gangguan singkat masih mungkin terjadi. Apache tetap perlu dinyalakan dari Laragon. Log pemulihan ada di `.local/postgres-watchdog.log`; log server ada di `.local/postgres.log`.
 
 Jalankan dari `D:\laragon\www\playhaven`:
 
@@ -48,6 +63,8 @@ Database tetap berjalan. Hentikan terpisah jika tidak dipakai:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\database.ps1 stop
 ```
+
+Perintah `stop` juga menjeda pemulihan otomatis, agar database tidak langsung menyala lagi. Jalankan `database.ps1 start` atau `start-playhaven.cmd` untuk melanjutkan. Operasi start/stop diserialkan agar launcher dan tugas otomatis tidak mencoba menyalakan instance yang sama bersamaan.
 
 Untuk terminal yang sudah mengizinkan script lokal:
 

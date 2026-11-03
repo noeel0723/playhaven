@@ -45,6 +45,16 @@ Verification after the change: the Apache runtime probe loaded Carbon, and `/`, 
 
 For browsing with compiled assets, start Apache in Laragon and double-click `start-playhaven.cmd` in the PlayHaven root. PostgreSQL is a project-local instance, so starting Apache alone does not start it after a computer restart. The launcher starts the database, clears this project's configuration cache, removes obsolete PlayHaven dev-server references, checks the site, and opens the browser. It does not restart Laragon or change another project. Run `scripts/start.ps1 -NoBrowser` to check startup without opening a browser.
 
+Install automatic database startup/recovery once for your development Windows account:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\database-autostart.ps1 install
+```
+
+This registers only `PlayHaven-PostgreSQL-5433` in Task Scheduler, with a sign-in trigger and a one-minute repeating check. It runs hidden with limited permissions while this Windows account is signed in, including on battery power, without storing a Windows password. `database-watchdog.ps1` checks the existing project cluster and local port, and invokes `database.ps1 start -ExistingOnly` when unavailable. It never initializes a replacement cluster, creates a missing database, runs migrations, changes ports, or stops another process. Port conflicts or recovery errors are recorded in `.local/postgres-watchdog.log`; inspect `.local/postgres.log` for server details. Recovery is attempted at the next check, so a short outage can still occur. Apache must still be running separately.
+
+Use `database-autostart.ps1 status` to inspect the registration, or `database-autostart.ps1 remove` to remove only this task without stopping the database. `database.ps1 stop` intentionally pauses recovery using `.local/postgres-autostart.paused`; `database.ps1 start` or the site launcher resumes it. Start/stop operations share a project-local file lock so simultaneous requests cannot start two copies.
+
 Start Apache from Laragon. For active frontend/backend development:
 
 ```powershell
