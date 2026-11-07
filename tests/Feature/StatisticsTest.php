@@ -211,7 +211,7 @@ class StatisticsTest extends TestCase
     public function test_release_years_and_highest_rated_shelf_use_only_owned_current_ratings_without_replay_duplication(): void
     {
         $owner = User::factory()->create();
-        $first = LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2020-04-01', 'thegamesdb_id' => 201, 'cover_url' => 'https://cdn.thegamesdb.net/images/original/games/owned.jpg']))->create();
+        $first = LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2020-04-01', 'rawg_id' => 201, 'cover_url' => 'https://media.rawg.io/media/games/owned.jpg']))->create();
         $second = LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2020-12-20']))->create();
         LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => '2022-01-01']))->create();
         LibraryEntry::factory()->for($owner)->for(Game::factory()->create(['released_on' => null]))->create();
@@ -226,7 +226,7 @@ class StatisticsTest extends TestCase
             ->where('stats.release_years.0.average', 4)->where('stats.release_years.0.ratings_count', 2)
             ->where('stats.release_years.1.average', null)->where('stats.undated_games', 1)
             ->has('stats.highest_rated', 2)->where('stats.highest_rated.0.id', $first->game_id)->where('stats.highest_rated.0.rating', 5)
-            ->where('stats.highest_rated.0.cover_url', 'https://cdn.thegamesdb.net/images/original/games/owned.jpg')->missing('stats.highest_rated.0.thegamesdb_id'));
+            ->where('stats.highest_rated.0.cover_url', 'https://media.rawg.io/media/games/owned.jpg')->missing('stats.highest_rated.0.rawg_id'));
         $rating->update(['score' => 1]);
         $this->get('/stats')->assertInertia(fn (Assert $page) => $page->where('stats.highest_rated.0.id', $second->game_id)->where('stats.release_years.0.average', 1.8));
     }
@@ -234,7 +234,7 @@ class StatisticsTest extends TestCase
     public function test_developers_count_unique_played_games_and_exclude_unassigned_and_other_players(): void
     {
         $owner = User::factory()->create();
-        $studio = Developer::create(['thegamesdb_id' => 333, 'name' => 'Studio One', 'slug' => 'studio-one']);
+        $studio = Developer::create(['rawg_id' => 333, 'name' => 'Studio One', 'slug' => 'studio-one']);
         $first = LibraryEntry::factory()->for($owner)->create(['status' => 'completed']);
         $second = LibraryEntry::factory()->for($owner)->create(['status' => 'playing']);
         $unassigned = LibraryEntry::factory()->for($owner)->create(['status' => null]);

@@ -224,9 +224,9 @@ class PlayerExperienceTest extends TestCase
 
     public function test_external_catalog_ids_cannot_be_duplicated(): void
     {
-        Game::factory()->create(['thegamesdb_id' => 123]);
+        Game::factory()->create(['igdb_id' => 123]);
         $this->expectException(QueryException::class);
-        Game::factory()->create(['thegamesdb_id' => 123]);
+        Game::factory()->create(['igdb_id' => 123]);
     }
 
     public function test_orphan_library_records_are_rejected(): void

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['thegamesdb_id', 'name', 'slug'])]
+#[Fillable(['igdb_id', 'rawg_id', 'name', 'slug'])]
 class Genre extends Model
 {
     /** @use HasFactory<GenreFactory> */
@@ -18,7 +18,8 @@ class Genre extends Model
     protected function casts(): array
     {
         return [
-            'thegamesdb_id' => 'integer',
+            'igdb_id' => 'integer',
+            'rawg_id' => 'integer',
         ];
     }
 

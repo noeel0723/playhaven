@@ -48,7 +48,7 @@ class PlayerDiscoveryTest extends TestCase
         $viewer = $this->player('viewer_player');
         $target = $this->player('target_player');
         $games = Game::factory()->count(4)->create();
-        $games[3]->update(['thegamesdb_id' => 42, 'cover_url' => 'https://untrusted.example/secret.jpg']);
+        $games[3]->update(['rawg_id' => 42, 'cover_url' => 'https://untrusted.example/secret.jpg']);
         foreach ($games->reverse()->values() as $position => $game) {
             $target->profile->topGames()->attach($game, ['position' => $position + 1]);
         }
@@ -62,7 +62,7 @@ class PlayerDiscoveryTest extends TestCase
             ->where('players.data.0.public_reviews_count', 1)->where('players.data.0.is_self', false)
             ->has('players.data.0.top_games', 4)->where('players.data.0.top_games.0.id', $games[3]->id)
             ->where('players.data.0.top_games.3.id', $games[0]->id)->where('players.data.0.top_games.0.cover_url', null)
-            ->missing('players.data.0.email')->missing('players.data.0.library_entries')->missing('players.data.0.top_games.0.thegamesdb_id')
+            ->missing('players.data.0.email')->missing('players.data.0.library_entries')->missing('players.data.0.top_games.0.rawg_id')
             ->missing('players.data.0.top_games.0.pivot')->missing('players.data.0.top_games.0.summary'));
         $this->assertSame($before, $entry->fresh()->getRawOriginal());
         Http::assertNothingSent();

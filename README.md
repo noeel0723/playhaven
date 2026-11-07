@@ -16,7 +16,7 @@ Fondasi lokal platform social game cataloging menggunakan Laravel dan React. Bah
 | Database aplikasi  | PostgreSQL 16                                        |
 | Web authentication | Laravel Fortify, session, CSRF                       |
 | API authentication | Laravel Sanctum                                      |
-| Game catalog       | TheGamesDB melalui backend Laravel                   |
+| Game catalog       | RAWG melalui backend Laravel                         |
 | Build              | Vite, melalui Vite+ bawaan starter kit resmi terbaru |
 | Mobile mendatang   | React Native + Expo, belum dibuat                    |
 
@@ -91,7 +91,7 @@ Header tersebut dipakai secara global dengan posisi yang sama sebelum dan setela
 
 ## Developer dan discovery
 
-Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedia. Klik nama developer atau penerbit untuk menjelajahi game lain dalam katalog lokal, atau gunakan filter **Studio & publisher** di `/games`. Game baru yang diimpor dari TheGamesDB langsung menyimpan informasi tersebut. Untuk melengkapi game lama, jalankan `php artisan catalog:enrich --limit=100` setelah memuat `scripts/env.ps1`. Lihat [panduan katalog](docs/CATALOG.md).
+Detail game menampilkan developer, penerbit, dan tautan situs resmi bila tersedia. Klik nama developer atau penerbit untuk menjelajahi game lain dalam katalog lokal, atau gunakan filter **Studio & publisher** di `/games`. Game baru yang diimpor dari RAWG langsung menyimpan informasi tersebut. Untuk melengkapi game lama, jalankan `php artisan catalog:enrich --limit=100` setelah memuat `scripts/env.ps1`. Lihat [panduan katalog](docs/CATALOG.md).
 
 ## Statistik pribadi
 
@@ -127,7 +127,7 @@ Dari detail game yang sudah ada di library, pilih **Playthroughs & diary** untuk
 
 Buka **Lists** untuk membuat koleksi privat, unlisted, atau publik. Tambahkan game lewat pencarian dalam list, lalu atur catatan dan posisinya. List publik dapat ditemukan pada **Community lists**. Lihat [panduan list](docs/LISTS.md).
 
-Untuk mencari judul yang belum ada di katalog, buka **Games → Find more games**, masukkan nama game di **Search TheGamesDB**, lalu pilih cover, judul, atau **Open game**. Game yang dipilih otomatis tersimpan di katalog lokal sebelum detail dibuka. API key tetap di backend; detail ada di [panduan katalog](docs/CATALOG.md#api-key-and-first-import).
+Untuk mencari judul yang belum ada di katalog, buka **Games → Find more games**, masukkan nama game di **Search RAWG**, lalu pilih cover, judul, atau **Open game**. Game yang dipilih otomatis tersimpan di katalog lokal sebelum detail dibuka. API key tetap di backend; detail ada di [panduan katalog](docs/CATALOG.md#search-and-import-from-the-website).
 
 Halaman detail juga menampilkan **Connected worlds** untuk game dalam seri yang sama, ekspansi/edisi, game induk, dan relasi cerita terkurasi. Lihat [panduan relasi game](docs/GAME_CONNECTIONS.md) untuk menambahkan prequel/sequel/shared universe dengan sumber yang jelas.
 
@@ -137,26 +137,26 @@ Untuk pengembangan lokal, gunakan `APP_ENV=local` dan `AUTH_REQUIRE_EMAIL_VERIFI
 
 Untuk mengaktifkannya kembali, ubah `AUTH_REQUIRE_EMAIL_VERIFICATION=true`, lalu jalankan `php artisan config:clear`. Lingkungan selain `local` selalu mewajibkan verifikasi email.
 
-## TheGamesDB
+## RAWG
 
-Provider katalog aktif adalah **TheGamesDB**. Isi hanya nilai berikut pada `.env` lokal (jangan commit API key):
-
-```dotenv
-THEGAMESDB_API_KEY=masukkan_key_kamu
-```
+Provider katalog aktif adalah RAWG. Isi `RAWG_API_KEY` di `.env` lokal, lalu jalankan:
 
 ```powershell
 . .\scripts\env.ps1
 php artisan config:clear
-php artisan thegamesdb:check
-php artisan catalog:sync --query="Sonic" --inline
+php artisan migrate
+php artisan rawg:check
+php artisan catalog:sync --inline
 ```
 
-Buka **Games → Find more games**, cari judul pada TheGamesDB, lalu klik **Open game** untuk mengimpor dan membukanya. Hasil pencarian mencantumkan platform karena satu judul dapat memiliki beberapa entri platform. Cover depan digunakan untuk poster; fanart/banner/screenshot digunakan untuk backdrop. Metadata disimpan lokal, sehingga halaman katalog dan detail tidak memanggil provider setiap kali dibuka.
+Default import mengambil 20 game dan deskripsi lengkapnya. Untuk background jobs:
 
-Impor berdasarkan ID: `php artisan catalog:sync --ids=53,432 --inline`. Tanpa `--inline`, jalankan queue worker setelah antrean dibuat. Perbarui metadata lokal dengan `php artisan catalog:enrich --limit=50`. Developer/publisher dan genre disimpan sebagai relasi lokal; TheGamesDB saat ini menyediakan nama/ID studio, bukan biografi studio. Connected worlds tetap mendukung kurasi lewat `catalog:relate` tanpa menebak urutan cerita.
+```powershell
+php artisan catalog:sync --page=1 --pages=5 --per-page=20
+php artisan queue:work
+```
 
-Integrasi dan kredensial provider sebelumnya sudah dilepas. Detail setup, reset yang mempertahankan akun, pemetaan metadata, dan pembatasan API ada di [panduan katalog](docs/CATALOG.md).
+ID RAWG dipisahkan dari ID IGDB lama. Import mempertahankan ID lokal, URL, library, rating, dan riwayat pemain. RAWG menggunakan API key langsung; tidak membutuhkan Twitch. Key tidak dicetak di output, dikirim ke frontend, atau disimpan di contoh konfigurasi. Detail ada di [panduan katalog](docs/CATALOG.md).
 
 ## Akses lewat Laragon
 
@@ -189,7 +189,7 @@ php vendor/bin/phpstan analyse --memory-limit=1G
 
 ```text
 app/                 Backend, models, actions, services
-  Services/TheGamesDb/     Client dan sinkronisasi katalog aktif
+  Services/Rawg/     Client dan sinkronisasi katalog aktif
 resources/js/        React + TypeScript
   components/ui/     Komponen shadcn/ui
   pages/             Halaman Inertia

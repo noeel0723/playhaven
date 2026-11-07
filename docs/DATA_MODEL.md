@@ -28,17 +28,17 @@ erDiagram
 
 ## Catalog
 
-| Table                         | Purpose and key rules                                                                                                                                                   |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `games`                       | Local primary key, unique slug, nullable unique TheGamesDB IDs, name, summary/storyline, release date, TheGamesDB cover URL, provider update and detail-sync timestamps |
-| `genres`, `platforms`         | Local primary keys, unique slugs, nullable unique TheGamesDB IDs                                                                                                        |
-| `game_genre`, `game_platform` | Many-to-many relationships with composite primary keys, preventing duplicate associations                                                                               |
+| Table                         | Purpose and key rules                                                                                                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `games`                       | Local primary key, unique slug, nullable unique RAWG and legacy IGDB IDs, name, summary/storyline, release date, RAWG cover URL, legacy cover ID, provider update and detail-sync timestamps |
+| `genres`, `platforms`         | Local primary keys, unique slugs, nullable unique RAWG and legacy IGDB IDs                                                                                                                   |
+| `game_genre`, `game_platform` | Many-to-many relationships with composite primary keys, preventing duplicate associations                                                                                                    |
 
-Local foreign keys always reference local IDs, never provider IDs. This keeps player history independent of the external provider. Metadata can be resynchronized later without recreating a game row. TheGamesDB metadata is imported through the explicit catalog command; no demo reviews are seeded.
+Local foreign keys always reference local IDs, never provider IDs. This keeps player history independent of the external provider. Metadata can be resynchronized later without recreating a game row. RAWG metadata is imported through the explicit catalog command; no demo reviews are seeded.
 
-`developers` and `publishers` store a unique TheGamesDB company ID, stable unique local slug, and name. `developer_game` and `game_publisher` connect companies to games through composite primary keys and cascading foreign keys. Games may have multiple developers and publishers. `games.website_url` holds the validated official website; `credits_synced_at` distinguishes older entries awaiting enrichment from checked entries with no available credits. These additive tables and columns do not modify player history.
+`developers` and `publishers` store a unique RAWG company ID, stable unique local slug, and name. `developer_game` and `game_publisher` connect companies to games through composite primary keys and cascading foreign keys. Games may have multiple developers and publishers. `games.website_url` holds the validated official website; `credits_synced_at` distinguishes older entries awaiting enrichment from checked entries with no available credits. These additive tables and columns do not modify player history.
 
-`game_connections` stores provider relationship snapshots and curated bidirectional edges with a TheGamesDB target ID, type, source, title/artwork/date snapshot, optional note, and source URL. `games.connections_synced_at`, `connections_checked_at`, and `connections_truncated` track refresh state. Selecting an external target imports its full local catalog record. See [game connections](GAME_CONNECTIONS.md).
+`game_connections` stores provider relationship snapshots and curated bidirectional edges with a RAWG target ID, type, source, title/artwork/date snapshot, optional note, and source URL. `games.connections_synced_at`, `connections_checked_at`, and `connections_truncated` track refresh state. Selecting an external target imports its full local catalog record. See [game connections](GAME_CONNECTIONS.md).
 
 ## Player experience
 

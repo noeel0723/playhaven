@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use App\Models\Game;
-use App\Services\TheGamesDb\CatalogImage;
+use App\Services\Rawg\CatalogImage;
+use App\Services\Rawg\OfficialWebsite;
 use App\Support\GameCoverUrl;
-use App\Support\OfficialWebsite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

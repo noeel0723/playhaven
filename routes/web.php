@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\CatalogDiscoveryController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DiaryController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GameCatalogController;
+use App\Http\Controllers\GameConnectionController;
 use App\Http\Controllers\GameDiaryController;
 use App\Http\Controllers\GameExperienceController;
 use App\Http\Controllers\GameListController;
@@ -17,6 +17,7 @@ use App\Http\Controllers\PlayerPagesController;
 use App\Http\Controllers\PlaythroughController;
 use App\Http\Controllers\ProfileBannerController;
 use App\Http\Controllers\ProfilePhotoController;
+use App\Http\Controllers\RawgDiscoveryController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,7 @@ Route::pattern('gameDiaryLog', '[1-9][0-9]{0,17}');
 Route::pattern('gameList', '[1-9][0-9]{0,17}');
 Route::pattern('listItem', '[1-9][0-9]{0,17}');
 Route::pattern('listOwner', '[1-9][0-9]{0,17}');
-Route::pattern('thegamesdbId', '[1-9][0-9]{0,9}');
+Route::pattern('rawgId', '[1-9][0-9]{0,9}');
 Route::pattern('username', '[A-Za-z][A-Za-z0-9_]{2,29}');
 Route::pattern('playerProfile', '[1-9][0-9]{0,17}');
 Route::pattern('photo', '[a-f0-9]{32}');
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('community/profile/banner', [ProfileBannerController::class, 'destroy'])->middleware('throttle:profile-banners')->name('players.banner.destroy');
     Route::post('players/{username}/follow', [FollowController::class, 'store'])->middleware('throttle:community-follows')->name('follows.store');
     Route::delete('players/{username}/follow', [FollowController::class, 'destroy'])->middleware('throttle:community-follows')->name('follows.destroy');
+    Route::post('games/{game:slug}/connections/refresh', [GameConnectionController::class, 'refresh'])->middleware('throttle:rawg-connections')->name('games.connections.refresh');
     Route::get('lists', [GameListController::class, 'index'])->name('lists.index');
     Route::get('my-lists/create', [GameListController::class, 'create'])->name('lists.create');
     Route::get('my-lists/{gameList}/edit', [GameListController::class, 'edit'])->name('lists.edit');
@@ -73,8 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('my-lists/{gameList}/items', [GameListItemController::class, 'store'])->name('list-items.store');
     Route::put('my-lists/{gameList}/items/{listItem}', [GameListItemController::class, 'update'])->name('list-items.update');
     Route::delete('my-lists/{gameList}/items/{listItem}', [GameListItemController::class, 'destroy'])->name('list-items.destroy');
-    Route::get('discover/thegamesdb', [CatalogDiscoveryController::class, 'index'])->middleware('throttle:catalog-search')->name('catalog.search');
-    Route::post('discover/thegamesdb/{thegamesdbId}', [CatalogDiscoveryController::class, 'store'])->middleware('throttle:catalog-import')->name('catalog.import');
+    Route::get('discover/rawg', [RawgDiscoveryController::class, 'index'])->middleware('throttle:rawg-search')->name('catalog.search');
+    Route::post('discover/rawg/{rawgId}', [RawgDiscoveryController::class, 'store'])->middleware('throttle:rawg-import')->name('catalog.import');
     Route::get('dashboard', [LibraryController::class, 'dashboard'])->name('dashboard');
     Route::get('stats', [StatisticsController::class, 'index'])->name('stats.index');
     Route::get('library', [LibraryController::class, 'index'])->name('library.index');

@@ -2,47 +2,81 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SyncTheGamesDbGame;
-use App\Services\TheGamesDb\CatalogSynchronizer;
-use App\Services\TheGamesDb\TheGamesDbClient;
+use App\Jobs\SyncRawgGames;
+use App\Services\Rawg\CatalogSynchronizer;
+use App\Services\Rawg\RawgRateLimited;
 use Illuminate\Console\Command;
 use Throwable;
 
 class SyncCatalog extends Command
 {
-    protected $signature = 'catalog:sync {--ids= : Comma-separated TheGamesDB IDs} {--query= : Search title to import} {--page=1} {--inline : Import immediately instead of queueing}';
+    protected $signature = 'catalog:sync {--page=1} {--pages=1} {--per-page=20} {--inline : Import metadata and descriptions immediately}';
 
-    protected $description = 'Import TheGamesDB games into the local catalog';
+    protected $description = 'Import RAWG games into the local catalog';
 
-    public function handle(TheGamesDbClient $client, CatalogSynchronizer $synchronizer): int
+    public function handle(CatalogSynchronizer $synchronizer): int
     {
-        $ids = trim((string) $this->option('ids'));
-        $query = trim((string) $this->option('query'));
-        $page = filter_var($this->option('page'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000]]);
-        if (($ids === '') === ($query === '') || $page === false || ($ids !== '' && ! preg_match('/^[1-9][0-9]{0,9}(,[1-9][0-9]{0,9}){0,99}$/', $ids))) {
-            $this->error('Choose --ids=53,432 or --query="Sonic" with a valid --page=1.');
+        $page = filter_var($this->option('page'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000000]]);
+        $pages = filter_var($this->option('pages'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 20]]);
+        $pageSize = filter_var($this->option('per-page'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 40]]);
+        if ($page === false || $pages === false || $pageSize === false) {
+            $this->error('Use a positive starting page, 1–20 pages, and 1–40 games per page.');
+
+            return self::FAILURE;
+        }
+        if (! config('services.rawg.api_key')) {
+            $this->error('Set RAWG_API_KEY in .env first.');
 
             return self::FAILURE;
         }
         try {
-            $gameIds = $ids !== '' ? array_map('intval', explode(',', $ids)) : array_column($client->search($query, $page)['games'], 'id');
-            foreach (array_unique($gameIds) as $id) {
-                if ($this->option('inline')) {
-                    $synchronizer->syncGame($id);
-                } else {
-                    if (! config('services.thegamesdb.api_key')) {
-                        throw new \RuntimeException('Missing credentials.');
-                    }
-                    SyncTheGamesDbGame::dispatch($id);
+            for ($current = $page; $current < $page + $pages; $current++) {
+                if (! $this->option('inline')) {
+                    SyncRawgGames::dispatch($current, $pageSize);
+
+                    continue;
+                }
+                $result = $this->paced(fn () => $synchronizer->syncPage($current, $pageSize));
+                $this->info("Page {$current}: {$result['imported']} games stored. Fetching descriptions…");
+                foreach ($result['ids'] as $id) {
+                    $this->paced(fn () => $synchronizer->syncGame($id));
+                }
+                $this->info("Page {$current}: descriptions synchronized.");
+                if ($result['ids'] === []) {
+                    break;
                 }
             }
-        } catch (Throwable) {
-            $this->error('Catalog import stopped. Set THEGAMESDB_API_KEY and check allowance, connection, and provider data.');
+        } catch (Throwable $exception) {
+            // Client exceptions are sanitized; do not print HTTP URLs, bodies, or credentials.
+            $this->error('RAWG catalog sync could not complete. Check credentials, quota, network, and upstream data before retrying.');
 
             return self::FAILURE;
         }
-        $this->info(count(array_unique($gameIds)).($this->option('inline') ? ' games imported.' : ' games queued. Run php artisan queue:work.'));
+        if (! $this->option('inline')) {
+            $this->info('RAWG catalog and detail synchronization queued. Run php artisan queue:work.');
+        }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @template T
+     *
+     * @param  callable(): T  $operation
+     * @return T
+     */
+    private function paced(callable $operation): mixed
+    {
+        $attempts = 0;
+        while (true) {
+            try {
+                return $operation();
+            } catch (RawgRateLimited $exception) {
+                if (++$attempts >= 4) {
+                    throw $exception;
+                }
+                sleep(min(5, $exception->retryAfter));
+            }
+        }
     }
 }

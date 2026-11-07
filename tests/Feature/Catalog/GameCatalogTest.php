@@ -16,7 +16,7 @@ class GameCatalogTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_empty_catalog_is_public_and_does_not_call_provider(): void
+    public function test_empty_catalog_is_public_and_does_not_call_igdb(): void
     {
         Http::preventStrayRequests();
         $this->get('/games')->assertOk()->assertInertia(fn (Assert $page) => $page
@@ -69,12 +69,12 @@ class GameCatalogTest extends TestCase
 
     public function test_detail_uses_local_slug_and_exposes_only_catalog_fields(): void
     {
-        $game = Game::factory()->create(['slug' => 'safe-game', 'summary' => '<script>not executable</script>', 'cover_url' => '../../bad']);
-        config(['services.thegamesdb.api_key' => 'never-render-this-secret']);
+        $game = Game::factory()->create(['slug' => 'safe-game', 'summary' => '<script>not executable</script>', 'cover_image_id' => '../../bad']);
+        config(['services.igdb.client_secret' => 'never-render-this-secret']);
         $this->get('/games/safe-game')->assertOk()->assertDontSee('never-render-this-secret')
             ->assertInertia(fn (Assert $page) => $page->component('games/show')->where('game.id', $game->id)
                 ->where('game.cover_url', null)->where('game.summary', '<script>not executable</script>')
-                ->missing('game.source_updated_at')->missing('game.library_entries'));
+                ->missing('game.igdb_updated_at')->missing('game.library_entries'));
         $this->get('/games/missing-game')->assertNotFound();
     }
 
@@ -84,17 +84,17 @@ class GameCatalogTest extends TestCase
         $this->getJson('/games?sort=sql&year=bad&page=-1')->assertUnprocessable()->assertJsonValidationErrors(['sort', 'year', 'page']);
     }
 
-    public function test_thegamesdb_images_are_rendered_without_exposing_the_api_key(): void
+    public function test_rawg_images_are_rendered_without_exposing_the_api_key(): void
     {
-        $game = Game::factory()->create(['thegamesdb_id' => 100, 'cover_url' => 'https://cdn.thegamesdb.net/images/original/games/test.jpg']);
-        config(['services.thegamesdb.api_key' => 'provider-test-secret-never-render']);
-        $this->get('/games/'.$game->slug)->assertOk()->assertDontSee('provider-test-secret-never-render')
-            ->assertInertia(fn (Assert $page) => $page->where('game.cover_url', 'https://cdn.thegamesdb.net/images/original/games/test.jpg')->where('game.rating', null));
+        $game = Game::factory()->create(['rawg_id' => 100, 'cover_url' => 'https://media.rawg.io/media/games/test.jpg']);
+        config(['services.rawg.api_key' => 'rawg-test-secret-never-render']);
+        $this->get('/games/'.$game->slug)->assertOk()->assertDontSee('rawg-test-secret-never-render')
+            ->assertInertia(fn (Assert $page) => $page->where('game.cover_url', 'https://media.rawg.io/media/games/test.jpg')->where('game.rating', null));
     }
 
-    public function test_thegamesdb_image_urls_cannot_point_to_untrusted_hosts_or_include_keys(): void
+    public function test_rawg_image_urls_cannot_point_to_untrusted_hosts_or_include_keys(): void
     {
-        $game = Game::factory()->create(['thegamesdb_id' => 100, 'cover_url' => 'https://cdn.thegamesdb.net/images/original/games/test.jpg?key=not-allowed']);
+        $game = Game::factory()->create(['rawg_id' => 100, 'cover_url' => 'https://media.rawg.io/media/games/test.jpg?key=not-allowed']);
         $this->get('/games/'.$game->slug)->assertInertia(fn (Assert $page) => $page->where('game.cover_url', null));
         $game->update(['cover_url' => 'https://untrusted.example/cover.jpg']);
         $this->get('/games/'.$game->slug)->assertInertia(fn (Assert $page) => $page->where('game.cover_url', null));

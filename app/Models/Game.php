@@ -12,16 +12,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
- * @property int|null $thegamesdb_id
+ * @property int|null $rawg_id
  * @property CarbonImmutable|null $released_on
- * @property CarbonImmutable|null $source_updated_at
+ * @property CarbonImmutable|null $igdb_updated_at
  * @property CarbonImmutable|null $synced_at
- * @property CarbonImmutable|null $details_synced_at
+ * @property CarbonImmutable|null $rawg_updated_at
+ * @property CarbonImmutable|null $rawg_details_synced_at
  * @property CarbonImmutable|null $connections_synced_at
  * @property CarbonImmutable|null $connections_checked_at
  * @property CarbonImmutable|null $credits_synced_at
  */
-#[Fillable(['thegamesdb_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_url', 'banner_url', 'website_url', 'source_updated_at', 'details_synced_at', 'credits_synced_at', 'synced_at'])]
+#[Fillable(['igdb_id', 'rawg_id', 'slug', 'name', 'summary', 'storyline', 'released_on', 'cover_image_id', 'cover_url', 'banner_url', 'website_url', 'igdb_updated_at', 'rawg_updated_at', 'rawg_details_synced_at', 'credits_synced_at', 'synced_at'])]
 class Game extends Model
 {
     /** @use HasFactory<GameFactory> */
@@ -31,14 +32,16 @@ class Game extends Model
     protected function casts(): array
     {
         return [
-            'thegamesdb_id' => 'integer',
-            'details_synced_at' => 'immutable_datetime',
-            'source_updated_at' => 'immutable_datetime',
+            'igdb_id' => 'integer',
+            'rawg_id' => 'integer',
+            'rawg_updated_at' => 'immutable_datetime',
+            'rawg_details_synced_at' => 'immutable_datetime',
             'connections_synced_at' => 'immutable_datetime',
             'connections_checked_at' => 'immutable_datetime',
             'connections_truncated' => 'boolean',
             'credits_synced_at' => 'immutable_datetime',
             'released_on' => 'immutable_date',
+            'igdb_updated_at' => 'immutable_datetime',
             'synced_at' => 'immutable_datetime',
         ];
     }

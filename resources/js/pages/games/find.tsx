@@ -1,7 +1,7 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
-import CatalogResult from '@/components/catalog-game-card';
-import type { CatalogGamePreview } from '@/components/catalog-game-card';
+import RawgResult from '@/components/rawg-game-card';
+import type { RawgGamePreview } from '@/components/rawg-game-card';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ export default function FindGames({
     hasNext,
     error,
 }: {
-    results: CatalogGamePreview[];
+    results: RawgGamePreview[];
     query: string;
     page: number;
     hasNext: boolean;
@@ -48,16 +48,16 @@ export default function FindGames({
                 key={`${query}:${page}`}
                 options={{ preserveState: 'errors' }}
                 role="search"
-                aria-label="Search TheGamesDB games"
+                aria-label="Search RAWG games"
             >
                 {({ processing, errors }) => (
                     <div className="mb-5">
-                        <Label htmlFor="provider-query" className="text-xs">
-                            Search game titles on TheGamesDB
+                        <Label htmlFor="rawg-query" className="text-xs">
+                            Search game titles on RAWG
                         </Label>
                         <div className="mt-1.5 flex items-center gap-2">
                             <Input
-                                id="provider-query"
+                                id="rawg-query"
                                 name="q"
                                 defaultValue={query}
                                 required
@@ -72,9 +72,7 @@ export default function FindGames({
                                 disabled={processing}
                             >
                                 <Search aria-hidden="true" />
-                                {processing
-                                    ? 'Searching…'
-                                    : 'Search TheGamesDB'}
+                                {processing ? 'Searching…' : 'Search RAWG'}
                             </Button>
                         </div>
                         <InputError
@@ -105,10 +103,10 @@ export default function FindGames({
                     </div>
                     <div
                         className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-6"
-                        data-provider-results
+                        data-rawg-results
                     >
                         {results.map((game) => (
-                            <CatalogResult
+                            <RawgResult
                                 key={game.id}
                                 game={game}
                                 compact
@@ -128,14 +126,14 @@ export default function FindGames({
                         <p className="mt-2 text-xs leading-5 text-[#bdb6b1]">
                             {query
                                 ? 'Try another title or browse a different page.'
-                                : 'Enter at least two characters to search TheGamesDB.'}
+                                : 'Enter at least two characters to search RAWG.'}
                         </p>
                     </div>
                 )
             )}
             {query && (
                 <nav
-                    aria-label="TheGamesDB search pagination"
+                    aria-label="RAWG search pagination"
                     className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3"
                 >
                     <p className="text-[11px] text-[#bdb6b1]">Page {page}</p>

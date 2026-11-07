@@ -9,15 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property GameConnectionType $type
- * @property int $related_thegamesdb_id
  * @property CarbonImmutable|null $released_on
  */
-#[Fillable(['game_id', 'related_thegamesdb_id', 'type', 'source', 'name', 'released_on', 'cover_url', 'note', 'source_url'])]
+#[Fillable(['game_id', 'related_rawg_id', 'type', 'source', 'name', 'released_on', 'cover_url', 'note', 'source_url'])]
 class GameConnection extends Model
 {
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['related_thegamesdb_id' => 'integer', 'type' => GameConnectionType::class, 'released_on' => 'immutable_date'];
+        return ['related_rawg_id' => 'integer', 'type' => GameConnectionType::class, 'released_on' => 'immutable_date'];
     }
 }

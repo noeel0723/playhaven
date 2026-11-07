@@ -7,7 +7,7 @@ import ListAddGame from '@/components/list-add-game';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { search as discovery } from '@/routes/catalog';
+import { search as rawg } from '@/routes/catalog';
 import { edit, show, update, destroy } from '@/routes/lists';
 import { update as updateItem } from '@/routes/list-items';
 import { listVisibilities } from '@/types/lists';
@@ -227,10 +227,10 @@ export default function EditList({
                                     {processing ? 'Searching…' : 'Search'}
                                 </Button>
                                 <Link
-                                    href={discovery()}
+                                    href={rawg()}
                                     className="rounded-sm px-2 py-2 text-xs text-[#bdb6b1] underline underline-offset-4 focus-visible:outline-2"
                                 >
-                                    Find with TheGamesDB
+                                    Find with RAWG
                                 </Link>
                             </div>
                             {errors.q && (

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Game;
-use App\Services\TheGamesDb\CatalogImage;
+use App\Services\Rawg\CatalogImage;
 use App\Support\GameCoverUrl;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;

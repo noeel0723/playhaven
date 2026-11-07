@@ -9,13 +9,13 @@ export const connectionTypes = [
 
 export type GameConnection = {
     id: number;
-    thegamesdb_id: number;
+    rawg_id: number;
     name: string;
     released_on: string | null;
     cover_url: string | null;
     local_slug: string | null;
     type: (typeof connectionTypes)[number]['value'];
-    source: 'curated';
+    source: 'rawg' | 'curated';
     note: string | null;
     source_url: string | null;
 };

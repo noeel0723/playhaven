@@ -3,15 +3,16 @@
 namespace App\Console\Commands;
 
 use App\Models\Game;
-use App\Services\TheGamesDb\CatalogSynchronizer;
+use App\Services\Rawg\CatalogSynchronizer;
+use App\Services\Rawg\RawgRateLimited;
 use Illuminate\Console\Command;
 use Throwable;
 
 class EnrichCatalog extends Command
 {
-    protected $signature = 'catalog:enrich {--limit=50}';
+    protected $signature = 'catalog:enrich {--limit=50 : Maximum games with missing credits to update}';
 
-    protected $description = 'Refresh TheGamesDB metadata and artwork for local games';
+    protected $description = 'Fill developer, publisher and website metadata for existing RAWG games';
 
     public function handle(CatalogSynchronizer $synchronizer): int
     {
@@ -21,17 +22,31 @@ class EnrichCatalog extends Command
 
             return self::FAILURE;
         }
+        $games = Game::whereNotNull('rawg_id')->whereNull('credits_synced_at')->orderBy('id')->limit($limit)->get();
         try {
-            $games = Game::whereNotNull('thegamesdb_id')->orderBy('details_synced_at')->orderBy('id')->limit($limit)->get();
             foreach ($games as $game) {
-                $synchronizer->syncGame($game->thegamesdb_id, true);
+                $attempt = 0;
+                while (true) {
+                    try {
+                        $synchronizer->syncGame($game->rawg_id);
+                        break;
+                    } catch (RawgRateLimited $exception) {
+                        if ($exception->retryAfter > 5 || ++$attempt > 3) {
+                            throw $exception;
+                        }
+                        sleep($exception->retryAfter);
+                    }
+                }
+                if ($game->fresh()->credits_synced_at === null) {
+                    throw new \RuntimeException('Stale details could not enrich this entry.');
+                }
             }
         } catch (Throwable) {
-            $this->error('Refresh stopped. Check TheGamesDB credentials, allowance, or connection.');
+            $this->error('Enrichment stopped. Saved player data is preserved; check RAWG credentials, quota, or connection and retry.');
 
             return self::FAILURE;
         }
-        $this->info($games->count().' games refreshed.');
+        $this->info($games->count().' games enriched.');
 
         return self::SUCCESS;
     }

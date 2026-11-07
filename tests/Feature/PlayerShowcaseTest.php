@@ -181,7 +181,7 @@ class PlayerShowcaseTest extends TestCase
         Game::factory()->count(13)->create(['name' => 'Search adventure']);
         $literal = Game::factory()->create(['name' => '100%_Complete']);
         $this->actingAs($user)->get(route('players.edit', ['q' => 'SEARCH']))->assertInertia(fn (Assert $page) => $page
-            ->has('availableGames', 12)->where('query', 'SEARCH')->where('topGames.0.id', $pick->id)->missing('availableGames.0.thegamesdb_id'));
+            ->has('availableGames', 12)->where('query', 'SEARCH')->where('topGames.0.id', $pick->id)->missing('availableGames.0.rawg_id'));
         $this->get(route('players.edit', ['q' => '%_']))->assertInertia(fn (Assert $page) => $page->has('availableGames', 1)->where('availableGames.0.id', $literal->id));
         $this->getJson(route('players.edit', ['q' => ['bad']]))->assertUnprocessable()->assertJsonValidationErrors('q');
         Http::assertNothingSent();

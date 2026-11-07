@@ -12,7 +12,7 @@ class GameFactory extends Factory
     public function definition(): array
     {
         return [
-            'thegamesdb_id' => null,
+            'igdb_id' => null,
             'name' => fake()->unique()->words(3, true),
             'slug' => fake()->unique()->slug(),
             'summary' => fake()->paragraph(),
