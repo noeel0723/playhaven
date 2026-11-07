@@ -14,7 +14,7 @@ A game can be rated or reviewed with any of the four playing statuses or without
 
 `PUT /library/{game:slug}/rating` accepts a present `stars` field: null to clear, or a numeric half-star value between 0.5 and 5. Values are stored as integers 1–10. Each user/game library entry has one current rating, so edits and repeat playthroughs do not add votes.
 
-Personal ratings appear on library/dashboard cards and in the editor. Community averages and rating counts use all current PlayHaven ratings, including ratings belonging to a private review. RAWG ratings are not imported into this aggregate.
+Personal ratings appear on library/dashboard cards and in the editor. Community averages and rating counts use all current PlayHaven ratings, including ratings belonging to a private review. TheGamesDB ratings are not imported into this aggregate.
 
 ## Reviews, privacy, and spoilers
 

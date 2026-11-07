@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAutoFilters } from '@/hooks/use-auto-filters';
 import { index } from '@/routes/games';
-import { search as rawgSearch } from '@/routes/catalog';
+import { search as providerSearch } from '@/routes/catalog';
 import type {
     CatalogFilters,
     CatalogPagination,
@@ -259,7 +259,7 @@ export default function Games({
                         </div>
                     </details>
                     <Link
-                        href={rawgSearch()}
+                        href={providerSearch()}
                         className="inline-flex h-7 items-center gap-1 rounded px-1.5 text-[#c5bfba] hover:bg-rein/30 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                         Find more games

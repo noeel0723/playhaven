@@ -42,7 +42,7 @@ Public list pages expose the owner's account name. Private/unlisted detail respo
 
 Authenticated, verified routes under `/my-lists` create, edit, and remove collections/items. The local email-verification bypass remains supported. Every mutation resolves the list through the current user's `gameLists()` relation. Items must belong to that exact list. Client-provided owner IDs, parent IDs, slugs, and replacement game IDs are excluded from metadata updates.
 
-Item mutations lock the list in a transaction to serialize adds, reordering, and removal. Existing unique constraints enforce one user/slug and one list/game pair. A list can contain games that are absent from the owner's library. Missing games can first be added through [RAWG discovery](CATALOG.md#search-and-import-from-the-website).
+Item mutations lock the list in a transaction to serialize adds, reordering, and removal. Existing unique constraints enforce one user/slug and one list/game pair. A list can contain games that are absent from the owner's library. Missing games can first be added through [TheGamesDB discovery](CATALOG.md#search-and-import-from-the-website).
 
 Editor writes send the validated `return_to_edit` flag to stay in the editor. Existing callers without this flag keep their detail-page redirects; the game action card's `return_to_game` behavior is preserved.
 

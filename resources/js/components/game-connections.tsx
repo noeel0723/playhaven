@@ -1,19 +1,15 @@
-import { useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import RawgGameCard from '@/components/rawg-game-card';
-import { refresh } from '@/routes/games/connections';
+import CatalogGameCard from '@/components/catalog-game-card';
 import { connectionTypes } from '@/types/connections';
 import type { ConnectionState, GameConnection } from '@/types/connections';
 
 function ConnectionCard({ connection }: { connection: GameConnection }) {
     return (
         <div className="min-w-0">
-            <RawgGameCard
+            <CatalogGameCard
                 compact
                 dense
                 game={{
-                    id: connection.rawg_id,
+                    id: connection.thegamesdb_id,
                     name: connection.name,
                     released_on: connection.released_on,
                     cover_url: connection.cover_url,
@@ -21,9 +17,7 @@ function ConnectionCard({ connection }: { connection: GameConnection }) {
                 }}
             />
             <p className="mt-1.5 text-[11px] leading-4 text-[#bdb6b1]">
-                {connection.source === 'curated'
-                    ? 'PlayHaven curation'
-                    : 'From RAWG'}
+                PlayHaven curation
             </p>
             {(connection.note || connection.source_url) && (
                 <details className="mt-1 text-[11px]">
@@ -52,28 +46,14 @@ function ConnectionCard({ connection }: { connection: GameConnection }) {
 }
 
 export default function GameConnections({
-    gameSlug,
     connections,
-    state,
-    reviewsPage,
 }: {
     gameSlug: string;
     connections: GameConnection[];
     state: ConnectionState;
     reviewsPage: number;
 }) {
-    const attempted = useRef(false);
-    const { post, processing, errors } = useForm<{
-        connections?: string;
-        reviews_page: number;
-    }>({ reviews_page: reviewsPage });
-    useEffect(() => {
-        if (state.can_refresh && !attempted.current) {
-            attempted.current = true;
-            post(refresh(gameSlug).url, { preserveScroll: true });
-        }
-    }, [state.can_refresh, gameSlug, post]);
-    if (!state.supported && connections.length === 0) return null;
+    if (connections.length === 0) return null;
     return (
         <section
             aria-labelledby="connected-worlds"
@@ -85,35 +65,6 @@ export default function GameConnections({
             >
                 Connected worlds
             </h2>
-            {processing && (
-                <p
-                    role="status"
-                    className="mt-3 flex items-center gap-1.5 text-[11px] text-[#c5bfba]"
-                >
-                    <LoaderCircle
-                        className="size-3 motion-safe:animate-spin"
-                        aria-hidden="true"
-                    />
-                    Finding connected games…
-                </p>
-            )}
-            {errors.connections && (
-                <p
-                    role="alert"
-                    className="mt-3 text-xs leading-5 text-[#d8bcb2]"
-                >
-                    {errors.connections}
-                </p>
-            )}
-            {!processing && connections.length === 0 && (
-                <p className="mt-3 text-xs leading-5 text-[#bdb6b1]">
-                    {state.synced_at
-                        ? 'No connections are available for this game yet.'
-                        : state.checked_at
-                          ? 'Connection data is temporarily unavailable. It can refresh again in a few minutes.'
-                          : 'Connection data will load when you open this game while logged in.'}
-                </p>
-            )}
             {connectionTypes.map((type) => {
                 const group = connections.filter(
                     (connection) => connection.type === type.value,
@@ -163,11 +114,6 @@ export default function GameConnections({
                     </section>
                 );
             })}
-            {state.truncated && (
-                <p className="mt-3 text-[11px] leading-4 text-[#bdb6b1]">
-                    RAWG has additional related entries beyond this selection.
-                </p>
-            )}
         </section>
     );
 }

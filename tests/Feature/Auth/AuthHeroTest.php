@@ -32,15 +32,15 @@ class AuthHeroTest extends TestCase
 
     public function test_home_login_and_registration_use_the_same_weekly_leader_and_validated_artwork(): void
     {
-        config(['services.rawg.api_key' => 'auth-secret-never-render']);
-        $game = Game::factory()->create(['rawg_id' => 101, 'banner_url' => 'https://media.rawg.io/media/screenshots/auth-hero.jpg', 'cover_url' => 'https://media.rawg.io/media/games/auth-cover.jpg']);
+        config(['services.thegamesdb.api_key' => 'auth-secret-never-render']);
+        $game = Game::factory()->create(['thegamesdb_id' => 101, 'banner_url' => 'https://cdn.thegamesdb.net/images/original/screenshots/auth-hero.jpg', 'cover_url' => 'https://cdn.thegamesdb.net/images/original/games/auth-cover.jpg']);
         $this->activePlayer($game, CarbonImmutable::now());
         $expected = $this->get(route('home'))->assertOk()->viewData('page')['props']['featuredWorld'];
         $before = LibraryEntry::firstOrFail()->getRawOriginal();
         foreach (['login', 'register'] as $route) {
             $this->get(route($route))->assertOk()->assertDontSee('auth-secret-never-render')->assertInertia(fn (Assert $page) => $page
                 ->component('auth/'.$route)->where('featuredWorld', $expected)
-                ->where('featuredWorld.banner_url', 'https://media.rawg.io/media/screenshots/auth-hero.jpg')->missing('featuredWorld.rawg_id')->missing('featuredWorld.user_id'));
+                ->where('featuredWorld.banner_url', 'https://cdn.thegamesdb.net/images/original/screenshots/auth-hero.jpg')->missing('featuredWorld.thegamesdb_id')->missing('featuredWorld.user_id'));
         }
         $this->assertSame($before, LibraryEntry::firstOrFail()->getRawOriginal());
         Http::assertNothingSent();
@@ -67,7 +67,7 @@ class AuthHeroTest extends TestCase
         foreach (['login', 'register'] as $route) {
             $this->get(route($route))->assertOk()->assertInertia(fn (Assert $page) => $page->where('featuredWorld', null));
         }
-        Game::factory()->create(['rawg_id' => 999, 'banner_url' => 'https://untrusted.example/secret.jpg', 'cover_url' => 'https://untrusted.example/cover.jpg']);
+        Game::factory()->create(['thegamesdb_id' => 999, 'banner_url' => 'https://untrusted.example/secret.jpg', 'cover_url' => 'https://untrusted.example/cover.jpg']);
         foreach (['login', 'register'] as $route) {
             $this->get(route($route))->assertOk()->assertDontSee('untrusted.example')->assertInertia(fn (Assert $page) => $page
                 ->where('featuredWorld.banner_url', null)->where('featuredWorld.cover_url', null));

@@ -12,7 +12,7 @@ class GenreFactory extends Factory
     public function definition(): array
     {
         return [
-            'igdb_id' => null,
+            'thegamesdb_id' => null,
             'name' => fake()->unique()->word(),
             'slug' => fake()->unique()->slug(),
         ];

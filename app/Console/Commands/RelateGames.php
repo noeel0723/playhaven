@@ -28,7 +28,7 @@ class RelateGames extends Command
             $type = $this->option('remove') ? null : GameConnectionType::from($data['type']);
             $connections->curate($game, $related, $type, $data['note'], $data['url']);
         } catch (Throwable) {
-            $this->error('Connection not saved. Check local slugs, RAWG IDs, type, note length, and HTTPS source URL.');
+            $this->error('Connection not saved. Check local slugs, TheGamesDB IDs, type, note length, and HTTPS source URL.');
 
             return self::FAILURE;
         }

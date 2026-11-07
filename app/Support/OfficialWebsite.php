@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Rawg;
+namespace App\Support;
 
 class OfficialWebsite
 {

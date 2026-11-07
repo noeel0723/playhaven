@@ -8,7 +8,7 @@ Personal and public profile pages use a centered 896px container with the global
 
 Open **Profile → Edit profile**, then use **Top 4 Games** in the editor's right column. Picks can be saved immediately without saving profile information or uploading a photo. A successful first save creates a private profile; it does not choose a username or publish the profile:
 
-1. Click an empty card's **+**, or click a selected cover to replace it. The **Pick a favorite game** dialog focuses **Name of game**. Enter a title and submit with Enter or the search button. The local catalog returns at most 12 results and makes no RAWG API request.
+1. Click an empty card's **+**, or click a selected cover to replace it. The **Pick a favorite game** dialog focuses **Name of game**. Enter a title and submit with Enter or the search button. The local catalog returns at most 12 results and makes no TheGamesDB API request.
 2. Select a result to fill that slot. A game already selected in another slot is disabled. Picks do not need to be in the player's library; import missing games through the existing catalog workflow first. Escape or Close dismisses the dialog and returns focus to the clicked card.
 3. Move picks left/right or remove them using labeled buttons, then choose **Save profile shelves**. Searching keeps the current unsaved picks.
 

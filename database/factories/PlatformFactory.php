@@ -12,7 +12,7 @@ class PlatformFactory extends Factory
     public function definition(): array
     {
         return [
-            'igdb_id' => null,
+            'thegamesdb_id' => null,
             'name' => fake()->unique()->words(2, true),
             'slug' => fake()->unique()->slug(),
         ];

@@ -13,7 +13,7 @@ Home menampilkan hingga enam game lokal, diurutkan berdasarkan jumlah pemain uni
 
 Satu pemain dihitung paling banyak sekali per game, termasuk jika beberapa aktivitas terjadi pada periode yang sama. Profil privat, profil tanpa username, review privat, isi Diary, catatan sesi, serta perubahan metadata Library saja tidak menjadi aktivitas mingguan. Tanggal di luar rentang, termasuk masa depan, tidak dihitung. Peringkat memakai agregat; identitas pemain dan teks review tidak disertakan.
 
-Rentang tujuh hari bergerak mengikuti waktu aplikasi pada setiap request home. Peringkat dan hero otomatis mengikuti perubahan aktivitas serta keluarnya aktivitas lama dari rentang, tanpa job, scheduler, panggilan RAWG, atau impor katalog saat halaman dibuka. Urutan seri memakai jumlah pemain keseluruhan, jumlah rating, lalu ID game agar hasil stabil. Game dengan nol aktivitas mingguan mengisi sisa tempat bila jumlah game aktif kurang dari enam.
+Rentang tujuh hari bergerak mengikuti waktu aplikasi pada setiap request home. Peringkat dan hero otomatis mengikuti perubahan aktivitas serta keluarnya aktivitas lama dari rentang, tanpa job, scheduler, panggilan TheGamesDB, atau impor katalog saat halaman dibuka. Urutan seri memakai jumlah pemain keseluruhan, jumlah rating, lalu ID game agar hasil stabil. Game dengan nol aktivitas mingguan mengisi sisa tempat bila jumlah game aktif kurang dari enam.
 
 Jika seluruh katalog belum memiliki aktivitas mingguan, home tetap menampilkan hingga enam game berdasarkan popularitas keseluruhan. Kartu ditampilkan sesuai urutan dari kiri ke kanan tanpa nomor peringkat, jumlah pemain, penjelasan perhitungan, atau jumlah katalog. Katalog kosong memiliki tampilan pengganti tanpa game atau banner contoh.
 
@@ -21,7 +21,7 @@ Jika seluruh katalog belum memiliki aktivitas mingguan, home tetap menampilkan h
 
 Game pada peringkat pertama menjadi satu-satunya sumber hero, judul, tautan detail, dan nama developer di bawah hero. Banner menggunakan games.banner_url yang sudah tersimpan dan tervalidasi, kemudian cover game yang sama jika banner tidak tersedia atau gagal dimuat. Bila kedua gambar tidak tersedia/gagal, hero memakai latar gradasi tanpa gambar. Tidak ada gambar RDR2 atau kredit Rockstar yang dipaksakan untuk game lain.
 
-Banner URL dibatasi oleh validator metadata katalog yang ada. URL eksternal tidak tepercaya, URL berkredensial, dan parameter provider tidak diteruskan. Hero mendapat preload dan fetch priority tinggi; preload mengikuti gambar yang benar-benar dipakai, termasuk saat fallback. Artwork tetap diberi kredit metadata katalog melalui RAWG. Asset RDR2 lokal lama boleh tetap tersimpan, tetapi tidak lagi dipakai otomatis oleh home.
+Banner URL dibatasi oleh validator metadata katalog yang ada. URL eksternal tidak tepercaya, URL berkredensial, dan parameter provider tidak diteruskan. Hero mendapat preload dan fetch priority tinggi; preload mengikuti gambar yang benar-benar dipakai, termasuk saat fallback. Artwork tetap diberi kredit metadata katalog melalui TheGamesDB. Asset RDR2 lokal lama boleh tetap tersimpan, tetapi tidak lagi dipakai otomatis oleh home.
 
 ## Navigasi dan aksesibilitas
 
@@ -37,7 +37,7 @@ Tes SQLite memakai database in-memory dan tes PostgreSQL hanya menargetkan playh
 
 ## Footer global dan autentikasi
 
-SiteFooter dipakai pada home, layout katalog, layout aplikasi/pengaturan, dan layout autentikasi. Container tengah 896 px menyusun brand, Explore, dan Your account, lalu baris copyright/kredit RAWG. Semua tautan menuju halaman yang sudah tersedia. Tautan akun mengikuti status login, dengan target fokus keyboard dan ukuran teks/tombol compact. Footer menempati akhir halaman tanpa duplikasi.
+SiteFooter dipakai pada home, layout katalog, layout aplikasi/pengaturan, dan layout autentikasi. Container tengah 896 px menyusun brand, Explore, dan Your account, lalu baris copyright/kredit TheGamesDB. Semua tautan menuju halaman yang sudah tersedia. Tautan akun mengikuti status login, dengan target fokus keyboard dan ukuran teks/tombol compact. Footer menempati akhir halaman tanpa duplikasi.
 
 Login dan pendaftaran memakai hero dari WeeklyPopularGames yang sama dengan home, termasuk fallback banner ke cover game yang sama dan gradasi bila artwork gagal. PopularGameBackdrop menyatukan render dan preload artwork untuk ketiganya. Tidak ada permintaan API game saat membuka form.
 

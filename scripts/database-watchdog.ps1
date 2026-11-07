@@ -27,9 +27,18 @@ try {
     # Do not pipe a database startup process: PostgreSQL can inherit an open
     # output pipe and keep PowerShell waiting after startup has already finished.
     # Wait for the helper itself, not the lifetime of its database descendants.
-    $recovery = Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', ('"' + "$PSScriptRoot\database.ps1" + '"'), 'start', '-ExistingOnly') -WindowStyle Hidden -PassThru
-    if (-not $recovery.WaitForExit(120000) -or $recovery.ExitCode -ne 0) {
-        throw 'PlayHaven recovery failed or timed out. Check .local/postgres.log and run scripts/database.ps1 start for details.'
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = Join-Path $PSHOME 'powershell.exe'
+    $startInfo.Arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + "$PSScriptRoot\database.ps1" + '" start -ExistingOnly'
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $recovery = [Diagnostics.Process]::Start($startInfo)
+    try {
+        if (-not $recovery.WaitForExit(120000) -or $recovery.ExitCode -ne 0) {
+            throw 'PlayHaven recovery failed or timed out. Check .local/postgres.log and run scripts/database.ps1 start for details.'
+        }
+    } finally {
+        $recovery.Dispose()
     }
     Write-WatchLog 'PlayHaven database recovery completed (or intentionally paused during the check).'
     exit 0

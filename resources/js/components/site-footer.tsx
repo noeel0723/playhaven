@@ -91,12 +91,12 @@ export default function SiteFooter() {
                     <p>
                         Game metadata and artwork from{' '}
                         <a
-                            href="https://rawg.io"
+                            href="https://thegamesdb.net"
                             target="_blank"
                             rel="noreferrer"
                             className="rounded-sm underline underline-offset-2 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
-                            RAWG
+                            TheGamesDB
                         </a>
                         .
                     </p>

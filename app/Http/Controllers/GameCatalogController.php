@@ -13,8 +13,6 @@ use App\Models\Platform;
 use App\Models\Publisher;
 use App\Models\Review;
 use App\Services\GameConnections;
-use App\Services\Rawg\ConnectionSynchronizer;
-use App\Support\EmailVerification;
 use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -71,7 +69,7 @@ class GameCatalogController extends Controller
         ]);
     }
 
-    public function show(GameDetailsRequest $request, Game $game, GameConnections $connections, ConnectionSynchronizer $synchronizer): Response
+    public function show(GameDetailsRequest $request, Game $game, GameConnections $connections): Response
     {
         $game->load(['genres', 'platforms', 'developers', 'publishers'])->loadCount(['ratings', 'libraryEntries as players_count'])->loadAvg('ratings', 'score');
 
@@ -98,9 +96,9 @@ class GameCatalogController extends Controller
             ] : null,
             'reviews' => PublicReviewResource::collection($reviews),
             'connections' => $connections->forGame($game),
-            'connectionState' => ['can_refresh' => $request->user() !== null && (! EmailVerification::required() || $request->user()->hasVerifiedEmail()) && $synchronizer->canRefresh($game),
+            'connectionState' => ['can_refresh' => false,
                 'synced_at' => $game->connections_synced_at?->toISOString(), 'checked_at' => $game->connections_checked_at?->toISOString(),
-                'truncated' => (bool) $game->connections_truncated, 'supported' => $game->rawg_id !== null],
+                'truncated' => false, 'supported' => false],
         ]);
     }
 }

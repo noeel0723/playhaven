@@ -85,7 +85,7 @@ class ListDiscoveryPresentationTest extends TestCase
         UserProfile::factory()->for($list->user)->create(['username' => 'hidden_alias', 'is_public' => false]);
         $this->get('/lists/discover')->assertInertia(fn (Assert $page) => $page->has('featuredLists', 0)->has('lists.data.0.preview_games', 0)
             ->where('lists.data.0.owner.username', null));
-        $game = Game::factory()->create(['rawg_id' => 1234, 'cover_url' => 'https://unsafe.example/image.jpg']);
+        $game = Game::factory()->create(['thegamesdb_id' => 1234, 'cover_url' => 'https://unsafe.example/image.jpg']);
         GameListItem::factory()->for($list)->for($game)->create(['position' => 1]);
         $this->get('/lists/discover')->assertInertia(fn (Assert $page) => $page->has('lists.data.0.preview_games', 1)->where('lists.data.0.preview_games.0.cover_url', null));
     }

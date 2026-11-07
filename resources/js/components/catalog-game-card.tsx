@@ -6,26 +6,27 @@ import { login } from '@/routes';
 import { importMethod } from '@/routes/catalog';
 import { show } from '@/routes/games';
 
-export type RawgGamePreview = {
+export type CatalogGamePreview = {
     id: number;
     name: string;
     released_on: string | null;
     cover_url: string | null;
     local_slug: string | null;
+    platform_name?: string | null;
 };
 
-export default function RawgGameCard({
+export default function CatalogGameCard({
     game,
     compact = false,
     dense = false,
 }: {
-    game: RawgGamePreview;
+    game: CatalogGamePreview;
     compact?: boolean;
     dense?: boolean;
 }) {
     const { auth } = usePage().props;
-    const form = useForm<{ rawg_id: number; import?: string }>({
-        rawg_id: game.id,
+    const form = useForm<{ thegamesdb_id: number; import?: string }>({
+        thegamesdb_id: game.id,
     });
     const open = () => form.post(importMethod(game.id).url);
     const titleClass = dense
@@ -112,6 +113,7 @@ export default function RawgGameCard({
                 className={`${compact || dense ? 'mt-1' : 'mt-2'} ${dense ? 'text-[11px]' : 'text-xs'} text-[#bdb6b1]`}
             >
                 {game.released_on?.slice(0, 4) ?? 'Release TBA'}
+                {game.platform_name && ` · ${game.platform_name}`}
             </p>
             {game.local_slug ? (
                 <Button

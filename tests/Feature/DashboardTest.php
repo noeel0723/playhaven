@@ -50,7 +50,7 @@ class DashboardTest extends TestCase
             ->where('recentEntries.1.game.rating', null)
             ->where('recentEntries.1.your_rating', null)
             ->missing('recentEntries.0.game.data')
-            ->missing('recentEntries.0.game.rawg_id')
+            ->missing('recentEntries.0.game.thegamesdb_id')
             ->missing('recentEntries.0.game.library_entries');
         $response->assertInertia($assertCards);
 
