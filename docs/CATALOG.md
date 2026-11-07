@@ -37,6 +37,8 @@ Import particular IDs with `php artisan catalog:sync --ids=53,432 --inline`. Omi
 
 Studio dictionaries provide IDs/names, not full studio biographies. No biography, website, rating, or story relationship is fabricated from a name. Games/developers/publishers/genres/platforms use local IDs for relationships and separate unique TheGamesDB IDs. Stable local slugs are retained on refresh; collisions receive a `-tgdb-ID` suffix. Imports are atomic and idempotent, preserving player history during ordinary refreshes. Missing optional artwork retains a saved image. Older timestamped responses cannot overwrite newer metadata. Invalid/missing taxonomy entries abort the import without leaving a partial game.
 
+The connection check accepts `/v1/API/Limit`'s bare allowance response, which has no `code`/`status` envelope. A null refresh timer is valid for private/unlimited keys. Nullable game genres/developer/publisher collections are accepted; unknown collections preserve saved credits on refresh.
+
 Only HTTPS artwork on `cdn.thegamesdb.net/images/` is rendered. Credentials, extra ports, queries, fragments, traversal and unrelated hosts are rejected. User-facing exceptions do not include upstream URLs, response bodies, or API keys. The footer attributes TheGamesDB. Ratings/reviews remain PlayHaven's own data.
 
 ## Caching and requests

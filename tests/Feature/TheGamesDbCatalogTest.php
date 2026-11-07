@@ -50,7 +50,7 @@ class TheGamesDbCatalogTest extends TestCase
                 '/v1/Platforms' => ['data' => ['platforms' => ['18' => ['id' => 18, 'name' => 'Sega Genesis']]]],
                 '/v1/Developers' => ['data' => ['developers' => ['1296' => ['id' => 1296, 'name' => 'Sonic Team']]]],
                 '/v1/Publishers' => ['data' => ['publishers' => ['1' => ['id' => 1, 'name' => 'Sega']]]],
-                '/v1/API/Limit' => ['remaining_monthly_allowance' => 249],
+                '/v1/API/Limit' => ['remaining_monthly_allowance' => 249, 'extra_allowance' => 0, 'allowance_refresh_timer' => 2592000],
                 default => throw new RuntimeException('Unexpected provider path.'),
             };
 
@@ -139,6 +139,43 @@ class TheGamesDbCatalogTest extends TestCase
         $this->assertStringNotContainsString(self::KEY, serialize(new SyncTheGamesDbGame(53)));
         $this->artisan('catalog:sync')->assertFailed();
         $this->artisan('catalog:reset', ['--confirm' => 'playhaven'])->assertFailed();
+    }
+
+    public function test_connection_check_accepts_bare_allowance_responses_but_rejects_errors_and_malformed_data(): void
+    {
+        config(['services.thegamesdb.api_key' => self::KEY]);
+        Http::preventStrayRequests();
+        $allowance = ['remaining_monthly_allowance' => 999, 'extra_allowance' => 0, 'allowance_refresh_timer' => 2592000];
+        Http::fake(['api.thegamesdb.net/v1/API/Limit*' => Http::sequence()
+            ->push($allowance)
+            ->push([...$allowance, 'remaining_monthly_allowance' => 0])
+            ->push(['code' => 200, ...$allowance])
+            ->push([...$allowance, 'allowance_refresh_timer' => null])
+            ->push(['code' => 403, ...$allowance])
+            ->push(['code' => 200])
+            ->push([...$allowance, 'remaining_monthly_allowance' => -1])
+            ->push(['error' => self::KEY], 403)]);
+        for ($i = 0; $i < 4; $i++) {
+            $this->artisan('thegamesdb:check')->expectsOutput('TheGamesDB connection successful.')->assertSuccessful();
+        }
+        for ($i = 0; $i < 4; $i++) {
+            $this->artisan('thegamesdb:check')->expectsOutput('TheGamesDB connection failed. Set THEGAMESDB_API_KEY in .env and check API allowance and network access.')->assertFailed();
+        }
+        Http::assertSentCount(8);
+    }
+
+    public function test_nullable_provider_credits_do_not_break_search_or_erase_saved_studios_on_refresh(): void
+    {
+        $this->fake();
+        $game = app(CatalogSynchronizer::class)->syncGame(53);
+        Cache::flush();
+        $this->fake($this->game(['developers' => null, 'publishers' => null, 'genres' => null]));
+        $this->actingAs(User::factory()->create())->get(route('catalog.search', ['q' => 'Sonic']))
+            ->assertOk()->assertInertia(fn (Assert $page) => $page->has('results', 1)->where('error', null));
+        app(CatalogSynchronizer::class)->syncGame(53, true);
+        $this->assertSame('Sonic Team', $game->fresh()->developers->sole()->name);
+        $this->assertSame('Sega', $game->fresh()->publishers->sole()->name);
+        $this->assertSame('Action', $game->fresh()->genres->sole()->name);
     }
 
     public function test_curated_game_relationships_still_work_bidirectionally_without_provider_calls(): void

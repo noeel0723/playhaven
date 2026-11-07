@@ -54,7 +54,7 @@ class CatalogSynchronizer
                 $game->banner_url = CatalogImage::pick($images, true) ?? $game->getAttribute('banner_url');
                 $game->save();
                 foreach (['genres' => Genre::class, 'platforms' => Platform::class, 'developers' => Developer::class, 'publishers' => Publisher::class] as $kind => $model) {
-                    if ($kind !== 'platforms' && ! array_key_exists($kind, $data)) {
+                    if ($kind !== 'platforms' && ! isset($data[$kind])) {
                         continue;
                     }
                     $externalIds = $kind === 'platforms' ? array_filter([$data['platform'] ?? null]) : ($data[$kind] ?? []);

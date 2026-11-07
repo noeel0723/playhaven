@@ -87,9 +87,9 @@ class TheGamesDbClient
             'games.*.release_date' => ['nullable', 'date_format:Y-m-d'],
             'games.*.overview' => ['nullable', 'string', 'max:200000'],
             'games.*.platform' => ['nullable', 'integer', 'min:1'],
-            'games.*.genres' => ['sometimes', 'array', 'max:100'], 'games.*.genres.*' => ['integer', 'min:1'],
-            'games.*.developers' => ['sometimes', 'array', 'max:100'], 'games.*.developers.*' => ['integer', 'min:1'],
-            'games.*.publishers' => ['sometimes', 'array', 'max:100'], 'games.*.publishers.*' => ['integer', 'min:1'],
+            'games.*.genres' => ['sometimes', 'nullable', 'array', 'max:100'], 'games.*.genres.*' => ['integer', 'min:1'],
+            'games.*.developers' => ['sometimes', 'nullable', 'array', 'max:100'], 'games.*.developers.*' => ['integer', 'min:1'],
+            'games.*.publishers' => ['sometimes', 'nullable', 'array', 'max:100'], 'games.*.publishers.*' => ['integer', 'min:1'],
             'games.*.last_updated' => ['nullable', 'date'],
         ])->validate();
 
@@ -119,7 +119,12 @@ class TheGamesDbClient
                     throw new RuntimeException('TheGamesDB request failed (HTTP '.$response->status().'). Check credentials and allowance.');
                 }
                 $data = $response->json();
-                if (! is_array($data) || ! is_numeric($data['code'] ?? null) || (int) $data['code'] !== 200) {
+                // API/Limit returns allowance fields directly, without the
+                // code/status envelope used by catalog endpoints.
+                $valid = is_array($data) && ($path === 'v1/API/Limit'
+                    ? $this->validAllowance($data)
+                    : is_numeric($data['code'] ?? null) && (int) $data['code'] === 200);
+                if (! $valid) {
                     throw new RuntimeException('TheGamesDB returned an invalid response.');
                 }
 
@@ -128,5 +133,23 @@ class TheGamesDbClient
         };
 
         return $ttl === 0 ? $fetch() : Cache::remember($cacheKey, $ttl, $fetch);
+    }
+
+    /** @param array<string, mixed> $data */
+    private function validAllowance(array $data): bool
+    {
+        if (isset($data['code']) && (! is_numeric($data['code']) || (int) $data['code'] !== 200)) {
+            return false;
+        }
+        foreach (['remaining_monthly_allowance', 'extra_allowance', 'allowance_refresh_timer'] as $field) {
+            if ($field === 'allowance_refresh_timer' && array_key_exists($field, $data) && $data[$field] === null) {
+                continue;
+            }
+            if (! isset($data[$field]) || filter_var($data[$field], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
