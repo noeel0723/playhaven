@@ -76,10 +76,13 @@ class RawgClient
     }
 
     /** @return array<string, mixed> */
-    public function developer(int $id): array
+    public function developer(int $id, bool $force = false): array
     {
         if ($id < 1) {
             throw new InvalidArgumentException('Invalid RAWG developer ID.');
+        }
+        if ($force) {
+            Cache::forget($this->cacheKey('developers/'.$id, []));
         }
         $data = $this->request('developers/'.$id, [], 86400);
         if (($data['id'] ?? null) !== $id) {

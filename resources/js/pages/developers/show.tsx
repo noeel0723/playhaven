@@ -15,6 +15,8 @@ type Developer = {
     name: string;
     slug: string;
     description: string | null;
+    description_source: 'rawg' | 'wikipedia' | null;
+    description_source_url: string | null;
     image_url: string | null;
     image_source: 'developer' | 'game' | null;
     games_count: number;
@@ -145,13 +147,50 @@ export default function DeveloperDetails({
                                     {expanded ? 'Show less' : 'Read more'}
                                 </button>
                             )}
+                            {developer.description_source &&
+                                developer.description_source_url && (
+                                    <p className="mt-3 text-[10px] leading-5 text-[#9e9690]">
+                                        {developer.description_source ===
+                                        'wikipedia'
+                                            ? 'Summary from '
+                                            : 'Source: '}
+                                        <a
+                                            href={
+                                                developer.description_source_url
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="rounded-sm underline underline-offset-4 hover:text-white focus-visible:outline-2"
+                                        >
+                                            {developer.description_source ===
+                                            'wikipedia'
+                                                ? 'Wikipedia contributors'
+                                                : 'RAWG'}
+                                        </a>
+                                        {developer.description_source ===
+                                            'wikipedia' && (
+                                            <>
+                                                {' '}
+                                                ·{' '}
+                                                <a
+                                                    href="https://creativecommons.org/licenses/by-sa/4.0/"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="rounded-sm underline underline-offset-4 hover:text-white focus-visible:outline-2"
+                                                >
+                                                    CC BY-SA 4.0
+                                                </a>
+                                            </>
+                                        )}
+                                    </p>
+                                )}
                         </>
                     ) : (
                         <p className="text-xs leading-6 text-[#bdb6b1]">
                             {developer.details_synced_at
-                                ? 'No biography is available for this developer yet.'
+                                ? 'No matching biography has been saved yet.'
                                 : 'Developer information has not been updated yet.'}
-                            {!developer.details_synced_at && canRefresh && (
+                            {canRefresh && (
                                 <>
                                     {' '}
                                     Select Update info to check for a biography.

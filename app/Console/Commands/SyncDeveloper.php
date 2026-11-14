@@ -9,9 +9,9 @@ use Throwable;
 
 class SyncDeveloper extends Command
 {
-    protected $signature = 'catalog:developer {slug : Local developer slug}';
+    protected $signature = 'catalog:developer {slug : Local developer slug} {--force : Check RAWG and fallback biography again now}';
 
-    protected $description = 'Fetch a saved developer biography and artwork from RAWG';
+    protected $description = 'Fetch developer details from RAWG, using Wikipedia for missing biographies';
 
     public function handle(DeveloperSynchronizer $synchronizer): int
     {
@@ -22,9 +22,9 @@ class SyncDeveloper extends Command
             return self::FAILURE;
         }
         try {
-            $synchronizer->sync($developer);
+            $synchronizer->sync($developer, (bool) $this->option('force'));
         } catch (Throwable) {
-            $this->error('Could not update developer details. Check RAWG credentials and connection. Saved data was preserved.');
+            $this->error('Could not update developer details. Check RAWG credentials and provider connections. Saved data was preserved.');
 
             return self::FAILURE;
         }

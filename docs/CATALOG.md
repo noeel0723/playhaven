@@ -18,7 +18,17 @@ The header retains PlayHaven's dark styling. Account settings retain their exist
 
 Click a developer name on a game detail page to open `/developers/{slug}`. The public page uses saved information and local game relationships, with a compact 24-game grid, automatic title search/sorting, pagination, release-year range, genres and platforms. A saved studio image is preferred; otherwise the page labels related game artwork as its fallback. No API request is made while browsing the page.
 
-Signed-in players can select **Update info** to fetch the studio biography and artwork from RAWG. Successful details are reused for 24 hours; failed requests preserve saved data. The same update is available with `php artisan catalog:developer rockstar-north`. API keys and upstream errors are not exposed in page data. Game imports also retain studio artwork when RAWG includes it. Missing biographies remain clearly marked as unavailable rather than inferred from game titles.
+Signed-in players can select **Update info** to fetch the studio biography and artwork from RAWG. Successful details are reused for 24 hours; failed requests preserve saved data. The same update is available with `php artisan catalog:developer rockstar-north`; add `--force` to bypass cached developer details and check both sources again. API keys and upstream errors are not exposed in page data. Game imports also retain studio artwork when RAWG includes it.
+
+### Wikipedia biography fallback
+
+Wikipedia is consulted only after a successful, correctly identified RAWG response explicitly supplies an empty/null description (including whitespace or empty HTML). A timeout, provider error, or missing description field is not interpreted as an empty biography. A nonempty RAWG biography takes priority; previously saved local biographies are not erased when upstream data is missing.
+
+The backend requests the English Wikipedia summary for the studio's exact name (or its saved canonical article title), accepts standard main-namespace articles with video-game company/developer context, and requires matching names or an explicit full-name alias in the extract. Disambiguations, unrelated subjects, parent-company redirects without a matching studio name, and changed pinned page IDs are rejected. For example, a Konami Computer Entertainment Japan lookup must not silently become a generic Konami Group biography. No arbitrary first search result is used. Uncertain matches remain unsaved for manual review.
+
+Accepted summaries are stored as plain text alongside `description_source`, an allowlisted article URL, canonical title, page ID, revision and fallback-check timestamp. Wikipedia summaries/no-match responses cache for one day, and provider requests are serialized with bounded timeouts. Reading a developer page performs no external requests. Existing RAWG-empty entries can use the fallback even if their artwork was recently synced. A provider outage preserves the previous biography and permits a later retry.
+
+The page shows the biography's source, and Wikipedia extracts include a link to the article/contributors and CC BY-SA 4.0. Images continue to come from the existing RAWG/local-artwork flow; this integration does not import Wikipedia media.
 
 ## API key
 

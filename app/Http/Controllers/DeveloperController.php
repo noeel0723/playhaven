@@ -8,6 +8,7 @@ use App\Models\Genre;
 use App\Models\Platform;
 use App\Services\Rawg\CatalogImage;
 use App\Services\Rawg\DeveloperSynchronizer;
+use App\Services\Wikipedia\DeveloperBiography;
 use App\Support\EmailVerification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -56,6 +57,8 @@ class DeveloperController extends Controller
         return Inertia::render('developers/show', [
             'developer' => ['name' => $developer->name, 'slug' => $developer->slug,
                 'description' => $developer->description ? trim(html_entity_decode(strip_tags($developer->description), ENT_QUOTES | ENT_HTML5, 'UTF-8')) : null,
+                'description_source' => in_array($developer->description_source, ['rawg', 'wikipedia'], true) ? $developer->description_source : null,
+                'description_source_url' => DeveloperBiography::sourceUrl($developer->description_source_url, $developer->description_source),
                 'image_url' => $image, 'image_source' => $image ? $imageSource : null,
                 'games_count' => $developer->games()->count(),
                 'first_release' => $this->releaseDate($developer->games()->min('games.released_on')), 'latest_release' => $this->releaseDate($developer->games()->max('games.released_on')),
