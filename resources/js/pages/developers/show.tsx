@@ -117,7 +117,7 @@ export default function DeveloperDetails({
             />
             <section
                 aria-labelledby="about-developer"
-                className="mb-7 grid gap-5 border-b border-white/10 pb-6 sm:grid-cols-[minmax(0,1fr)_220px] sm:gap-8"
+                className="mb-7 grid items-start gap-5 border-b border-white/10 pb-6 sm:grid-cols-[minmax(0,1fr)_260px] sm:gap-8"
             >
                 <div className="min-w-0">
                     <h2
@@ -148,24 +148,56 @@ export default function DeveloperDetails({
                         </>
                     ) : (
                         <p className="text-xs leading-6 text-[#bdb6b1]">
-                            A developer description is not available yet.
+                            {developer.details_synced_at
+                                ? 'No biography is available for this developer yet.'
+                                : 'Developer information has not been updated yet.'}
+                            {!developer.details_synced_at && canRefresh && (
+                                <>
+                                    {' '}
+                                    Select Update info to check for a biography.
+                                </>
+                            )}
                         </p>
                     )}
                 </div>
-                <dl className="space-y-3 text-[11px] leading-5">
-                    {facts.map(({ label, terms }) => (
-                        <div key={label}>
-                            <dt className="mb-1 font-medium text-[#e0d9d3]">
-                                {label}
-                            </dt>
-                            <dd className="text-[#bdb6b1]">
-                                {terms.length
-                                    ? terms.map((term) => term.name).join(' · ')
-                                    : 'Not listed'}
-                            </dd>
-                        </div>
-                    ))}
-                </dl>
+                <aside
+                    aria-label="Developer information"
+                    className="min-w-0 self-start rounded-lg border border-white/10 bg-[#151313]/90 p-4 backdrop-blur-sm"
+                >
+                    <dl className="divide-y divide-white/10 text-[11px] leading-5">
+                        {facts.map(({ label, terms }) => (
+                            <div
+                                key={label}
+                                className="min-w-0 py-3 first:pt-0 last:pb-0"
+                            >
+                                <dt className="mb-2 font-medium text-[#e0d9d3]">
+                                    {label}
+                                </dt>
+                                <dd>
+                                    {terms.length ? (
+                                        <ul
+                                            className="flex min-w-0 flex-wrap gap-1.5"
+                                            aria-label={label}
+                                        >
+                                            {terms.map((term) => (
+                                                <li
+                                                    key={term.id}
+                                                    className="max-w-full rounded-md border border-white/10 bg-white/[0.035] px-2 py-0.5 wrap-break-word text-[#c5bfba]"
+                                                >
+                                                    {term.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-[#9e9690]">
+                                            Not listed
+                                        </p>
+                                    )}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                </aside>
             </section>
             <section aria-labelledby="developer-games" aria-busy={processing}>
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
