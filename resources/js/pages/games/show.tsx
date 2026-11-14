@@ -7,6 +7,7 @@ import CommunityReviews from '@/components/community-reviews';
 import GameConnections from '@/components/game-connections';
 
 import { index } from '@/routes/games';
+import { show as developerDetails } from '@/routes/developers';
 
 import type { CatalogGame } from '@/types/catalog';
 import type { ConnectionState, GameConnection } from '@/types/connections';
@@ -84,11 +85,9 @@ export default function GameDetails({
                                     <span key={developer.id}>
                                         {position > 0 && ', '}
                                         <Link
-                                            href={index({
-                                                query: {
-                                                    developer: developer.slug,
-                                                },
-                                            })}
+                                            href={developerDetails(
+                                                developer.slug,
+                                            )}
                                             className="wrap-break-word text-[#e0d9d3] underline decoration-shadow underline-offset-4 hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4"
                                         >
                                             {developer.name}

@@ -55,6 +55,8 @@ This registers only `PlayHaven-PostgreSQL-5433` in Task Scheduler, with a sign-i
 
 Use `database-autostart.ps1 status` to inspect the registration, or `database-autostart.ps1 remove` to remove only this task without stopping the database. `database.ps1 stop` intentionally pauses recovery using `.local/postgres-autostart.paused`; `database.ps1 start` or the site launcher resumes it. Start/stop operations share a project-local file lock so simultaneous requests cannot start two copies.
 
+A running PostgreSQL PID is checked for readiness too. If two bounded readiness probes receive no response, the helper verifies that the process belongs to this project's data directory and attempts a fast, controlled restart of only that cluster. A server that is still starting/rejecting connections is left alone for the next check. Authentication uses a five-second connection timeout; the helper never escalates to a forced shutdown. This covers the case where a stalled process previously made recovery report "already running" without restoring connections.
+
 Start Apache from Laragon. For active frontend/backend development:
 
 ```powershell

@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('community-follows', fn (Request $request) => Limit::perMinute(30)->by('community-follows:'.$request->user()->id));
         RateLimiter::for('rawg-search', fn (Request $request) => [Limit::perMinute(12)->by('rawg-search:user:'.$request->user()->id), Limit::perMinute(30)->by('rawg-search:shared')]);
         RateLimiter::for('rawg-import', fn (Request $request) => [Limit::perMinute(6)->by('rawg-import:user:'.$request->user()->id), Limit::perMinute(20)->by('rawg-import:shared')]);
+        RateLimiter::for('developer-details', fn (Request $request) => [Limit::perMinute(2)->by('developer-details:user:'.$request->user()->id), Limit::perMinute(6)->by('developer-details:shared')]);
         $connectionsBusy = function (Request $request) {
             $game = $request->route('game');
             $reviewPage = filter_var($request->input('reviews_page'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100000]]);

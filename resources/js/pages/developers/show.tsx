@@ -1,0 +1,279 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, Building2, RefreshCw, Search } from 'lucide-react';
+import { useState } from 'react';
+import GameCard from '@/components/game-card';
+import HistoryPagination from '@/components/history-pagination';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAutoFilters } from '@/hooks/use-auto-filters';
+import { refresh, show } from '@/routes/developers';
+import { index } from '@/routes/games';
+import type { CatalogPagination, CatalogTerm } from '@/types/catalog';
+
+type Developer = {
+    name: string;
+    slug: string;
+    description: string | null;
+    image_url: string | null;
+    image_source: 'developer' | 'game' | null;
+    games_count: number;
+    first_release: string | null;
+    latest_release: string | null;
+    details_synced_at: string | null;
+};
+
+function Artwork({ developer }: { developer: Developer }) {
+    const [failed, setFailed] = useState(false);
+    return (
+        <div className="relative mb-5 h-40 overflow-hidden rounded-md border border-white/10 bg-rein/25 sm:h-52">
+            {developer.image_url && !failed ? (
+                <>
+                    <img
+                        src={developer.image_url}
+                        alt={`${developer.name} artwork`}
+                        className="h-full w-full object-cover"
+                        onError={() => setFailed(true)}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-caviar/90 via-caviar/15 to-transparent" />
+                    {developer.image_source === 'game' && (
+                        <p className="absolute right-3 bottom-3 left-3 text-[10px] text-white/70">
+                            Artwork from the studio’s games
+                        </p>
+                    )}
+                </>
+            ) : (
+                <div className="flex h-full items-center justify-center text-[#807d7d]">
+                    <Building2 className="size-10" aria-hidden="true" />
+                    <span className="sr-only">
+                        Developer artwork unavailable
+                    </span>
+                </div>
+            )}
+        </div>
+    );
+}
+
+const buttonClass =
+    'h-7 gap-1.5 border-white/10 bg-rein/20 px-2.5 text-[11px] text-[#e0d9d3] hover:bg-rein hover:text-white [&_svg]:size-3';
+
+export default function DeveloperDetails({
+    developer,
+    games,
+    genres,
+    platforms,
+    filters,
+    canRefresh,
+}: {
+    developer: Developer;
+    games: CatalogPagination;
+    genres: CatalogTerm[];
+    platforms: CatalogTerm[];
+    filters: { q: string; sort: string };
+    canRefresh: boolean;
+}) {
+    const { values, change, processing, errors } = useAutoFilters(
+        show(developer.slug).url,
+        filters,
+    );
+    const info = useForm<{ developer?: string }>({});
+    const [expanded, setExpanded] = useState(false);
+    const first = developer.first_release?.slice(0, 4);
+    const latest = developer.latest_release?.slice(0, 4);
+    const facts = [
+        { label: 'Genres', terms: genres },
+        { label: 'Platforms', terms: platforms },
+    ];
+    return (
+        <div className="mx-auto max-w-4xl font-sans">
+            <Head title={`${developer.name} · Developer`}>
+                <meta
+                    name="description"
+                    content={`Explore games developed by ${developer.name}, studio information, and community ratings on PlayHaven.`}
+                />
+            </Head>
+            <Link
+                href={index()}
+                className="mb-4 inline-flex items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2"
+            >
+                <ArrowLeft className="size-3" aria-hidden="true" />
+                All games
+            </Link>
+            <Artwork key={developer.image_url} developer={developer} />
+            <header className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+                <div className="min-w-0">
+                    <p className="mb-1 text-[10px] tracking-widest text-[#bdb6b1] uppercase">
+                        Developer
+                    </p>
+                    <h1 className="text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">
+                        {developer.name}
+                    </h1>
+                    <p className="mt-2 text-xs text-[#bdb6b1]">
+                        {developer.games_count}{' '}
+                        {developer.games_count === 1 ? 'game' : 'games'} in
+                        PlayHaven
+                        {first &&
+                            ` · Releases ${first}${latest !== first ? `–${latest}` : ''}`}
+                    </p>
+                </div>
+                {canRefresh && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className={buttonClass}
+                        disabled={info.processing}
+                        onClick={() =>
+                            info.post(refresh(developer.slug).url, {
+                                preserveScroll: true,
+                            })
+                        }
+                    >
+                        <RefreshCw
+                            aria-hidden="true"
+                            className={info.processing ? 'animate-spin' : ''}
+                        />
+                        {info.processing ? 'Updating…' : 'Update info'}
+                    </Button>
+                )}
+            </header>
+            <InputError
+                message={info.errors.developer}
+                role="alert"
+                className="mb-4 text-xs"
+            />
+            <section
+                aria-labelledby="about-developer"
+                className="mb-6 grid gap-5 border-b border-white/10 pb-5 sm:grid-cols-[minmax(0,1fr)_240px]"
+            >
+                <div className="min-w-0">
+                    <h2
+                        id="about-developer"
+                        className="mb-2 text-xs font-medium tracking-wider uppercase"
+                    >
+                        About the developer
+                    </h2>
+                    {developer.description ? (
+                        <>
+                            <p
+                                className={`text-xs leading-6 whitespace-pre-line text-[#bdb6b1] ${expanded ? '' : 'line-clamp-6'}`}
+                            >
+                                {developer.description}
+                            </p>
+                            {(developer.description.length > 240 ||
+                                developer.description.split('\n').length >
+                                    5) && (
+                                <button
+                                    type="button"
+                                    className="mt-2 rounded-sm text-[11px] underline underline-offset-4 focus-visible:outline-2"
+                                    aria-expanded={expanded}
+                                    onClick={() => setExpanded(!expanded)}
+                                >
+                                    {expanded ? 'Show less' : 'Read more'}
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <p className="text-xs leading-6 text-[#bdb6b1]">
+                            A developer description is not available yet.
+                        </p>
+                    )}
+                </div>
+                <dl className="space-y-3 text-[11px] leading-5">
+                    {facts.map(({ label, terms }) => (
+                        <div key={label}>
+                            <dt className="mb-1 font-medium text-[#e0d9d3]">
+                                {label}
+                            </dt>
+                            <dd className="text-[#bdb6b1]">
+                                {terms.length
+                                    ? terms.map((term) => term.name).join(' · ')
+                                    : 'Not listed'}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+            </section>
+            <section aria-labelledby="developer-games" aria-busy={processing}>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                    <h2
+                        id="developer-games"
+                        className="text-xs font-medium tracking-wider uppercase"
+                    >
+                        Games{' '}
+                        <span className="ml-1 text-[11px] font-normal tracking-normal text-[#bdb6b1]">
+                            {games.meta.total}
+                        </span>
+                    </h2>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                        <div className="relative min-w-0 flex-1 sm:w-44">
+                            <label
+                                htmlFor="developer-game-search"
+                                className="sr-only"
+                            >
+                                Search this developer’s games
+                            </label>
+                            <Search
+                                className="pointer-events-none absolute top-2 left-2 size-3 text-[#bdb6b1]"
+                                aria-hidden="true"
+                            />
+                            <Input
+                                id="developer-game-search"
+                                type="search"
+                                value={values.q}
+                                maxLength={100}
+                                placeholder="Find a game…"
+                                onChange={(event) =>
+                                    change({ q: event.target.value }, 250)
+                                }
+                                className="h-7 border-white/10 bg-rein/25 pl-7 text-xs"
+                            />
+                        </div>
+                        <label
+                            className="sr-only"
+                            htmlFor="developer-game-sort"
+                        >
+                            Sort games
+                        </label>
+                        <select
+                            id="developer-game-sort"
+                            value={values.sort}
+                            onChange={(event) =>
+                                change({ sort: event.target.value })
+                            }
+                            className="h-7 max-w-36 rounded-md border border-white/10 bg-[#211f1f] px-2 text-[11px]"
+                        >
+                            <option value="rating">Highest rated</option>
+                            <option value="recent">Latest release</option>
+                            <option value="popular">Most collected</option>
+                            <option value="name">Name</option>
+                        </select>
+                    </div>
+                </div>
+                <InputError
+                    message={errors.q || errors.sort}
+                    role="alert"
+                    className="mb-3 text-xs"
+                />
+                {games.data.length ? (
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-6">
+                        {games.data.map((game) => (
+                            <GameCard key={game.id} game={game} poster />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="rounded-md border border-dashed border-white/10 px-4 py-8 text-center text-xs text-[#bdb6b1]">
+                        {filters.q
+                            ? 'No games match your search.'
+                            : 'No games from this developer are in the catalog yet.'}
+                    </div>
+                )}
+                <HistoryPagination
+                    pagination={games}
+                    label="Developer games pagination"
+                    compact
+                    dense
+                />
+            </section>
+        </div>
+    );
+}

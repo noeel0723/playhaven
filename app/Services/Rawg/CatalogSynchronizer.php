@@ -55,6 +55,7 @@ class CatalogSynchronizer
             'games.*.developers.*.id' => ['required', 'integer', 'min:1'],
             'games.*.developers.*.name' => ['required', 'string', 'max:255'],
             'games.*.developers.*.slug' => ['required', 'string', 'max:200'],
+            'games.*.developers.*.image_background' => ['nullable', 'string', 'max:2048'],
             'games.*.publishers' => ['nullable', 'array', 'list', 'max:100'],
             'games.*.publishers.*.id' => ['required', 'integer', 'min:1'],
             'games.*.publishers.*.name' => ['required', 'string', 'max:255'],
@@ -125,7 +126,7 @@ class CatalogSynchronizer
 
     /**
      * @param  class-string<Genre|Platform|Developer|Publisher>  $model
-     * @param  list<array{id: int, name: string, slug: string}>  $terms
+     * @param  list<array{id: int, name: string, slug: string, image_background?: string|null}>  $terms
      * @return list<int>
      */
     private function terms(string $model, array $terms): array
@@ -133,7 +134,11 @@ class CatalogSynchronizer
         $ids = [];
         foreach ($terms as $data) {
             $term = $model::firstOrNew(['rawg_id' => $data['id']]);
-            $term->fill(['name' => $data['name'], 'slug' => $this->slug($term, $data['slug'], $data['id'])])->save();
+            $term->fill(['name' => $data['name'], 'slug' => $this->slug($term, $data['slug'], $data['id'])]);
+            if ($term instanceof Developer && ($image = CatalogImage::url($data['image_background'] ?? null))) {
+                $term->image_url = $image;
+            }
+            $term->save();
             $ids[] = $term->id;
         }
 

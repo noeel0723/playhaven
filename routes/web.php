@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DiaryController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GameCatalogController;
@@ -48,10 +49,12 @@ Route::get('players/{username}/reviews', [PlayerPagesController::class, 'reviews
 
 Route::get('/games', [GameCatalogController::class, 'index'])->name('games.index');
 Route::get('/games/{game:slug}', [GameCatalogController::class, 'show'])->name('games.show');
+Route::get('developers/{developer:slug}', [DeveloperController::class, 'show'])->name('developers.show');
 Route::get('lists/discover', [GameListController::class, 'discover'])->name('lists.discover');
 Route::get('lists/{listOwner}/{listSlug}', [GameListController::class, 'show'])->name('lists.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('developers/{developer:slug}/refresh', [DeveloperController::class, 'refresh'])->middleware('throttle:developer-details')->name('developers.refresh');
     Route::get('community/profile', [PlayerController::class, 'mine'])->name('players.me');
     Route::get('community/profile/reviews', [PlayerPagesController::class, 'myReviews'])->name('players.myReviews');
     Route::get('community/profile/followers', [PlayerNetworkController::class, 'myFollowers'])->name('players.myFollowers');

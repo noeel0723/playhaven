@@ -87,7 +87,9 @@ export default function SiteHeader() {
         {
             label: 'Games',
             href: games(),
-            active: isCurrentOrParentUrl(games()),
+            active:
+                isCurrentOrParentUrl(games()) ||
+                page.component.startsWith('developers/'),
         },
         {
             label: 'Lists',

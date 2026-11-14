@@ -16,6 +16,7 @@ void createInertiaApp({
             case name === 'welcome':
                 return null;
             case name.startsWith('games/'):
+            case name.startsWith('developers/'):
             case name.startsWith('library/'):
             case name.startsWith('playthroughs/'):
             case name.startsWith('diary/'):

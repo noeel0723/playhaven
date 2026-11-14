@@ -14,6 +14,12 @@ Community is highlighted only on the community feed, including filtered views. T
 
 The header retains PlayHaven's dark styling. Account settings retain their existing Light, Dark, and System appearance controls for the content area.
 
+## Developer pages
+
+Click a developer name on a game detail page to open `/developers/{slug}`. The public page uses saved information and local game relationships, with a compact 24-game grid, automatic title search/sorting, pagination, release-year range, genres and platforms. A saved studio image is preferred; otherwise the page labels related game artwork as its fallback. No API request is made while browsing the page.
+
+Signed-in players can select **Update info** to fetch the studio biography and artwork from RAWG. Successful details are reused for 24 hours; failed requests preserve saved data. The same update is available with `php artisan catalog:developer rockstar-north`. API keys and upstream errors are not exposed in page data. Game imports also retain studio artwork when RAWG includes it. Missing biographies remain clearly marked as unavailable rather than inferred from game titles.
+
 ## API key
 
 Create an account and key through [RAWG](https://rawg.io/apidocs), then set the server-side value in the ignored project `.env`:

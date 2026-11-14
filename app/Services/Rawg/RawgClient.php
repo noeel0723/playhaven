@@ -75,6 +75,20 @@ class RawgClient
         Cache::forget($this->cacheKey('games/'.$id, []));
     }
 
+    /** @return array<string, mixed> */
+    public function developer(int $id): array
+    {
+        if ($id < 1) {
+            throw new InvalidArgumentException('Invalid RAWG developer ID.');
+        }
+        $data = $this->request('developers/'.$id, [], 86400);
+        if (($data['id'] ?? null) !== $id) {
+            throw new RuntimeException('RAWG returned an unexpected developer ID.');
+        }
+
+        return $data;
+    }
+
     /** @return array{results: list<array<string, mixed>>, has_next: bool} */
     public function related(int $id, string $kind): array
     {
