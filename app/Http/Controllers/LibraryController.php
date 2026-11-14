@@ -25,7 +25,7 @@ class LibraryController extends Controller
         $favorite = $request->boolean('favorite');
         $sort = $request->input('sort') ?: 'updated';
         $query = $user->libraryEntries()->with(['rating', 'game' => fn (BelongsTo $query) => $query
-            ->with(['genres', 'platforms'])->withCount(['ratings', 'libraryEntries as players_count'])->withAvg('ratings', 'score')]);
+            ->with(['genres', 'platforms', 'developers'])->withCount(['ratings', 'libraryEntries as players_count', 'reviews as public_reviews_count' => fn (Builder $query) => $query->where('reviews.is_public', true)])->withAvg('ratings', 'score')]);
 
         if ($search !== '') {
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search));

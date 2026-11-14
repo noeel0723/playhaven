@@ -1,9 +1,7 @@
-import { Link } from '@inertiajs/react';
 import { CheckCircle2, Gamepad2, Heart, Pause, Square } from 'lucide-react';
 import GameCard from '@/components/game-card';
-import GameCover from '@/components/game-cover';
+import GamePreviewLink from '@/components/game-preview-link';
 import StarRating from '@/components/star-rating';
-import { show } from '@/routes/games';
 import { libraryStatuses } from '@/types/library';
 import type { LibraryEntry } from '@/types/library';
 
@@ -28,18 +26,14 @@ export default function LibraryGameCard({
     if (compact)
         return (
             <article className="min-w-0" aria-label={entry.game.name}>
-                <Link
-                    href={show(entry.game.slug)}
-                    aria-label={entry.game.name}
-                    title={`${entry.game.name} · ${status}${entry.your_rating !== null ? ` · ${entry.your_rating} / 5` : ''}`}
+                <GamePreviewLink
+                    game={entry.game}
+                    compact
+                    coverClassName="aspect-[2/3] rounded-sm group-hover:border-[#bdb6b1]"
                     className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
                 >
-                    <GameCover
-                        game={entry.game}
-                        compact
-                        className="aspect-[2/3] rounded-sm group-hover:border-[#bdb6b1]"
-                    />
-                </Link>
+                    <span className="sr-only">{entry.game.name}</span>
+                </GamePreviewLink>
                 <div className="mt-1 flex min-h-3.5 flex-wrap items-center gap-1 text-[#bdb6b1]">
                     {entry.your_rating !== null && (
                         <StarRating value={entry.your_rating} compact />

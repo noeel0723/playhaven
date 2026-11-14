@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\LibraryStatus;
+use App\Models\Developer;
 use App\Models\DiaryEntry;
 use App\Models\Game;
 use App\Models\LibraryEntry;
@@ -12,6 +13,7 @@ use App\Models\Review;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -27,6 +29,34 @@ class LibraryTest extends TestCase
         $this->put(route('library.save', $game->slug), ['status' => 'playing', 'is_favorite' => true])->assertRedirect(route('login'));
         $this->delete(route('library.destroy', $game->slug), ['confirm' => true])->assertRedirect(route('login'));
         $this->assertDatabaseCount('library_entries', 0);
+    }
+
+    public function test_library_previews_include_developers_and_community_totals_without_private_review_content(): void
+    {
+        Http::preventStrayRequests();
+        $game = Game::factory()->create();
+        $developer = Developer::create(['rawg_id' => 501, 'name' => 'Library Preview Studio', 'slug' => 'library-preview-studio']);
+        $game->developers()->attach($developer);
+        $entry = LibraryEntry::factory()->for($game)->create(['status' => 'playing', 'is_favorite' => true]);
+        Rating::factory()->for($entry)->create(['score' => 8]);
+        Review::factory()->for($entry)->create(['is_public' => false, 'body' => 'PRIVATE LIBRARY PREVIEW REVIEW']);
+        $other = LibraryEntry::factory()->for($game)->create();
+        Rating::factory()->for($other)->create(['score' => 10]);
+        Review::factory()->for($other)->create(['is_public' => true, 'body' => 'PUBLIC REVIEW BODY NOT NEEDED IN PREVIEW']);
+        $empty = LibraryEntry::factory()->for($entry->user)->create();
+
+        $this->actingAs($entry->user)->get(route('library.index', ['q' => $game->name]))->assertOk()
+            ->assertDontSee('PRIVATE LIBRARY PREVIEW REVIEW')->assertDontSee('PUBLIC REVIEW BODY NOT NEEDED IN PREVIEW')
+            ->assertInertia(fn (Assert $page) => $page->component('library/index')->has('entries.data', 1)
+                ->where('entries.data.0.game.developers.0.name', 'Library Preview Studio')
+                ->where('entries.data.0.game.rating', 4.5)->where('entries.data.0.game.ratings_count', 2)
+                ->where('entries.data.0.game.public_reviews_count', 1)->where('entries.data.0.your_rating', 4)
+                ->where('entries.data.0.status', 'playing')->where('entries.data.0.is_favorite', true)
+                ->missing('entries.data.0.game.reviews')->missing('entries.data.0.game.developers.0.rawg_id'));
+        $this->get(route('library.index', ['q' => $empty->game->name]))->assertInertia(fn (Assert $page) => $page
+            ->has('entries.data', 1)->where('entries.data.0.game.rating', null)->where('entries.data.0.game.ratings_count', 0)
+            ->where('entries.data.0.game.public_reviews_count', 0)->has('entries.data.0.game.developers', 0));
+        Http::assertNothingSent();
     }
 
     public static function statuses(): array
