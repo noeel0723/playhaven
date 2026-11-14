@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Building2, RefreshCw, Search } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Search } from 'lucide-react';
 import { useState } from 'react';
 import GameCard from '@/components/game-card';
 import HistoryPagination from '@/components/history-pagination';
@@ -22,37 +22,6 @@ type Developer = {
     latest_release: string | null;
     details_synced_at: string | null;
 };
-
-function Artwork({ developer }: { developer: Developer }) {
-    const [failed, setFailed] = useState(false);
-    return (
-        <div className="relative mb-5 h-40 overflow-hidden rounded-md border border-white/10 bg-rein/25 sm:h-52">
-            {developer.image_url && !failed ? (
-                <>
-                    <img
-                        src={developer.image_url}
-                        alt={`${developer.name} artwork`}
-                        className="h-full w-full object-cover"
-                        onError={() => setFailed(true)}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-caviar/90 via-caviar/15 to-transparent" />
-                    {developer.image_source === 'game' && (
-                        <p className="absolute right-3 bottom-3 left-3 text-[10px] text-white/70">
-                            Artwork from the studio’s games
-                        </p>
-                    )}
-                </>
-            ) : (
-                <div className="flex h-full items-center justify-center text-[#807d7d]">
-                    <Building2 className="size-10" aria-hidden="true" />
-                    <span className="sr-only">
-                        Developer artwork unavailable
-                    </span>
-                </div>
-            )}
-        </div>
-    );
-}
 
 const buttonClass =
     'h-7 gap-1.5 border-white/10 bg-rein/20 px-2.5 text-[11px] text-[#e0d9d3] hover:bg-rein hover:text-white [&_svg]:size-3';
@@ -94,18 +63,17 @@ export default function DeveloperDetails({
             </Head>
             <Link
                 href={index()}
-                className="mb-4 inline-flex items-center gap-1.5 rounded-sm text-[11px] text-[#bdb6b1] hover:text-white focus-visible:outline-2"
+                className="mb-5 inline-flex items-center gap-1.5 rounded-sm text-[11px] text-[#d5cec7] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4"
             >
                 <ArrowLeft className="size-3" aria-hidden="true" />
                 All games
             </Link>
-            <Artwork key={developer.image_url} developer={developer} />
-            <header className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+            <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
                 <div className="min-w-0">
                     <p className="mb-1 text-[10px] tracking-widest text-[#bdb6b1] uppercase">
                         Developer
                     </p>
-                    <h1 className="text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">
+                    <h1 className="max-w-2xl text-3xl leading-tight font-medium tracking-tight wrap-break-word text-white sm:text-4xl lg:text-[2.75rem]">
                         {developer.name}
                     </h1>
                     <p className="mt-2 text-xs text-[#bdb6b1]">
@@ -115,12 +83,18 @@ export default function DeveloperDetails({
                         {first &&
                             ` · Releases ${first}${latest !== first ? `–${latest}` : ''}`}
                     </p>
+                    {developer.image_url &&
+                        developer.image_source === 'game' && (
+                            <p className="mt-2 text-[10px] text-[#9e9690]">
+                                Artwork from the studio’s games
+                            </p>
+                        )}
                 </div>
                 {canRefresh && (
                     <Button
                         type="button"
                         variant="outline"
-                        className={buttonClass}
+                        className={`${buttonClass} shrink-0 backdrop-blur-sm`}
                         disabled={info.processing}
                         onClick={() =>
                             info.post(refresh(developer.slug).url, {
@@ -143,7 +117,7 @@ export default function DeveloperDetails({
             />
             <section
                 aria-labelledby="about-developer"
-                className="mb-6 grid gap-5 border-b border-white/10 pb-5 sm:grid-cols-[minmax(0,1fr)_240px]"
+                className="mb-7 grid gap-5 border-b border-white/10 pb-6 sm:grid-cols-[minmax(0,1fr)_220px] sm:gap-8"
             >
                 <div className="min-w-0">
                     <h2

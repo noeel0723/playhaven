@@ -2,6 +2,7 @@ import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import GameBanner from '@/components/game-banner';
+import DeveloperBanner from '@/components/developer-banner';
 import ProfileBanner from '@/components/profile-banner';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
@@ -11,6 +12,7 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
     const page = usePage<{
         game?: CatalogGame;
         player?: { banner_url?: string | null };
+        developer?: { image_url?: string | null };
     }>();
     const [failedSources, setFailedSources] = useState<string[]>([]);
     const game = page.component === 'games/show' ? page.props.game : undefined;
@@ -29,7 +31,15 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
         profileSource && !failedSources.includes(profileSource)
             ? profileSource
             : null;
-    const hasBanner = Boolean(banner || profileBanner);
+    const developerSource =
+        page.component === 'developers/show'
+            ? page.props.developer?.image_url
+            : null;
+    const developerBanner =
+        developerSource && !failedSources.includes(developerSource)
+            ? developerSource
+            : null;
+    const hasBanner = Boolean(banner || profileBanner || developerBanner);
     function failSource(source: string) {
         setFailedSources((sources) =>
             sources.includes(source) ? sources : [...sources, source],
@@ -57,6 +67,13 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
                     onError={() => failSource(profileBanner)}
                 />
             )}
+            {developerBanner && (
+                <DeveloperBanner
+                    key={developerBanner}
+                    src={developerBanner}
+                    onError={() => failSource(developerBanner)}
+                />
+            )}
             <a
                 href="#catalog-main"
                 className="sr-only z-50 rounded-md bg-white p-3 text-black focus:not-sr-only focus:absolute focus:top-2 focus:left-2"
@@ -71,7 +88,7 @@ export default function CatalogLayout({ children }: PropsWithChildren) {
             <main
                 id="catalog-main"
                 tabIndex={-1}
-                className={`relative z-10 mx-auto w-full max-w-7xl flex-1 px-6 pb-10 sm:px-10 sm:pb-12 ${profileBanner ? 'pt-40 sm:pt-52 lg:pt-72' : banner ? 'pt-36 sm:pt-48 lg:pt-60' : 'pt-10 sm:pt-12'}`}
+                className={`relative z-10 mx-auto w-full max-w-7xl flex-1 px-6 pb-10 sm:px-10 sm:pb-12 ${developerBanner ? 'pt-48 sm:pt-64 lg:pt-80' : profileBanner ? 'pt-40 sm:pt-52 lg:pt-72' : banner ? 'pt-36 sm:pt-48 lg:pt-60' : 'pt-10 sm:pt-12'}`}
             >
                 {children}
             </main>
