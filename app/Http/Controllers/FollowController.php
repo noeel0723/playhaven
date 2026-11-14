@@ -44,10 +44,10 @@ class FollowController extends Controller
 
             return to_route('players.'.$direction, ['username' => $request->validated('network_username'), ...$filters]);
         }
-        if ($request->boolean('return_to_players')) {
+        if ($request->boolean('return_to_players') || $request->boolean('return_to_popular')) {
             $filters = array_filter($request->safe()->only(['q', 'page']), fn ($value) => $value !== null && $value !== '');
 
-            return to_route('players.index', $filters);
+            return to_route($request->boolean('return_to_popular') ? 'players.popular' : 'players.index', $filters);
         }
 
         return to_route('players.show', ['username' => $player->profile->username]);

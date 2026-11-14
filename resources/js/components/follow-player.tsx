@@ -20,6 +20,7 @@ export default function FollowPlayer({
     const { auth } = page.props;
     const button = useRef<HTMLButtonElement>(null);
     const fromPlayers = page.component === 'players/index';
+    const fromPopular = page.component === 'players/popular';
     const filters = new URL(page.url, 'http://localhost').searchParams;
     const compactClass = compact
         ? 'size-7 rounded-full border border-caviar bg-[#d5cec7] p-0 font-sans text-xs text-[#211d1a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
@@ -91,11 +92,15 @@ export default function FollowPlayer({
                             />
                         </>
                     )}
-                    {fromPlayers && (
+                    {(fromPlayers || fromPopular) && (
                         <>
                             <input
                                 type="hidden"
-                                name="return_to_players"
+                                name={
+                                    fromPopular
+                                        ? 'return_to_popular'
+                                        : 'return_to_players'
+                                }
                                 value="1"
                             />
                             <input

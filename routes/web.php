@@ -13,6 +13,7 @@ use App\Http\Controllers\GameListItemController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\PlayerDirectoryController;
 use App\Http\Controllers\PlayerNetworkController;
 use App\Http\Controllers\PlayerPagesController;
 use App\Http\Controllers\PlaythroughController;
@@ -40,6 +41,7 @@ Route::get('player-banners/{playerProfile}/{banner}', [ProfileBannerController::
 
 Route::get('community', [CommunityController::class, 'index'])->name('community.index');
 Route::get('players', [PlayerController::class, 'index'])->name('players.index');
+Route::get('players/browse/all', [PlayerDirectoryController::class, 'index'])->name('players.popular');
 Route::get('players/{username}', [PlayerController::class, 'show'])->name('players.show');
 Route::get('players/{username}/followers', [PlayerNetworkController::class, 'followers'])->name('players.followers');
 Route::get('players/{username}/following', [PlayerNetworkController::class, 'following'])->name('players.following');

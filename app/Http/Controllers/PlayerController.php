@@ -10,10 +10,12 @@ use App\Http\Resources\CommunityReviewResource;
 use App\Http\Resources\DiscoveredPlayerResource;
 use App\Http\Resources\GameListResource;
 use App\Http\Resources\GameResource;
+use App\Http\Resources\NetworkPlayerResource;
 use App\Http\Resources\ProfileActivityResource;
 use App\Http\Resources\ProfileReviewResource;
 use App\Http\Resources\PublicPlayerResource;
 use App\Services\Community;
+use App\Services\PlayerDirectory;
 use App\Services\PlayerShowcase;
 use App\Services\ProfileActivity;
 use App\Services\ProfileBanners;
@@ -56,7 +58,7 @@ class PlayerController extends Controller
         ]);
     }
 
-    public function index(CommunityRequest $request, Community $community): Response
+    public function index(CommunityRequest $request, Community $community, PlayerDirectory $directory): Response
     {
         $search = trim($request->string('q')->value());
         $players = $community->players($request->user());
@@ -73,10 +75,25 @@ class PlayerController extends Controller
                 ->orWhereRaw("LOWER(display_name) LIKE ? ESCAPE '!'", ['%'.$escaped.'%'])));
         }
 
+        $ranked = $directory->players($request->user());
+        $network = [];
+        if ($viewer = $request->user()) {
+            foreach (['following', 'followers'] as $direction) {
+                $related = $directory->players($viewer)->whereHas($direction === 'following' ? 'followers' : 'following', fn (Builder $query) => $query->where($direction === 'following' ? 'follows.follower_id' : 'follows.followed_id', $viewer->id));
+                $network[$direction] = [
+                    'total' => (clone $related)->count(),
+                    'data' => NetworkPlayerResource::collection($related->limit(6)->get())->resolve($request),
+                ];
+            }
+        }
+
         return Inertia::render('players/index', [
             'players' => DiscoveredPlayerResource::collection($players->orderByDesc('followers_count')->orderBy('users.id')->paginate(18)->withQueryString()),
             'query' => $search,
             'hasDiscoverablePlayers' => $hasDiscoverablePlayers,
+            'popularPlayers' => NetworkPlayerResource::collection((clone $ranked)->limit(8)->get())->resolve($request),
+            'publicPlayerCount' => $ranked->count(),
+            'network' => $network,
         ]);
     }
 

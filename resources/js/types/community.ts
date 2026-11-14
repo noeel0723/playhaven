@@ -33,6 +33,9 @@ export type NetworkPlayer = PublicPlayer & {
     public_reviews_count: number;
     public_lists_count: number;
 };
+export type PlayerDirectoryNetwork = Partial<
+    Record<'following' | 'followers', { total: number; data: NetworkPlayer[] }>
+>;
 export type NetworkDestination = {
     username: string | null;
     mine: boolean;

@@ -2,14 +2,20 @@ import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { Search, Users } from 'lucide-react';
 import HistoryPagination from '@/components/history-pagination';
 import PlayerDiscoveryCard from '@/components/player-discovery-card';
+import PlayerRankingTable from '@/components/player-ranking-table';
+import PlayerDirectorySidebar from '@/components/player-directory-sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { register } from '@/routes';
 import { index as community } from '@/routes/community';
 import { index as games } from '@/routes/games';
-import { index, edit, me } from '@/routes/players';
-import type { PlayerPagination } from '@/types/community';
+import { index, edit, me, popular } from '@/routes/players';
+import type {
+    PlayerPagination,
+    NetworkPlayer,
+    PlayerDirectoryNetwork,
+} from '@/types/community';
 
 const buttonClass =
     'h-7 border-white/10 bg-rein/20 px-2.5 text-[11px] text-[#e0d9d3] hover:bg-rein hover:text-white';
@@ -20,10 +26,16 @@ export default function Players({
     players,
     query,
     hasDiscoverablePlayers,
+    popularPlayers,
+    publicPlayerCount,
+    network,
 }: {
     players: PlayerPagination;
     query: string;
     hasDiscoverablePlayers: boolean;
+    popularPlayers: NetworkPlayer[];
+    publicPlayerCount: number;
+    network: PlayerDirectoryNetwork;
 }) {
     const { auth } = usePage().props;
     const emptyTitle = !hasDiscoverablePlayers
@@ -199,6 +211,38 @@ export default function Players({
                     dense
                 />
             </section>
+            {!query && (
+                <div className="mt-9 grid min-w-0 gap-7 md:grid-cols-[minmax(0,1fr)_12rem] md:gap-8">
+                    <section
+                        aria-labelledby="popular-players"
+                        className="min-w-0"
+                    >
+                        <div className="mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-2">
+                            <h2
+                                id="popular-players"
+                                className="text-xs font-medium tracking-[0.12em] text-[#c5bfba] uppercase"
+                            >
+                                Popular players
+                            </h2>
+                            <span className="text-[10px] text-[#a9a19b]">
+                                Most followers
+                            </span>
+                        </div>
+                        <PlayerRankingTable players={popularPlayers} />
+                        {publicPlayerCount > 0 && (
+                            <div className="mt-4 text-center">
+                                <Link
+                                    href={popular()}
+                                    className="inline-flex h-7 items-center rounded border border-white/10 bg-rein/20 px-4 text-[11px] text-[#d5cec7] hover:bg-rein hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                                >
+                                    View more players
+                                </Link>
+                            </div>
+                        )}
+                    </section>
+                    <PlayerDirectorySidebar network={network} />
+                </div>
+            )}
             <footer className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3 text-[11px] leading-5 text-[#a9a19b]">
                 <p>Only public profiles appear here.</p>
                 <Link href={community()} className={linkClass}>
